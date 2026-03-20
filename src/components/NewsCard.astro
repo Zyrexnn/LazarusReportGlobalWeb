@@ -1,0 +1,92 @@
+---
+export interface Props {
+  title: string;
+  category: string;
+  excerpt?: string;
+  image?: string;
+  date?: string;
+  source?: string;
+  url?: string;
+  isBreaking?: boolean;
+}
+
+const { title, category, excerpt, image, date, source, url = '#', isBreaking = false } = Astro.props;
+
+const categoryColors: Record<string, string> = {
+  geopolitics: 'text-lazarus-gold',
+  military: 'text-blue-400',
+  markets: 'text-green-400',
+  finance: 'text-emerald-400',
+  crypto: 'text-purple-400',
+  energy: 'text-orange-400',
+  breaking: 'text-lazarus-alert',
+  default: 'text-lazarus-gold',
+};
+
+const colorClass = categoryColors[category?.toLowerCase()] || categoryColors.default;
+---
+
+<article class="group bg-lazarus-dark border border-lazarus-border rounded-xl overflow-hidden hover:border-lazarus-gold/40 transition-all duration-300 hover:shadow-lg hover:shadow-lazarus-gold/5">
+  <!-- Image -->
+  {image && (
+    <div class="relative overflow-hidden aspect-video">
+      <img
+        src={image}
+        alt={title}
+        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+        loading="lazy"
+        decoding="async"
+      />
+      {isBreaking && (
+        <div class="absolute top-3 left-3 px-2 py-1 bg-lazarus-alert text-white text-xs font-bold tracking-wider uppercase rounded">
+          Breaking
+        </div>
+      )}
+    </div>
+  )}
+
+  <!-- Content -->
+  <div class="p-5">
+    <!-- Category + Source -->
+    <div class="flex items-center justify-between mb-2.5">
+      <span class:list={['text-xs font-bold tracking-[0.15em] uppercase', colorClass]}>
+        {category}
+      </span>
+      {source && (
+        <span class="text-lazarus-muted/60 text-xs">
+          {source}
+        </span>
+      )}
+    </div>
+
+    <!-- Title -->
+    <a href={url} class="block">
+      <h3 class="text-lazarus-headline text-base font-semibold leading-snug mb-2 group-hover:text-lazarus-gold transition-colors duration-200 line-clamp-2">
+        {title}
+      </h3>
+    </a>
+
+    <!-- Excerpt -->
+    {excerpt && (
+      <p class="text-lazarus-muted text-sm leading-relaxed mb-3 line-clamp-2">
+        {excerpt}
+      </p>
+    )}
+
+    <!-- Date -->
+    {date && (
+      <time class="text-lazarus-muted/50 text-xs">
+        {date}
+      </time>
+    )}
+  </div>
+</article>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

@@ -1,0 +1,81 @@
+---
+// Hero Section — Breaking News with gradient overlay
+// 65vh on desktop, auto on mobile
+---
+
+<section class="relative min-h-[50vh] md:min-h-[65vh] flex items-end overflow-hidden" id="hero-section">
+  <!-- Background: Dark gradient + subtle map overlay -->
+  <div class="absolute inset-0 bg-gradient-to-b from-lazarus-black via-lazarus-black/90 to-lazarus-black z-10"></div>
+  <div class="absolute inset-0 opacity-[0.07]" style="background-image: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 400%22%3E%3Cpath d=%22M200 100 L250 80 L300 120 L350 90 L400 150 L450 110 L500 130 L550 170 L600 140%22 fill=%22none%22 stroke=%22%23d4af37%22 stroke-width=%221%22/%3E%3Cpath d=%22M100 200 L180 180 L240 220 L320 190 L380 240 L440 210 L520 250 L580 220 L660 260 L720 230%22 fill=%22none%22 stroke=%22%23d4af37%22 stroke-width=%220.5%22/%3E%3Ccircle cx=%22300%22 cy=%22150%22 r=%223%22 fill=%22%23d4af37%22/%3E%3Ccircle cx=%22500%22 cy=%22200%22 r=%222%22 fill=%22%23d4af37%22/%3E%3Ccircle cx=%22400%22 cy=%22300%22 r=%224%22 fill=%22%23d4af37%22/%3E%3Ccircle cx=%22600%22 cy=%22100%22 r=%222.5%22 fill=%22%23d4af37%22/%3E%3C/svg%3E'); background-size: cover; background-position: center;"></div>
+  
+  <!-- Decorative grid lines -->
+  <div class="absolute inset-0 opacity-[0.03]" style="background-image: linear-gradient(rgba(212,175,55,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(212,175,55,0.3) 1px, transparent 1px); background-size: 60px 60px;"></div>
+
+  <!-- Content -->
+  <div class="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10 md:pb-16 pt-10">
+    <!-- Breaking News Badge -->
+    <div class="inline-flex items-center gap-2 mb-6 animate-fade-in">
+      <span class="relative flex h-2.5 w-2.5">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-lazarus-alert opacity-75"></span>
+        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-lazarus-alert"></span>
+      </span>
+      <span class="text-lazarus-alert text-xs font-bold tracking-[0.2em] uppercase">Breaking Analysis</span>
+    </div>
+
+    <!-- Main Headline -->
+    <h1 class="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-lazarus-headline leading-[1.1] mb-4 max-w-4xl text-balance animate-fade-in" style="animation-delay: 0.1s;">
+      Global Power Shifts Reshape<br class="hidden sm:block" />
+      <span class="gold-gradient">Middle East Security Architecture</span>
+    </h1>
+
+    <!-- Subtitle -->
+    <p class="text-lazarus-body/80 text-base sm:text-lg md:text-xl max-w-2xl mb-8 leading-relaxed animate-fade-in" style="animation-delay: 0.2s;">
+      In-depth analysis of emerging geopolitical realignments, military deployments, and economic corridors transforming the global order.
+    </p>
+
+    <!-- CTA -->
+    <div class="flex flex-wrap items-center gap-4 animate-fade-in" style="animation-delay: 0.3s;">
+      <a href="/geopolitics" class="touch-target px-6 py-3 bg-lazarus-gold text-lazarus-black font-semibold text-sm tracking-wide rounded-lg hover:bg-lazarus-gold-light transition-colors duration-200">
+        Read Analysis
+      </a>
+      <a href="/about" class="touch-target px-6 py-3 border border-lazarus-border text-lazarus-body font-medium text-sm tracking-wide rounded-lg hover:border-lazarus-gold hover:text-lazarus-gold transition-colors duration-200">
+        About Lazarus
+      </a>
+    </div>
+
+    <!-- Hero Cards Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-10 animate-fade-in" style="animation-delay: 0.4s;">
+      <a href="#" class="group bg-lazarus-dark/80 border border-lazarus-border rounded-lg p-4 hover:border-lazarus-gold/50 transition-all duration-300">
+        <span class="text-lazarus-gold text-xs font-bold tracking-wider uppercase">Geopolitics</span>
+        <h3 class="text-lazarus-headline text-sm font-semibold mt-1.5 leading-snug group-hover:text-lazarus-gold transition-colors">
+          NATO Expansion Triggers New Diplomatic Crisis in Eastern Europe
+        </h3>
+        <span class="text-lazarus-muted text-xs mt-2 block">2 hours ago</span>
+      </a>
+
+      <a href="#" class="group bg-lazarus-dark/80 border border-lazarus-border rounded-lg p-4 hover:border-lazarus-gold/50 transition-all duration-300">
+        <span class="text-lazarus-gold text-xs font-bold tracking-wider uppercase">Military</span>
+        <h3 class="text-lazarus-headline text-sm font-semibold mt-1.5 leading-snug group-hover:text-lazarus-gold transition-colors">
+          US Navy Deploys Carrier Strike Group to Persian Gulf
+        </h3>
+        <span class="text-lazarus-muted text-xs mt-2 block">4 hours ago</span>
+      </a>
+
+      <a href="#" class="group bg-lazarus-dark/80 border border-lazarus-border rounded-lg p-4 hover:border-lazarus-gold/50 transition-all duration-300">
+        <span class="text-lazarus-alert text-xs font-bold tracking-wider uppercase">Breaking</span>
+        <h3 class="text-lazarus-headline text-sm font-semibold mt-1.5 leading-snug group-hover:text-lazarus-gold transition-colors">
+          Oil Prices Surge Amid Strait of Hormuz Tensions
+        </h3>
+        <span class="text-lazarus-muted text-xs mt-2 block">6 hours ago</span>
+      </a>
+
+      <a href="#" class="group bg-lazarus-dark/80 border border-lazarus-border rounded-lg p-4 hover:border-lazarus-gold/50 transition-all duration-300">
+        <span class="text-lazarus-gold text-xs font-bold tracking-wider uppercase">Crypto</span>
+        <h3 class="text-lazarus-headline text-sm font-semibold mt-1.5 leading-snug group-hover:text-lazarus-gold transition-colors">
+          Bitcoin Rallies Past $70K as Institutional Interest Surges
+        </h3>
+        <span class="text-lazarus-muted text-xs mt-2 block">8 hours ago</span>
+      </a>
+    </div>
+  </div>
+</section>

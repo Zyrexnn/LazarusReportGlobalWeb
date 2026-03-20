@@ -1,0 +1,183 @@
+/* ── Google Fonts ── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap');
+
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* ── Tailwind v4 Theme ── */
+@theme {
+  /* Brand Colors */
+  --color-lazarus-black: #0f0f0f;
+  --color-lazarus-dark: #1a1a1a;
+  --color-lazarus-gold: #d4af37;
+  --color-lazarus-gold-dark: #8b6f47;
+  --color-lazarus-gold-light: #f0d060;
+  --color-lazarus-body: #e0e0e0;
+  --color-lazarus-headline: #ffffff;
+  --color-lazarus-muted: #888888;
+  --color-lazarus-alert: #b22222;
+  --color-lazarus-card: #1a1a1a;
+  --color-lazarus-border: rgba(212, 175, 55, 0.2);
+  --color-lazarus-overlay: rgba(15, 15, 15, 0.85);
+
+  /* Typography */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'Playfair Display', ui-serif, Georgia, serif;
+
+  /* Breakpoints */
+  --breakpoint-xs: 475px;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  /* Custom animations */
+  --animate-fade-in: fade-in 0.6s ease-out forwards;
+  --animate-slide-up: slide-up 0.5s ease-out forwards;
+  --animate-ticker: ticker 30s linear infinite;
+  --animate-pulse-gold: pulse-gold 2s ease-in-out infinite;
+}
+
+/* ── Base Styles ── */
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--color-lazarus-black);
+    color: var(--color-lazarus-body);
+    line-height: 1.7;
+    font-size: 16px;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--color-lazarus-headline);
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  a {
+    color: var(--color-lazarus-gold);
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  a:hover {
+    color: var(--color-lazarus-gold-light);
+  }
+
+  ::selection {
+    background-color: rgba(212, 175, 55, 0.3);
+    color: var(--color-lazarus-headline);
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-lazarus-black);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-lazarus-gold-dark);
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-lazarus-gold);
+  }
+}
+
+/* ── Utility Classes ── */
+@layer utilities {
+  .gold-gradient {
+    background: linear-gradient(135deg, var(--color-lazarus-gold), var(--color-lazarus-gold-dark));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gold-border {
+    border: 1px solid var(--color-lazarus-border);
+  }
+
+  .gold-border-hover {
+    border: 1px solid transparent;
+    transition: border-color 0.3s ease;
+  }
+
+  .gold-border-hover:hover {
+    border-color: var(--color-lazarus-gold);
+  }
+
+  .glass-dark {
+    background: rgba(15, 15, 15, 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .touch-target {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* ── Keyframes ── */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes pulse-gold {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* ── Leaflet Map Overrides ── */
+.leaflet-container {
+  background: var(--color-lazarus-dark) !important;
+  border-radius: 8px;
+}
+
+.leaflet-popup-content-wrapper {
+  background: var(--color-lazarus-dark) !important;
+  color: var(--color-lazarus-body) !important;
+  border: 1px solid var(--color-lazarus-border) !important;
+  border-radius: 8px !important;
+}
+
+.leaflet-popup-tip {
+  background: var(--color-lazarus-dark) !important;
+}
