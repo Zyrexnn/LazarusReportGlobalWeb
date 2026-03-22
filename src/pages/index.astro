@@ -6,8 +6,12 @@ import Sidebar from '../components/Sidebar.astro';
 import Footer from '../components/Footer.astro';
 import NewsFeed from '../components/NewsFeed.tsx';
 import CryptoTicker from '../components/CryptoTicker.tsx';
-import AISMap from '../components/AISMap.tsx';
+import AISMap from '../components/AISMap.astro';
 import '../styles/global.css';
+import { getTranslation } from '../utils/i18n';
+
+const lang = Astro.cookies.get('lazarus_lang')?.value || 'en';
+const t = getTranslation(lang);
 ---
 
 <BaseLayout title="Lazarus Report Global — Independent Geopolitical Analysis">
@@ -24,18 +28,18 @@ import '../styles/global.css';
         <div class="flex-1 lg:w-[70%]">
           <h2 class="font-serif text-2xl text-lazarus-headline mb-6 flex items-center gap-3">
             <div class="w-1 h-6 bg-lazarus-gold rounded-full"></div>
-            Latest Intelligence
+            {t.sections.latestIntelligence}
           </h2>
-          <NewsFeed client:load />
+          <NewsFeed client:load lang={lang} />
         </div>
 
         <!-- Sidebar (30%) -->
         <div class="lg:w-[30%] lg:sticky lg:top-24 lg:self-start space-y-6">
           <!-- AIS Map -->
-          <AISMap client:only="react" />
+          <AISMap />
 
           <!-- Crypto Ticker -->
-          <CryptoTicker client:load />
+          <CryptoTicker client:load lang={lang} />
 
           <!-- Lazarus Exclusive -->
           <div class="bg-lazarus-dark border border-lazarus-border rounded-xl p-4">
@@ -43,29 +47,29 @@ import '../styles/global.css';
               <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z" />
               </svg>
-              Lazarus Exclusive
+              {t.sections.lazarusExclusive}
             </h3>
             <div class="space-y-4">
               <a href="#" class="block group">
-                <span class="text-lazarus-gold/80 text-[10px] font-bold tracking-wider uppercase">Analysis</span>
+                <span class="text-lazarus-gold/80 text-[10px] font-bold tracking-wider uppercase">{t.categories.analysis}</span>
                 <h4 class="text-lazarus-headline text-sm font-semibold mt-0.5 leading-snug group-hover:text-lazarus-gold transition-colors">
-                  The Hidden Corridors of Power: BRICS Realignment
+                  {t.sidebar.article1}
                 </h4>
                 <span class="text-lazarus-muted/50 text-xs">March 20, 2026</span>
               </a>
               <div class="border-t border-lazarus-border/30"></div>
               <a href="#" class="block group">
-                <span class="text-lazarus-gold/80 text-[10px] font-bold tracking-wider uppercase">Intelligence</span>
+                <span class="text-lazarus-gold/80 text-[10px] font-bold tracking-wider uppercase">{t.categories.intelligence}</span>
                 <h4 class="text-lazarus-headline text-sm font-semibold mt-0.5 leading-snug group-hover:text-lazarus-gold transition-colors">
-                  Satellite Imagery Reveals New Military Installations
+                  {t.sidebar.article2}
                 </h4>
                 <span class="text-lazarus-muted/50 text-xs">March 19, 2026</span>
               </a>
               <div class="border-t border-lazarus-border/30"></div>
               <a href="#" class="block group">
-                <span class="text-lazarus-gold/80 text-[10px] font-bold tracking-wider uppercase">Deep Dive</span>
+                <span class="text-lazarus-gold/80 text-[10px] font-bold tracking-wider uppercase">{t.categories.deepDive}</span>
                 <h4 class="text-lazarus-headline text-sm font-semibold mt-0.5 leading-snug group-hover:text-lazarus-gold transition-colors">
-                  Energy Wars: Who Controls Tomorrow's Resources
+                  {t.sidebar.article3}
                 </h4>
                 <span class="text-lazarus-muted/50 text-xs">March 18, 2026</span>
               </a>

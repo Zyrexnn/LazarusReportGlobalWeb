@@ -1,0 +1,148 @@
+---
+// AISMap.astro
+// Premium Global AIS Map with Cyberpunk/Dark filtering
+import { getTranslation } from '../utils/i18n';
+
+export interface Props {
+  fullPage?: boolean;
+}
+
+const { fullPage = false } = Astro.props;
+const containerHeight = fullPage ? 'h-[75vh]' : 'h-80 md:h-96';
+const lang = Astro.cookies.get('lazarus_lang')?.value || 'en';
+const t = getTranslation(lang);
+---
+
+<div 
+  class="bg-lazarus-dark border border-lazarus-border rounded-xl overflow-hidden group relative ais-map-root"
+  data-full-page={fullPage ? "true" : "false"}
+>
+  {!fullPage && (
+    <div class="flex items-center justify-between px-4 pt-4 pb-2 relative z-20 bg-lazarus-dark">
+      <h3 class="text-lazarus-gold text-xs font-bold tracking-[0.2em] uppercase flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" />
+        </svg>
+        {t.shipTrackerUI.globalLiveTracking}
+      </h3>
+      <a href="/ship-tracker" class="text-lazarus-muted hover:text-lazarus-gold text-xs transition-colors">
+        {t.shipTrackerUI.fullMap}
+      </a>
+    </div>
+  )}
+
+  <div class={`relative w-full ${containerHeight} overflow-hidden bg-[#0B0E11] z-10`}>
+    <!-- Kontainer Map -->
+    <div 
+      class="ais-container w-full h-full absolute inset-0 -top-[35px] scale-[1.01]" 
+      style="height: calc(100% + 35px)"
+    ></div>
+    
+    <!-- Efek Shadow Overlay -->
+    <div class="absolute inset-0 pointer-events-none shadow-[inset_0_0_80px_rgba(0,0,0,0.9)] z-10"></div>
+
+    <!-- Skeleton Loader -->
+    <div class="ais-skeleton absolute inset-0 bg-[#0B0E11] flex items-center justify-center z-20 transition-opacity duration-1000">
+      <div class="text-center">
+        <div class="w-10 h-10 border-2 border-lazarus-gold border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <p class="text-lazarus-gold/80 text-[11px] tracking-[0.3em] font-mono uppercase animate-pulse">Establishing Live Feed</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Info -->
+  <div class="px-4 py-3 border-t border-lazarus-border/30 bg-lazarus-black/80 flex items-center justify-between relative z-20">
+    <div class="flex items-center gap-2">
+      <span class="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
+      <span class="text-lazarus-muted/70 text-[10px] uppercase tracking-widest font-mono text-balance">Live AIS Relay Active</span>
+    </div>
+    <span class="text-lazarus-gold/30 text-[9px] tracking-[0.3em] uppercase font-mono">
+      // ENCRYPTED FEED
+    </span>
+  </div>
+</div>
+
+<script is:inline>
+  // Self-executing function to handle multiple instances
+  (function() {
+    // Find all map roots on the page
+    const roots = document.querySelectorAll('.ais-map-root');
+    
+    roots.forEach(root => {
+      // Prevent multiple initialization
+      if (root.dataset.initialized) return;
+      root.dataset.initialized = "true";
+
+      const container = root.querySelector('.ais-container');
+      const skeleton = root.querySelector('.ais-skeleton');
+      const isFullPage = root.dataset.fullPage === "true";
+
+      if (!container) return;
+
+      // Map Configuration
+      const configVars = [
+        'var width="100%";',
+        'var height="100%";',
+        'var latitude="15.00";',
+        'var longitude="25.00";',
+        'var zoom="3";',
+        'var names=true;',
+        'var show_track=false;',
+        'var mmsi="";',
+        'var imo="";',
+        'var fleet="";'
+      ].join('\n');
+
+      // Create iframe sandbox
+      const iframe = document.createElement('iframe');
+      iframe.style.width = '100%';
+      iframe.style.height = '100%';
+      iframe.style.border = 'none';
+      iframe.style.background = '#0B0E11';
+      
+      container.appendChild(iframe);
+
+      // Short delay for the iframe's window to be available
+      setTimeout(() => {
+        try {
+          const iframeDoc = iframe.contentWindow.document;
+          iframeDoc.open();
+          
+          // Using array join to avoid template literal conflicts in Astro
+          const htmlContent = [
+            '<!DOCTYPE html>',
+            '<html>',
+            '<head>',
+            '<style>',
+            'body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #0B0E11; }',
+            'iframe { width: 100% !important; height: 100% !important; border: none !important;',
+            'filter: invert(0.92) hue-rotate(180deg) brightness(0.8) contrast(1.2) saturate(0.8);',
+            'background: #0B0E11 !important; }',
+            '</style>',
+            '</head>',
+            '<body>',
+            '<script type="text/javascript">',
+            configVars,
+            '<\/script>',
+            '<script type="text/javascript" src="https://www.vesselfinder.com/aismap.js"><\/script>',
+            '</body>',
+            '</html>'
+          ].join('\n');
+
+          iframeDoc.write(htmlContent);
+          iframeDoc.close();
+        } catch (e) {
+          console.error('Lazarus AIS Error:', e);
+        }
+      }, 200);
+
+      // Fade out skeleton
+      setTimeout(() => {
+        if (skeleton) {
+          skeleton.style.opacity = '0';
+          setTimeout(() => skeleton.remove(), 1000);
+        }
+      }, 4000);
+    });
+  })();
+</script>

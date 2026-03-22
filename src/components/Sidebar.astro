@@ -1,5 +1,8 @@
 ---
 // Sidebar: AIS mini-map, Crypto ticker, Lazarus Exclusive
+import { getTranslation } from '../utils/i18n';
+const lang = Astro.cookies.get('lazarus_lang')?.value || 'en';
+const t = getTranslation(lang);
 ---
 
 <aside class="space-y-6">
@@ -11,21 +14,21 @@
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" />
           </svg>
-          AIS Ship Tracker
+          {t.nav.shipTracker}
         </h3>
         <a href="/ship-tracker" class="text-lazarus-muted hover:text-lazarus-gold text-xs transition-colors">
-          Full Map →
+          {t.shipTrackerUI.fullMap}
         </a>
       </div>
       <!-- Mini map placeholder - replaced by React island on client -->
       <div id="sidebar-map-container" class="h-48 bg-lazarus-black/50 flex items-center justify-center">
         <div class="text-center">
           <div class="w-6 h-6 border-2 border-lazarus-gold border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-          <p class="text-lazarus-muted text-xs">Loading map...</p>
+          <p class="text-lazarus-muted text-xs">{t.sections.loadingMap}</p>
         </div>
       </div>
       <div class="px-4 py-2 border-t border-lazarus-border/50">
-        <p class="text-lazarus-muted/60 text-[10px]">5 vessels tracked • Persian Gulf</p>
+        <p class="text-lazarus-muted/60 text-[10px]">5 {t.sections.vesselsTracked} • Persian Gulf</p>
       </div>
     </div>
   </div>
@@ -34,36 +37,36 @@
   <div id="sidebar-crypto"></div>
 
   <!-- Lazarus Exclusive -->
-  <div class="bg-lazarus-dark border border-lazarus-border rounded-xl p-4">
-    <h3 class="text-lazarus-gold text-xs font-bold tracking-[0.2em] uppercase mb-4 flex items-center gap-2">
-      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+  <div class="bg-lazarus-black border-t-2 border-lazarus-gold/80 pt-4">
+    <h3 class="text-lazarus-headline text-xs font-bold tracking-[0.2em] uppercase mb-4 flex items-center gap-2">
+      <svg class="w-4 h-4 text-lazarus-gold" fill="currentColor" viewBox="0 0 24 24">
         <path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z" />
       </svg>
-      Lazarus Exclusive
+      {t.sections.lazarusExclusive}
     </h3>
-    <div class="space-y-4">
+    <div class="space-y-5">
       <a href="#" class="block group">
-        <span class="text-lazarus-gold/80 text-[10px] font-bold tracking-wider uppercase">Analysis</span>
-        <h4 class="text-lazarus-headline text-sm font-semibold mt-0.5 leading-snug group-hover:text-lazarus-gold transition-colors">
-          The Hidden Corridors of Power: BRICS Realignment
+        <span class="text-lazarus-gold/80 text-[10px] font-bold tracking-wider uppercase block mb-1">{t.categories.analysis}</span>
+        <h4 class="font-serif text-lazarus-headline text-base font-medium leading-snug group-hover:text-lazarus-gold transition-colors">
+          {t.sidebar.article1}
         </h4>
-        <span class="text-lazarus-muted/50 text-xs">March 20, 2026</span>
+        <span class="text-lazarus-muted/50 text-[10px] font-mono uppercase mt-2 block">March 20, 2026</span>
       </a>
       <div class="border-t border-lazarus-border/30"></div>
       <a href="#" class="block group">
-        <span class="text-lazarus-gold/80 text-[10px] font-bold tracking-wider uppercase">Intelligence</span>
-        <h4 class="text-lazarus-headline text-sm font-semibold mt-0.5 leading-snug group-hover:text-lazarus-gold transition-colors">
-          Satellite Imagery Reveals New Military Installations
+        <span class="text-lazarus-gold/80 text-[10px] font-bold tracking-wider uppercase block mb-1">{t.categories.intelligence}</span>
+        <h4 class="font-serif text-lazarus-headline text-base font-medium leading-snug group-hover:text-lazarus-gold transition-colors">
+          {t.sidebar.article2}
         </h4>
-        <span class="text-lazarus-muted/50 text-xs">March 19, 2026</span>
+        <span class="text-lazarus-muted/50 text-[10px] font-mono uppercase mt-2 block">March 19, 2026</span>
       </a>
       <div class="border-t border-lazarus-border/30"></div>
       <a href="#" class="block group">
-        <span class="text-lazarus-gold/80 text-[10px] font-bold tracking-wider uppercase">Deep Dive</span>
-        <h4 class="text-lazarus-headline text-sm font-semibold mt-0.5 leading-snug group-hover:text-lazarus-gold transition-colors">
-          Energy Wars: Who Controls Tomorrow's Resources
+        <span class="text-lazarus-gold/80 text-[10px] font-bold tracking-wider uppercase block mb-1">{t.categories.deepDive}</span>
+        <h4 class="font-serif text-lazarus-headline text-base font-medium leading-snug group-hover:text-lazarus-gold transition-colors">
+          {t.sidebar.article3}
         </h4>
-        <span class="text-lazarus-muted/50 text-xs">March 18, 2026</span>
+        <span class="text-lazarus-muted/50 text-[10px] font-mono uppercase mt-2 block">March 18, 2026</span>
       </a>
     </div>
   </div>

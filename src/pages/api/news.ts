@@ -24,13 +24,21 @@ const CATEGORY_KEYWORDS: Record<string, string> = {
   breaking: 'breaking news OR urgent OR crisis',
 };
 
+const isWithin3Days = (dateStr: string | number) => {
+  if (!dateStr) return true;
+  const articleTime = new Date(typeof dateStr === 'number' ? dateStr * 1000 : dateStr).getTime();
+  if (isNaN(articleTime)) return true;
+  const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
+  return (Date.now() - articleTime) <= THREE_DAYS_MS;
+};
+
 async function fetchNewsData(category: string, query: string): Promise<NewsArticle[]> {
   const apiKey = import.meta.env.NEWSDATA_API_KEY;
   if (!apiKey || apiKey === 'your_newsdata_api_key_here') return [];
 
   try {
     const searchQuery = query || CATEGORY_KEYWORDS[category.toLowerCase()] || 'geopolitics';
-    const url = `https://newsdata.io/api/1/latest?apikey=${apiKey}&q=${encodeURIComponent(searchQuery)}&language=en&size=5`;
+    const url = `https://newsdata.io/api/1/latest?apikey=${apiKey}&q=${encodeURIComponent(searchQuery)}&language=en&size=50`;
 
     const res = await fetch(url, { 
       signal: AbortSignal.timeout(8000),
@@ -41,13 +49,15 @@ async function fetchNewsData(category: string, query: string): Promise<NewsArtic
     const data = await res.json();
     if (!data.results) return [];
 
-    return data.results.map((item: any) => ({
+    return data.results
+      .filter((item: any) => isWithin3Days(item.pubDate))
+      .map((item: any) => ({
       title: item.title || 'Untitled',
       category: category || 'Geopolitics',
       excerpt: item.description || '',
       image: item.image_url || undefined,
       date: item.pubDate ? new Date(item.pubDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Today',
-      source: 'NewsData',
+      source: item.source_id || 'News',
       url: item.link || '#',
       isBreaking: false,
     }));
@@ -62,7 +72,7 @@ async function fetchWorldNews(category: string, query: string): Promise<NewsArti
 
   try {
     const searchQuery = query || CATEGORY_KEYWORDS[category.toLowerCase()] || 'geopolitics';
-    const url = `https://api.worldnewsapi.com/search-news?api-key=${apiKey}&text=${encodeURIComponent(searchQuery)}&language=en&number=5&sort=publish-time&sort-direction=DESC`;
+    const url = `https://api.worldnewsapi.com/search-news?api-key=${apiKey}&text=${encodeURIComponent(searchQuery)}&language=en&number=50&sort=publish-time&sort-direction=DESC`;
 
     const res = await fetch(url, {
       signal: AbortSignal.timeout(8000),
@@ -73,13 +83,15 @@ async function fetchWorldNews(category: string, query: string): Promise<NewsArti
     const data = await res.json();
     if (!data.news) return [];
 
-    return data.news.map((item: any) => ({
+    return data.news
+      .filter((item: any) => isWithin3Days(item.publish_date))
+      .map((item: any) => ({
       title: item.title || 'Untitled',
       category: category || 'Geopolitics',
       excerpt: item.text?.substring(0, 200) || '',
       image: item.image || undefined,
       date: item.publish_date ? new Date(item.publish_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Today',
-      source: 'WorldNews',
+      source: item.author || 'WorldNews',
       url: item.url || '#',
       isBreaking: false,
     }));
@@ -107,13 +119,15 @@ async function fetchFinnhubNews(category: string): Promise<NewsArticle[]> {
     const data = await res.json();
     if (!Array.isArray(data)) return [];
 
-    return data.slice(0, 5).map((item: any) => ({
+    return data.slice(0, 100)
+      .filter((item: any) => isWithin3Days(item.datetime))
+      .map((item: any) => ({
       title: item.headline || 'Untitled',
       category: 'Markets',
       excerpt: item.summary || '',
       image: item.image || undefined,
       date: item.datetime ? new Date(item.datetime * 1000).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Today',
-      source: 'Finnhub',
+      source: item.source || 'Finnhub',
       url: item.url || '#',
       isBreaking: false,
     }));
@@ -180,10 +194,35 @@ const FALLBACK_ARTICLES: NewsArticle[] = [
   },
 ];
 
-export const GET: APIRoute = async ({ url }) => {
+// --- Deduplication Helpers ---
+function normalizeTitle(title: string): string {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[!?.,:;"'-]/g, '')
+    .replace(/\s+/g, ' ');
+}
+
+function normalizeUrl(url: string): string {
+  return url
+    .toLowerCase()
+    .trim()
+    .replace(/^https?:\/\//, '')
+    .replace(/\/$/, '');
+}
+
+function getUniqueKey(article: NewsArticle): string {
+  if (article.url && article.url !== '#' && article.url.length > 5) {
+    return normalizeUrl(article.url);
+  }
+  return normalizeTitle(article.title);
+}
+
+export const GET: APIRoute = async ({ url, cookies }) => {
   const category = url.searchParams.get('category') || 'all';
   const query = url.searchParams.get('q') || '';
   const sort = url.searchParams.get('sort') || 'latest';
+  const lang = cookies.get('lazarus_lang')?.value || 'en';
 
   try {
     // Fetch from all sources in parallel
@@ -214,21 +253,56 @@ export const GET: APIRoute = async ({ url }) => {
       }
     }
 
-    // Sort
-    if (sort === 'latest') {
-      articles.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    // --- Advanced Deduplication ---
+    const articleMap = new Map<string, NewsArticle>();
+
+    for (const article of articles) {
+      const key = getUniqueKey(article);
+      const existing = articleMap.get(key);
+
+      if (!existing) {
+        articleMap.set(key, article);
+      } else {
+        // Collision Resolution
+        const isNewLazarus = article.source === 'Lazarus Report';
+        const isExistingLazarus = existing.source === 'Lazarus Report';
+
+        if (isNewLazarus && !isExistingLazarus) {
+          articleMap.set(key, article); // Lazarus wins
+        } else if (!isNewLazarus && isExistingLazarus) {
+          // Keep existing Lazarus
+        } else {
+          // Compare content richness (excerpt length)
+          const newLength = article.excerpt?.length || 0;
+          const extLength = existing.excerpt?.length || 0;
+          
+          if (newLength > extLength + 20) {
+            articleMap.set(key, article); // Significantly longer content wins
+          } else if (newLength >= extLength - 20) {
+            // Tie-breaker: Newer date wins
+            const newTime = new Date(article.date).getTime();
+            const extTime = new Date(existing.date).getTime();
+            if (newTime > extTime && !isNaN(newTime)) {
+              articleMap.set(key, article);
+            }
+          }
+        }
+      }
     }
 
-    // Remove duplicates by title
-    const seen = new Set<string>();
-    articles = articles.filter((a) => {
-      const key = a.title.toLowerCase().trim();
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
+    // Convert Map back to array
+    let uniqueArticles = Array.from(articleMap.values());
 
-    return new Response(JSON.stringify({ articles: articles.slice(0, 20) }), {
+    // Sort globally by Date descending
+    if (sort === 'latest') {
+      uniqueArticles.sort((a, b) => {
+        const timeA = new Date(a.date).getTime();
+        const timeB = new Date(b.date).getTime();
+        return (isNaN(timeB) ? 0 : timeB) - (isNaN(timeA) ? 0 : timeA);
+      });
+    }
+
+    return new Response(JSON.stringify({ articles: uniqueArticles.slice(0, 100) }), {
       status: 200,
       headers: {
         'Content-Type': 'application/json',

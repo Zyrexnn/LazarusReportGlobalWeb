@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
+import { getTranslation } from '../utils/i18n';
 
 interface CryptoData {
   symbol: string;
@@ -55,8 +56,9 @@ function MiniSparkline({ data, positive }: { data: number[]; positive: boolean }
   );
 }
 
-export default function CryptoTicker() {
+export default function CryptoTicker({ lang = 'en' }: { lang?: string }) {
   const [cryptoData, setCryptoData] = useState<CryptoData[]>(INITIAL_DATA);
+  const t = useMemo(() => getTranslation(lang), [lang]);
 
   useEffect(() => {
     // Try to connect to Binance WebSocket for live data
@@ -107,13 +109,13 @@ export default function CryptoTicker() {
   }, []);
 
   return (
-    <div className="bg-lazarus-dark border border-lazarus-border rounded-xl p-4">
-      <h3 className="text-lazarus-gold text-xs font-bold tracking-[0.2em] uppercase mb-4 flex items-center gap-2">
+    <div className="bg-lazarus-black border-t-2 border-lazarus-gold/80 pt-4">
+      <h3 className="text-lazarus-headline text-xs font-bold tracking-[0.2em] uppercase mb-4 flex items-center gap-2">
         <span className="relative flex h-2 w-2">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
           <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400"></span>
         </span>
-        Live Markets
+        {t.sections.liveMarkets}
       </h3>
 
       <div className="space-y-3">

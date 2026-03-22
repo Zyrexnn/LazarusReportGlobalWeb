@@ -1,5 +1,8 @@
 ---
+import { getTranslation } from '../utils/i18n';
 const currentYear = new Date().getFullYear();
+const lang = Astro.cookies.get('lazarus_lang')?.value || 'en';
+const t = getTranslation(lang);
 ---
 
 <footer class="border-t border-lazarus-border bg-lazarus-black mt-16">
@@ -8,32 +11,33 @@ const currentYear = new Date().getFullYear();
       <!-- Brand -->
       <div>
         <div class="flex items-center gap-3 mb-4">
-          <svg viewBox="0 0 48 48" class="w-8 h-8 text-lazarus-gold" fill="currentColor">
-            <path d="M24 4C24 4 18 10 16 16C14 22 16 26 18 28C14 24 10 22 8 18C8 18 8 26 14 32C18 36 22 38 24 44C26 38 30 36 34 32C40 26 40 18 40 18C38 22 34 24 30 28C32 26 34 22 32 16C30 10 24 4 24 4Z" />
-          </svg>
-          <span class="font-serif text-lg tracking-[0.2em] text-lazarus-headline font-bold">
-            LAZARUS <span class="text-lazarus-gold">REPORT</span>
-          </span>
+          <img
+            src="/logolazarusreport.png"
+            alt="Lazarus Report Global"
+            class="h-8 w-auto"
+            loading="lazy"
+            decoding="async"
+          />
         </div>
         <p class="text-lazarus-muted text-sm leading-relaxed max-w-xs">
-          Independent Geopolitical Analysis & Global Security. Uncovering the buried truths behind global power shifts.
+          {t.footer.description}
         </p>
       </div>
 
       <!-- Quick Links -->
       <div>
-        <h4 class="text-lazarus-gold text-sm font-semibold tracking-wider uppercase mb-4">Coverage</h4>
+        <h4 class="text-lazarus-gold text-sm font-semibold tracking-wider uppercase mb-4">{t.footer.coverage}</h4>
         <ul class="space-y-2">
-          <li><a href="/geopolitics" class="text-lazarus-muted hover:text-lazarus-gold text-sm transition-colors">Geopolitics</a></li>
-          <li><a href="/military" class="text-lazarus-muted hover:text-lazarus-gold text-sm transition-colors">Military & Defense</a></li>
-          <li><a href="/markets" class="text-lazarus-muted hover:text-lazarus-gold text-sm transition-colors">Markets & Finance</a></li>
-          <li><a href="/ship-tracker" class="text-lazarus-muted hover:text-lazarus-gold text-sm transition-colors">Ship Tracker</a></li>
+          <li><a href="/geopolitics" class="text-lazarus-muted hover:text-lazarus-gold text-sm transition-colors">{t.categories.geopolitics}</a></li>
+          <li><a href="/military" class="text-lazarus-muted hover:text-lazarus-gold text-sm transition-colors">{t.categories.military}</a></li>
+          <li><a href="/markets" class="text-lazarus-muted hover:text-lazarus-gold text-sm transition-colors">{t.categories.markets}</a></li>
+          <li><a href="/ship-tracker" class="text-lazarus-muted hover:text-lazarus-gold text-sm transition-colors">{t.nav.shipTracker}</a></li>
         </ul>
       </div>
 
       <!-- Connect -->
       <div>
-        <h4 class="text-lazarus-gold text-sm font-semibold tracking-wider uppercase mb-4">Connect</h4>
+        <h4 class="text-lazarus-gold text-sm font-semibold tracking-wider uppercase mb-4">{t.footer.connect}</h4>
         <a
           href="https://www.instagram.com/lazarusreportglobal/"
           target="_blank"
@@ -47,7 +51,7 @@ const currentYear = new Date().getFullYear();
         </a>
         <div class="mt-6">
           <p class="text-lazarus-muted/60 text-xs leading-relaxed">
-            All content is for informational purposes only and does not constitute financial, legal, or strategic advice.
+            {t.footer.disclaimer}
           </p>
         </div>
       </div>
@@ -56,14 +60,14 @@ const currentYear = new Date().getFullYear();
     <!-- Bottom bar -->
     <div class="border-t border-lazarus-border mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
       <p class="text-lazarus-muted/50 text-xs">
-        &copy; {currentYear} Lazarus Report Global. All rights reserved.
+        &copy; {currentYear} {t.footer.rights}
       </p>
       <div class="flex items-center gap-1 text-xs text-lazarus-muted/40">
-        <span>Built with</span>
+        <span>{t.footer.builtWith}</span>
         <svg class="w-3 h-3 text-lazarus-gold" fill="currentColor" viewBox="0 0 24 24">
           <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
         </svg>
-        <span>for truth</span>
+        <span>{t.footer.forTruth}</span>
       </div>
     </div>
   </div>

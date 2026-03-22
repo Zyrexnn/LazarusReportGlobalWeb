@@ -4,11 +4,15 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import NewsFeed from '../components/NewsFeed.tsx';
 import '../styles/global.css';
+
+import { getTranslation } from '../utils/i18n';
+const lang = Astro.cookies.get('lazarus_lang')?.value || 'en';
+const t = getTranslation(lang);
 ---
 
 <BaseLayout
-  title="Analysis — Lazarus Report Global"
-  description="In-depth analytical reports on geopolitics, security, economics, and global trends."
+  title={`${t.pages.analysis.title} — Lazarus Report Global`}
+  description={t.pages.analysis.metaDescription}
 >
   <Header />
 
@@ -17,12 +21,12 @@ import '../styles/global.css';
       <div class="flex items-center gap-3 mb-2">
         <div class="w-1.5 h-10 bg-lazarus-gold rounded-full"></div>
         <div>
-          <h1 class="font-serif text-3xl sm:text-4xl text-lazarus-headline">Analysis</h1>
-          <p class="text-lazarus-muted text-sm mt-1">Long-form intelligence reports and investigative deep-dives.</p>
+          <h1 class="font-serif text-3xl sm:text-4xl text-lazarus-headline">{t.pages.analysis.title}</h1>
+          <p class="text-lazarus-muted text-sm mt-1">{t.pages.analysis.description}</p>
         </div>
       </div>
     </div>
-    <NewsFeed client:load initialCategory="All" />
+    <NewsFeed client:load initialCategory="All" lang={lang} />
   </main>
 
   <Footer />

@@ -4,11 +4,15 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import NewsFeed from '../components/NewsFeed.tsx';
 import '../styles/global.css';
+
+import { getTranslation } from '../utils/i18n';
+const lang = Astro.cookies.get('lazarus_lang')?.value || 'en';
+const t = getTranslation(lang);
 ---
 
 <BaseLayout
-  title="Military & Defense — Lazarus Report Global"
-  description="Military deployments, defense strategy, weapons systems, and conflict analysis."
+  title={`${t.pages.military.title} — Lazarus Report Global`}
+  description={t.pages.military.metaDescription}
 >
   <Header />
 
@@ -17,12 +21,12 @@ import '../styles/global.css';
       <div class="flex items-center gap-3 mb-2">
         <div class="w-1.5 h-10 bg-blue-400 rounded-full"></div>
         <div>
-          <h1 class="font-serif text-3xl sm:text-4xl text-lazarus-headline">Military & Defense</h1>
-          <p class="text-lazarus-muted text-sm mt-1">Force deployments, defense strategies, and global conflict analysis.</p>
+          <h1 class="font-serif text-3xl sm:text-4xl text-lazarus-headline">{t.pages.military.title}</h1>
+          <p class="text-lazarus-muted text-sm mt-1">{t.pages.military.description}</p>
         </div>
       </div>
     </div>
-    <NewsFeed client:load initialCategory="Military" />
+    <NewsFeed client:load initialCategory="Military" lang={lang} />
   </main>
 
   <Footer />

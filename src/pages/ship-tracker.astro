@@ -2,76 +2,112 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import AISMap from '../components/AISMap.tsx';
+import AISMap from '../components/AISMap.astro';
 import '../styles/global.css';
+import { getTranslation } from '../utils/i18n';
+
+const lang = Astro.cookies.get('lazarus_lang')?.value || 'en';
+const t = getTranslation(lang);
 ---
 
 <BaseLayout
-  title="AIS Ship Tracker — Lazarus Report Global"
+  title="Live Ship Tracker — Lazarus Report Global"
   description="Live AIS vessel tracking in the Persian Gulf, Strait of Hormuz, and strategic maritime chokepoints."
 >
   <Header />
 
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-    <!-- Page Header -->
-    <div class="mb-6">
-      <div class="flex items-center gap-3 mb-2">
-        <div class="w-1.5 h-10 bg-lazarus-gold rounded-full"></div>
-        <div>
-          <h1 class="font-serif text-3xl sm:text-4xl text-lazarus-headline">AIS Ship Tracker</h1>
-          <p class="text-lazarus-muted text-sm mt-1">Live vessel tracking — Persian Gulf, Strait of Hormuz & strategic waterways.</p>
-        </div>
+  <main class="max-w-[1600px] mx-auto px-2 sm:px-4 lg:px-6 py-6 font-mono">
+    <!-- Terminal Header -->
+    <div class="mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-end border-b border-lazarus-border pb-2">
+      <div>
+        <h1 class="text-2xl sm:text-3xl font-bold text-lazarus-gold uppercase tracking-widest">{t.shipTrackerUI.globalLiveTracking}</h1>
+        <p class="text-xs text-green-500 mt-1 uppercase tracking-wider flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-green-500 inline-block shadow-[0_0_8px_rgba(34,197,94,0.8)] animate-pulse"></span>
+          {t.shipTrackerUI.statusOnline}
+        </p>
+      </div>
+      <div class="text-[10px] sm:text-xs text-lazarus-muted text-left sm:text-right mt-3 sm:mt-0 opacity-70">
+        <div>{t.shipTrackerUI.coords}</div>
+        <div>{t.shipTrackerUI.encryption}</div>
       </div>
     </div>
 
-    <!-- Info Bar -->
-    <div class="flex flex-wrap items-center gap-4 mb-6 text-sm">
-      <div class="flex items-center gap-2 text-lazarus-body">
-        <span class="relative flex h-2 w-2">
-          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-          <span class="relative inline-flex rounded-full h-2 w-2 bg-green-400"></span>
-        </span>
-        Live tracking active
+    <!-- Terminal Grid Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+      
+      <!-- Side Panel -->
+      <div class="lg:col-span-1 space-y-4">
+        
+        <!-- Data Panel -->
+        <div class="border border-lazarus-border bg-lazarus-dark p-3 relative overflow-hidden group hover:border-lazarus-gold/50 transition-colors">
+          <div class="absolute top-0 right-0 w-8 h-8 bg-lazarus-gold/10 flex items-center justify-center border-l border-b border-lazarus-border">
+            <svg class="w-4 h-4 text-lazarus-gold opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          </div>
+          <h3 class="text-lazarus-gold text-xs font-bold tracking-widest uppercase mb-3 border-b border-lazarus-border/50 pb-1 w-max">{t.shipTrackerUI.chokepointTraffic}</h3>
+          <ul class="text-xs text-lazarus-body space-y-2">
+            <li class="flex justify-between items-center bg-lazarus-black/30 p-1.5 rounded-sm"><span class="text-lazarus-muted uppercase">Strait of Hormuz</span><span class="text-red-400">HIGH</span></li>
+            <li class="flex justify-between items-center bg-lazarus-black/30 p-1.5 rounded-sm"><span class="text-lazarus-muted uppercase">Bab el-Mandeb</span><span class="text-red-400 animate-pulse">CRITICAL</span></li>
+            <li class="flex justify-between items-center bg-lazarus-black/30 p-1.5 rounded-sm"><span class="text-lazarus-muted uppercase">Suez Canal</span><span class="text-yellow-400">MODERATE</span></li>
+            <li class="flex justify-between items-center bg-lazarus-black/30 p-1.5 rounded-sm"><span class="text-lazarus-muted uppercase">Malacca Strait</span><span class="text-green-400">NORMAL</span></li>
+            <li class="flex justify-between items-center bg-lazarus-black/30 p-1.5 rounded-sm"><span class="text-lazarus-muted uppercase">Panama Canal</span><span class="text-yellow-400">RESTRICTED</span></li>
+          </ul>
+        </div>
+        
+        <!-- Tactical Alerts -->
+        <div class="border border-red-900/50 bg-[#1a0505] p-3 shadow-inner">
+          <h3 class="text-red-500 text-xs font-bold tracking-widest uppercase mb-3 flex items-center gap-2">
+            <svg class="w-3 h-3 animate-ping" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            {t.shipTrackerUI.tacticalAlerts}
+          </h3>
+          <div class="text-[10px] space-y-2 text-red-200/80 uppercase">
+            {t.shipTrackerUI.alerts.map((alert, index) => (
+              <p class={`border-l-2 pl-2 ${index === 2 ? 'border-yellow-500 text-yellow-500' : 'border-red-500'}`}>{alert}</p>
+            ))}
+          </div>
+        </div>
+
+        <!-- System Logs -->
+        <div class="border border-lazarus-border bg-lazarus-dark p-3 h-40 overflow-hidden hidden sm:block relative">
+           <h3 class="text-lazarus-gold/70 text-[10px] font-bold tracking-widest uppercase mb-2">{t.shipTrackerUI.rawFeed}</h3>
+           <div class="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-lazarus-dark to-transparent z-10 pointer-events-none"></div>
+           <div class="text-[#00ff00] text-[9px] opacity-60 flex flex-col gap-1 system-logs animate-log-scroll">
+              {t.shipTrackerUI.logs.map((log) => (
+                <p>{log}</p>
+              ))}
+           </div>
+        </div>
       </div>
-      <span class="text-lazarus-muted/30">|</span>
-      <span class="text-lazarus-muted">Region: Persian Gulf & Bahrain</span>
-      <span class="text-lazarus-muted/30">|</span>
-      <span class="text-lazarus-muted">Bounding Box: 24°–28°N, 48°–58°E</span>
-    </div>
+      
+      <!-- Main Map Terminal -->
+      <div class="lg:col-span-3 border border-lazarus-border bg-[#050505] p-1 relative shadow-[0_0_15px_rgba(202,170,95,0.05)]">
+        
+        <!-- Corner Brackets -->
+        <div class="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-lazarus-gold/50 z-20"></div>
+        <div class="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-lazarus-gold/50 z-20"></div>
+        <div class="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-lazarus-gold/50 z-20"></div>
+        <div class="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-lazarus-gold/50 z-20"></div>
 
-    <!-- Full Page Map -->
-    <AISMap client:only="react" fullPage={true} />
-
-    <!-- Legend -->
-    <div class="mt-6 bg-lazarus-dark border border-lazarus-border rounded-xl p-4">
-      <h3 class="text-lazarus-gold text-xs font-bold tracking-wider uppercase mb-3">Map Legend</h3>
-      <div class="flex flex-wrap gap-6 text-sm text-lazarus-muted">
-        <div class="flex items-center gap-2">
-          <svg class="w-4 h-4 text-lazarus-gold" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 2L4 20h16L12 2zm0 4l5 12H7l5-12z"/>
-          </svg>
-          Active Vessel
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="w-3 h-3 rounded-full bg-green-400 inline-block"></span>
-          Underway
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="w-3 h-3 rounded-full bg-yellow-400 inline-block"></span>
-          Anchored
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="w-3 h-3 rounded-full bg-red-400 inline-block"></span>
-          Not Under Command
+        <!-- Terminal scanline effect -->
+        <div class="pointer-events-none absolute inset-0 z-20 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_4px,3px_100%] opacity-20"></div>
+        
+        <!-- Inner map wrap -->
+        <div class="relative w-full h-full z-10 overflow-hidden bg-[#0B0E11]" style="min-height: 75vh">
+          <AISMap fullPage={true} />
         </div>
       </div>
+      
     </div>
-
-    <!-- Disclaimer -->
-    <p class="text-lazarus-muted/40 text-xs mt-4">
-      AIS data is provided for informational purposes only. Position data may be delayed or incomplete. Vessel information sourced from AISStream.io.
-    </p>
   </main>
+
+  <style>
+    .animate-log-scroll {
+      animation: logScroll 15s infinite linear;
+    }
+    @keyframes logScroll {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-70px); }
+    }
+  </style>
 
   <Footer />
 </BaseLayout>

@@ -1,6 +1,9 @@
 ---
 // Hero Section — Breaking News with gradient overlay
 // 65vh on desktop, auto on mobile
+import { getTranslation } from '../utils/i18n';
+const lang = Astro.cookies.get('lazarus_lang')?.value || 'en';
+const t = getTranslation(lang);
 ---
 
 <section class="relative min-h-[50vh] md:min-h-[65vh] flex items-end overflow-hidden" id="hero-section">
@@ -19,7 +22,7 @@
         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-lazarus-alert opacity-75"></span>
         <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-lazarus-alert"></span>
       </span>
-      <span class="text-lazarus-alert text-xs font-bold tracking-[0.2em] uppercase">Breaking Analysis</span>
+      <span class="text-lazarus-alert text-xs font-bold tracking-[0.2em] uppercase">{t.hero.breakingLabel}</span>
     </div>
 
     <!-- Main Headline -->
@@ -35,46 +38,46 @@
 
     <!-- CTA -->
     <div class="flex flex-wrap items-center gap-4 animate-fade-in" style="animation-delay: 0.3s;">
-      <a href="/geopolitics" class="touch-target px-6 py-3 bg-lazarus-gold text-lazarus-black font-semibold text-sm tracking-wide rounded-lg hover:bg-lazarus-gold-light transition-colors duration-200">
-        Read Analysis
+      <a href="/geopolitics" class="touch-target px-8 py-3 bg-lazarus-gold text-lazarus-black font-semibold text-xs tracking-widest uppercase rounded-sm hover:bg-lazarus-gold-light transition-colors duration-200">
+        {t.hero.readAnalysis}
       </a>
-      <a href="/about" class="touch-target px-6 py-3 border border-lazarus-border text-lazarus-body font-medium text-sm tracking-wide rounded-lg hover:border-lazarus-gold hover:text-lazarus-gold transition-colors duration-200">
-        About Lazarus
+      <a href="/about" class="touch-target px-8 py-3 border border-lazarus-border text-lazarus-body font-medium text-xs tracking-widest uppercase rounded-sm hover:border-lazarus-gold hover:text-lazarus-gold transition-colors duration-200">
+        {t.hero.aboutLazarus}
       </a>
     </div>
 
     <!-- Hero Cards Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-10 animate-fade-in" style="animation-delay: 0.4s;">
-      <a href="#" class="group bg-lazarus-dark/80 border border-lazarus-border rounded-lg p-4 hover:border-lazarus-gold/50 transition-all duration-300">
-        <span class="text-lazarus-gold text-xs font-bold tracking-wider uppercase">Geopolitics</span>
-        <h3 class="text-lazarus-headline text-sm font-semibold mt-1.5 leading-snug group-hover:text-lazarus-gold transition-colors">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mt-12 animate-fade-in border-t border-lazarus-border/40" style="animation-delay: 0.4s;">
+      <a href="#" class="group block p-5 lg:pl-0 lg:pr-6 border-b sm:border-b-0 sm:border-r border-lazarus-border/30 hover:bg-lazarus-dark/30 transition-colors">
+        <span class="text-lazarus-gold text-[10px] font-bold tracking-[0.15em] uppercase block mb-3">{t.categories.geopolitics}</span>
+        <h3 class="font-serif text-lazarus-headline text-lg font-medium leading-[1.3] group-hover:text-lazarus-gold transition-colors">
           NATO Expansion Triggers New Diplomatic Crisis in Eastern Europe
         </h3>
-        <span class="text-lazarus-muted text-xs mt-2 block">2 hours ago</span>
+        <span class="text-lazarus-muted text-[10px] font-mono uppercase mt-4 block">2 {t.hero.timeAgo}</span>
       </a>
 
-      <a href="#" class="group bg-lazarus-dark/80 border border-lazarus-border rounded-lg p-4 hover:border-lazarus-gold/50 transition-all duration-300">
-        <span class="text-lazarus-gold text-xs font-bold tracking-wider uppercase">Military</span>
-        <h3 class="text-lazarus-headline text-sm font-semibold mt-1.5 leading-snug group-hover:text-lazarus-gold transition-colors">
+      <a href="#" class="group block p-5 lg:px-6 border-b sm:border-b-0 lg:border-r border-lazarus-border/30 hover:bg-lazarus-dark/30 transition-colors">
+        <span class="text-lazarus-gold text-[10px] font-bold tracking-[0.15em] uppercase block mb-3">{t.categories.military}</span>
+        <h3 class="font-serif text-lazarus-headline text-lg font-medium leading-[1.3] group-hover:text-lazarus-gold transition-colors">
           US Navy Deploys Carrier Strike Group to Persian Gulf
         </h3>
-        <span class="text-lazarus-muted text-xs mt-2 block">4 hours ago</span>
+        <span class="text-lazarus-muted text-[10px] font-mono uppercase mt-4 block">4 {t.hero.timeAgo}</span>
       </a>
 
-      <a href="#" class="group bg-lazarus-dark/80 border border-lazarus-border rounded-lg p-4 hover:border-lazarus-gold/50 transition-all duration-300">
-        <span class="text-lazarus-alert text-xs font-bold tracking-wider uppercase">Breaking</span>
-        <h3 class="text-lazarus-headline text-sm font-semibold mt-1.5 leading-snug group-hover:text-lazarus-gold transition-colors">
+      <a href="#" class="group block p-5 lg:px-6 border-b sm:border-b-0 sm:border-r border-lazarus-border/30 hover:bg-lazarus-dark/30 transition-colors">
+        <span class="text-lazarus-alert text-[10px] font-bold tracking-[0.15em] uppercase block mb-3">{t.categories.breaking}</span>
+        <h3 class="font-serif text-lazarus-headline text-lg font-medium leading-[1.3] group-hover:text-lazarus-gold transition-colors">
           Oil Prices Surge Amid Strait of Hormuz Tensions
         </h3>
-        <span class="text-lazarus-muted text-xs mt-2 block">6 hours ago</span>
+        <span class="text-lazarus-muted text-[10px] font-mono uppercase mt-4 block">6 {t.hero.timeAgo}</span>
       </a>
 
-      <a href="#" class="group bg-lazarus-dark/80 border border-lazarus-border rounded-lg p-4 hover:border-lazarus-gold/50 transition-all duration-300">
-        <span class="text-lazarus-gold text-xs font-bold tracking-wider uppercase">Crypto</span>
-        <h3 class="text-lazarus-headline text-sm font-semibold mt-1.5 leading-snug group-hover:text-lazarus-gold transition-colors">
+      <a href="#" class="group block p-5 lg:pl-6 lg:pr-0 hover:bg-lazarus-dark/30 transition-colors">
+        <span class="text-lazarus-gold text-[10px] font-bold tracking-[0.15em] uppercase block mb-3">{t.categories.crypto}</span>
+        <h3 class="font-serif text-lazarus-headline text-lg font-medium leading-[1.3] group-hover:text-lazarus-gold transition-colors">
           Bitcoin Rallies Past $70K as Institutional Interest Surges
         </h3>
-        <span class="text-lazarus-muted text-xs mt-2 block">8 hours ago</span>
+        <span class="text-lazarus-muted text-[10px] font-mono uppercase mt-4 block">8 {t.hero.timeAgo}</span>
       </a>
     </div>
   </div>

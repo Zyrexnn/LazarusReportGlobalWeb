@@ -1,15 +1,18 @@
 ---
 // Phoenix Logo SVG Component
 // Premium header with sticky navigation, mobile hamburger, and search
+import LanguageToggle from './LanguageToggle';
+import MarketTicker from './MarketTicker';
+import { getTranslation } from '../utils/i18n';
+
+const lang = Astro.cookies.get('lazarus_lang')?.value || 'en';
+const t = getTranslation(lang);
+
 const navItems = [
-  { href: '/', label: 'Home' },
-  { href: '/geopolitics', label: 'Geopolitics' },
-  { href: '/military', label: 'Military' },
-  { href: '/markets', label: 'Markets' },
-  { href: '/crypto', label: 'Crypto' },
-  { href: '/ship-tracker', label: 'Ship Tracker' },
-  { href: '/analysis', label: 'Analysis' },
-  { href: '/about', label: 'About' },
+  { href: '/', label: t.nav.home },
+  { href: '/ship-tracker', label: t.nav.shipTracker },
+  { href: '/analysis', label: t.nav.analysis },
+  { href: '/about', label: t.nav.about },
 ];
 
 const currentPath = Astro.url.pathname;
@@ -17,41 +20,20 @@ const currentPath = Astro.url.pathname;
 
 <header id="main-header" class="fixed top-0 left-0 right-0 z-50 glass-dark border-b border-lazarus-border">
   <!-- Market Ticker Bar -->
-  <div class="bg-lazarus-black/90 border-b border-lazarus-border py-1 overflow-hidden">
-    <div class="ticker-wrapper flex items-center text-xs font-mono">
-      <div class="animate-ticker flex items-center gap-6 whitespace-nowrap pr-6">
-        <span class="text-lazarus-gold">BTC</span><span class="text-green-400">$67,234.50</span>
-        <span class="text-lazarus-gold">ETH</span><span class="text-green-400">$3,456.20</span>
-        <span class="text-lazarus-gold">GOLD</span><span class="text-green-400">$2,178.30</span>
-        <span class="text-lazarus-gold">WTI</span><span class="text-red-400">$78.45</span>
-        <span class="text-lazarus-gold">DOW</span><span class="text-green-400">39,142.50</span>
-        <span class="text-lazarus-gold">BTC</span><span class="text-green-400">$67,234.50</span>
-        <span class="text-lazarus-gold">ETH</span><span class="text-green-400">$3,456.20</span>
-        <span class="text-lazarus-gold">GOLD</span><span class="text-green-400">$2,178.30</span>
-        <span class="text-lazarus-gold">WTI</span><span class="text-red-400">$78.45</span>
-        <span class="text-lazarus-gold">DOW</span><span class="text-green-400">39,142.50</span>
-      </div>
-    </div>
-  </div>
+  <MarketTicker client:load />
 
   <!-- Main Navigation Bar -->
   <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between h-14">
+    <div class="flex items-center justify-between h-20">
       <!-- Logo -->
-      <a href="/" class="flex items-center gap-3 group" id="logo-link">
-        <!-- Phoenix SVG -->
-        <svg viewBox="0 0 48 48" class="w-9 h-9 text-lazarus-gold transition-transform duration-300 group-hover:scale-110" fill="currentColor">
-          <path d="M24 4C24 4 18 10 16 16C14 22 16 26 18 28C14 24 10 22 8 18C8 18 8 26 14 32C18 36 22 38 24 44C26 38 30 36 34 32C40 26 40 18 40 18C38 22 34 24 30 28C32 26 34 22 32 16C30 10 24 4 24 4Z" />
-          <path d="M24 14C24 14 21 18 20 22C19 26 21 28 22 29C22 29 20 26 21 22C22 18 24 14 24 14Z" opacity="0.5" />
-          <path d="M24 14C24 14 27 18 28 22C29 26 27 28 26 29C26 29 28 26 27 22C26 18 24 14 24 14Z" opacity="0.5" />
-        </svg>
-        <div class="hidden sm:block">
-          <div class="border-t border-lazarus-gold-dark w-full"></div>
-          <span class="font-serif text-lg tracking-[0.25em] text-lazarus-headline font-bold">
-            LAZARUS <span class="text-lazarus-gold">REPORT</span>
-          </span>
-          <div class="border-b border-lazarus-gold-dark w-full"></div>
-        </div>
+      <a href="/" class="flex items-center group" id="logo-link">
+        <img
+          src="/logolazarusreport.png"
+          alt="Lazarus Report Global"
+          class="h-32 py-1 w-auto transition-transform duration-300 group-hover:scale-105"
+          loading="eager"
+          decoding="async"
+        />
       </a>
 
       <!-- Desktop Navigation -->
@@ -73,10 +55,13 @@ const currentPath = Astro.url.pathname;
 
       <!-- Right side: Search + Mobile Menu -->
       <div class="flex items-center gap-2">
+        <!-- Language Toggle -->
+        <LanguageToggle client:load initialLang={lang} />
+
         <!-- Search Button -->
         <button
           id="search-toggle"
-          class="touch-target rounded-md text-lazarus-body hover:text-lazarus-gold hover:bg-lazarus-gold/5 transition-colors"
+          class="touch-target rounded-md text-lazarus-body hover:text-lazarus-gold hover:bg-lazarus-gold/5 transition-colors ml-2"
           aria-label="Search"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
@@ -128,7 +113,7 @@ const currentPath = Astro.url.pathname;
         <input
           id="search-input"
           type="text"
-          placeholder="Search geopolitics, markets, analysis..."
+          placeholder={t.sections.searchPlaceholder}
           class="w-full pl-12 pr-4 py-4 bg-lazarus-dark border border-lazarus-border rounded-xl text-lazarus-headline placeholder-lazarus-muted text-lg focus:outline-none focus:border-lazarus-gold transition-colors"
         />
         <button
@@ -147,7 +132,7 @@ const currentPath = Astro.url.pathname;
 </header>
 
 <!-- Spacer for fixed header -->
-<div class="h-[88px]"></div>
+<div class="h-[112px]"></div>
 
 <script>
   // Mobile menu toggle

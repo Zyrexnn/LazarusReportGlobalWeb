@@ -5,11 +5,15 @@ import Footer from '../components/Footer.astro';
 import NewsFeed from '../components/NewsFeed.tsx';
 import CryptoTicker from '../components/CryptoTicker.tsx';
 import '../styles/global.css';
+
+import { getTranslation } from '../utils/i18n';
+const lang = Astro.cookies.get('lazarus_lang')?.value || 'en';
+const t = getTranslation(lang);
 ---
 
 <BaseLayout
-  title="Crypto — Lazarus Report Global"
-  description="Cryptocurrency market analysis, Bitcoin, Ethereum, and digital asset intelligence."
+  title={`${t.pages.crypto.title} — Lazarus Report Global`}
+  description={t.pages.crypto.metaDescription}
 >
   <Header />
 
@@ -18,17 +22,17 @@ import '../styles/global.css';
       <div class="flex items-center gap-3 mb-2">
         <div class="w-1.5 h-10 bg-purple-400 rounded-full"></div>
         <div>
-          <h1 class="font-serif text-3xl sm:text-4xl text-lazarus-headline">Crypto</h1>
-          <p class="text-lazarus-muted text-sm mt-1">Digital asset intelligence, market analysis, and institutional flows.</p>
+          <h1 class="font-serif text-3xl sm:text-4xl text-lazarus-headline">{t.pages.crypto.title}</h1>
+          <p class="text-lazarus-muted text-sm mt-1">{t.pages.crypto.description}</p>
         </div>
       </div>
     </div>
     <div class="flex flex-col lg:flex-row gap-8">
       <div class="flex-1 lg:w-[70%]">
-        <NewsFeed client:load initialCategory="Crypto" />
+        <NewsFeed client:load initialCategory="Crypto" lang={lang} />
       </div>
-      <div class="lg:w-[30%] lg:sticky lg:top-24 lg:self-start">
-        <CryptoTicker client:load />
+      <div class="lg:w-[30%] lg:sticky lg:top-24 lg:self-start space-y-6">
+        <CryptoTicker client:load lang={lang} />
       </div>
     </div>
   </main>

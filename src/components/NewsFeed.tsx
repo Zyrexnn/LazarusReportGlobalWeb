@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { getTranslation } from '../utils/i18n';
 
 interface NewsItem {
   title: string;
@@ -13,33 +14,34 @@ interface NewsItem {
 
 interface NewsFeedProps {
   initialCategory?: string;
+  lang?: string;
 }
 
 // Skeleton card component
 function SkeletonCard() {
   return (
-    <div className="bg-lazarus-dark border border-lazarus-border rounded-xl overflow-hidden animate-pulse">
-      <div className="aspect-video bg-lazarus-black/50"></div>
-      <div className="p-5 space-y-3">
-        <div className="h-3 bg-lazarus-black/50 rounded w-20"></div>
-        <div className="h-4 bg-lazarus-black/50 rounded w-full"></div>
-        <div className="h-4 bg-lazarus-black/50 rounded w-3/4"></div>
-        <div className="h-3 bg-lazarus-black/50 rounded w-32"></div>
+    <div className="bg-lazarus-dark border border-lazarus-border/30 rounded-none overflow-hidden animate-pulse">
+      <div className="aspect-video bg-lazarus-black/40"></div>
+      <div className="p-6 space-y-4">
+        <div className="h-3 bg-lazarus-black/40 rounded-sm w-24"></div>
+        <div className="h-5 bg-lazarus-black/40 rounded-sm w-full"></div>
+        <div className="h-5 bg-lazarus-black/40 rounded-sm w-5/6"></div>
+        <div className="h-3 bg-lazarus-black/40 rounded-sm w-32 mt-4"></div>
       </div>
     </div>
   );
 }
 
 // News card component
-function NewsCard({ item }: { item: NewsItem }) {
+function NewsCard({ item, t }: { item: NewsItem; t: any }) {
   return (
-    <article className="group bg-lazarus-dark border border-lazarus-border rounded-xl overflow-hidden hover:border-lazarus-gold/40 transition-all duration-300 hover:shadow-lg hover:shadow-lazarus-gold/5">
+    <article className="group bg-lazarus-dark border border-lazarus-border/30 rounded-none overflow-hidden hover:bg-lazarus-dark/80 transition-all duration-300">
       {item.image && (
-        <div className="relative overflow-hidden aspect-video">
+        <div className="relative overflow-hidden aspect-video border-b border-lazarus-border/20">
           <img
             src={item.image}
             alt={item.title}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             loading="lazy"
             decoding="async"
             onError={(e) => {
@@ -47,21 +49,24 @@ function NewsCard({ item }: { item: NewsItem }) {
             }}
           />
           {item.isBreaking && (
-            <div className="absolute top-3 left-3 px-2 py-1 bg-lazarus-alert text-white text-xs font-bold tracking-wider uppercase rounded">
+            <div className="absolute top-3 left-3 px-2 py-1 bg-lazarus-alert text-white text-[10px] font-bold tracking-widest uppercase rounded-sm shadow-md">
               Breaking
             </div>
           )}
         </div>
       )}
       <div className="p-5">
-        <div className="flex items-center justify-between mb-2.5">
-          <span className="text-xs font-bold tracking-widest uppercase text-lazarus-gold">
+        <div className="flex items-center justify-between mb-3 border-b border-lazarus-border/30 pb-2">
+          <span className="text-[10px] font-bold tracking-widest uppercase text-lazarus-black bg-lazarus-gold px-2 py-0.5 rounded-sm">
             {item.category}
           </span>
-          <span className="text-lazarus-muted/60 text-xs">{item.source}</span>
+          <span className="text-lazarus-muted/80 text-[10px] font-mono uppercase bg-lazarus-black/50 px-2 py-0.5 rounded-sm border border-lazarus-border/50 flex items-center gap-1.5 shadow-inner leading-none">
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shadow-[0_0_5px_rgba(96,165,250,0.6)] animate-pulse"></span>
+            {t.sections.source} <span className="text-gray-200 font-semibold">{item.source || 'GLOBAL'}</span>
+          </span>
         </div>
         <a href={item.url} target="_blank" rel="noopener noreferrer" className="block">
-          <h3 className="text-lazarus-headline text-base font-semibold leading-snug mb-2 group-hover:text-lazarus-gold transition-colors duration-200 line-clamp-2">
+          <h3 className="font-serif text-lazarus-headline text-lg font-medium leading-[1.3] mb-3 group-hover:text-lazarus-gold transition-colors duration-200 line-clamp-3" dir="auto">
             {item.title}
           </h3>
         </a>
@@ -134,12 +139,14 @@ const FALLBACK_NEWS: NewsItem[] = [
   },
 ];
 
-export default function NewsFeed({ initialCategory = 'All' }: NewsFeedProps) {
+export default function NewsFeed({ initialCategory = 'All', lang = 'en' }: NewsFeedProps) {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState(initialCategory);
   const [query, setQuery] = useState('');
   const [sort, setSort] = useState('latest');
+  
+  const t = useMemo(() => getTranslation(lang), [lang]);
 
   const fetchNews = useCallback(async () => {
     setLoading(true);
@@ -189,23 +196,24 @@ export default function NewsFeed({ initialCategory = 'All' }: NewsFeedProps) {
         category={category}
         query={query}
         sort={sort}
+        lang={lang}
         onCategoryChange={(c) => { setCategory(c); }}
         onQueryChange={(q) => { setQuery(q); }}
         onSortChange={(s) => { setSort(s); }}
       />
 
       {/* News Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         {loading
           ? Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
-          : news.map((item, i) => <NewsCard key={i} item={item} />)
+          : news.map((item, i) => <NewsCard key={i} item={item} t={t} />)
         }
       </div>
 
       {!loading && news.length === 0 && (
         <div className="text-center py-16">
-          <p className="text-lazarus-muted text-lg">No articles found.</p>
-          <p className="text-lazarus-muted/60 text-sm mt-1">Try adjusting your filters.</p>
+          <p className="text-lazarus-muted text-lg">{t.sections.noArticles}</p>
+          <p className="text-lazarus-muted/60 text-sm mt-1">{t.sections.adjustFilters}</p>
         </div>
       )}
     </div>
@@ -219,15 +227,25 @@ const CATEGORIES = [
 ];
 
 function NewsFilterBar({
-  category, query, sort,
+  category, query, sort, lang,
   onCategoryChange, onQueryChange, onSortChange,
 }: {
-  category: string; query: string; sort: string;
+  category: string; query: string; sort: string; lang: string;
   onCategoryChange: (c: string) => void;
   onQueryChange: (q: string) => void;
   onSortChange: (s: string) => void;
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const t = useMemo(() => getTranslation(lang), [lang]);
+
+  // Translate categories
+  const mappedCategories = CATEGORIES.map(cat => {
+    const lower = cat.toLowerCase().replace(' ', '') as any;
+    if (lower === 'all') return { val: cat, label: t.categories.all };
+    if (lower === 'oil&energy') return { val: cat, label: t.categories.oilEnergy };
+    if (lower === 'middleeast') return { val: cat, label: t.categories.middleEast };
+    return { val: cat, label: (t.categories as any)[lower] || cat };
+  });
 
   return (
     <div className="mb-6">
@@ -238,7 +256,7 @@ function NewsFilterBar({
         style={{ minHeight: '44px' }}
       >
         <span className="text-lazarus-body text-sm font-medium">
-          Filter: <span className="text-lazarus-gold">{category}</span>
+          {t.sections.filter}: <span className="text-lazarus-gold">{mappedCategories.find(c => c.val === category)?.label || category}</span>
         </span>
         <svg className={`w-5 h-5 text-lazarus-gold transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
@@ -249,18 +267,18 @@ function NewsFilterBar({
         <div className="flex flex-col md:flex-row md:items-center gap-4">
           <div className="flex-1 overflow-x-auto">
             <div className="flex items-center gap-1.5 pb-2 md:pb-0 min-w-max">
-              {CATEGORIES.map((cat) => (
+              {mappedCategories.map((catInfo) => (
                 <button
-                  key={cat}
-                  onClick={() => onCategoryChange(cat)}
+                  key={catInfo.val}
+                  onClick={() => onCategoryChange(catInfo.val)}
                   className={`px-3 py-2 text-xs font-semibold tracking-wider uppercase rounded-lg whitespace-nowrap transition-all ${
-                    category === cat
+                    category === catInfo.val
                       ? 'bg-lazarus-gold text-lazarus-black'
                       : 'text-lazarus-muted hover:text-lazarus-gold hover:bg-lazarus-gold/10 border border-lazarus-border'
                   }`}
                   style={{ minHeight: '44px' }}
                 >
-                  {cat}
+                  {catInfo.label}
                 </button>
               ))}
             </div>
@@ -272,7 +290,7 @@ function NewsFilterBar({
               </svg>
               <input
                 type="text"
-                placeholder="Search..."
+                placeholder={t.sections.searchPlaceholder}
                 value={query}
                 onChange={(e) => onQueryChange(e.target.value)}
                 className="pl-9 pr-4 py-2.5 bg-lazarus-dark border border-lazarus-border rounded-lg text-sm text-lazarus-body placeholder-lazarus-muted focus:outline-none focus:border-lazarus-gold transition-colors w-full md:w-40"
@@ -284,8 +302,8 @@ function NewsFilterBar({
               className="px-3 py-2.5 bg-lazarus-dark border border-lazarus-border rounded-lg text-sm text-lazarus-body focus:outline-none focus:border-lazarus-gold appearance-none cursor-pointer"
               style={{ minHeight: '44px' }}
             >
-              <option value="latest">Latest</option>
-              <option value="relevance">Relevance</option>
+              <option value="latest">{t.sections.sortLatest}</option>
+              <option value="relevance">{t.sections.sortRelevance}</option>
             </select>
           </div>
         </div>
