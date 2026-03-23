@@ -4,6 +4,7 @@ export const translations = {
   en: {
     nav: {
       home: 'Home',
+      liveTv: 'Live TV',
       shipTracker: 'Ship Tracker',
       analysis: 'Analysis',
       about: 'About',
@@ -87,6 +88,11 @@ export const translations = {
         title: 'Analysis',
         description: 'Long-form intelligence reports and investigative deep-dives.',
         metaDescription: 'In-depth analytical reports on geopolitics, security, economics, and global trends.'
+      },
+      liveTv: {
+        title: 'Live TV',
+        description: 'Track live coverage from Al Jazeera English, France 24, and Bloomberg Television in one focused monitoring desk.',
+        metaDescription: 'Watch live YouTube news streams from Al Jazeera English, France 24 English, and Bloomberg Television in a production-ready monitoring page.'
       }
     },
     footer: {
@@ -132,6 +138,7 @@ export const translations = {
   id: {
     nav: {
       home: 'Beranda',
+      liveTv: 'Live TV',
       shipTracker: 'Pelacak Kapal',
       analysis: 'Analisis',
       about: 'Tentang',
@@ -215,6 +222,11 @@ export const translations = {
         title: 'Analisis',
         description: 'Laporan intelijen panjang dan analisis mendalam investigatif.',
         metaDescription: 'Laporan analitis mendalam tentang geopolitik, keamanan, ekonomi, dan tren global.'
+      },
+      liveTv: {
+        title: 'Live TV',
+        description: 'Pantau siaran langsung Al Jazeera English, France 24, dan Bloomberg Television dalam satu desk monitoring yang fokus.',
+        metaDescription: 'Tonton live stream YouTube dari Al Jazeera English, France 24 English, dan Bloomberg Television dalam halaman monitoring yang siap produksi.'
       }
     },
     footer: {

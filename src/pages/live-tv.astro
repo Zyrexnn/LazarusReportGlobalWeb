@@ -1,0 +1,32 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import LiveTV from '../components/LiveTV.astro';
+import '../styles/global.css';
+import { getTranslation } from '../utils/i18n';
+
+const lang = Astro.cookies.get('lazarus_lang')?.value || 'en';
+const t = getTranslation(lang);
+---
+
+<BaseLayout
+  title={`${t.pages.liveTv.title} - Lazarus Report Global`}
+  description={t.pages.liveTv.metaDescription}
+>
+  <Header />
+
+  <main class="max-w-7xl mx-auto px-4 py-10 sm:px-6 lg:px-8">
+    <section class="mb-8 rounded-[1.75rem] border border-lazarus-border bg-[linear-gradient(135deg,rgba(212,175,55,0.08),rgba(15,15,15,0.96)_42%,rgba(15,15,15,0.98))] px-5 py-8 sm:px-8">
+      <p class="text-[11px] font-semibold uppercase tracking-[0.3em] text-lazarus-gold/85">Signal Desk</p>
+      <h1 class="mt-3 max-w-3xl font-serif text-3xl text-lazarus-headline sm:text-4xl">{t.pages.liveTv.title}</h1>
+      <p class="mt-3 max-w-2xl text-sm leading-7 text-lazarus-muted sm:text-base">
+        {t.pages.liveTv.description}
+      </p>
+    </section>
+
+    <LiveTV />
+  </main>
+
+  <Footer />
+</BaseLayout>

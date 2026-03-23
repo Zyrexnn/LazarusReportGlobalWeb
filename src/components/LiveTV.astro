@@ -1,0 +1,186 @@
+---
+interface Channel {
+  id: string;
+  label: string;
+  channelId: string;
+  officialUrl: string;
+  officialLabel: string;
+  description: string;
+}
+
+export interface Props {
+  class?: string;
+  title?: string;
+  compact?: boolean;
+  instanceId?: string;
+}
+
+const {
+  class: className = '',
+  title = 'Live TV',
+  compact = false,
+  instanceId = `live-tv-${Math.random().toString(36).slice(2, 10)}`,
+} = Astro.props;
+
+const channels: Channel[] = [
+  {
+    id: 'aljazeera',
+    label: 'Al Jazeera',
+    channelId: 'UCNye-wNBqNL5ZzHSJj3l8Bg',
+    officialUrl: 'https://www.aljazeera.com/live',
+    officialLabel: 'Al Jazeera English',
+    description: '24/7 international coverage with a strong Middle East and global affairs focus.',
+  },
+  {
+    id: 'france24',
+    label: 'France 24',
+    channelId: 'UCQfwfsi5VrQ8yKZ-UWmAEFg',
+    officialUrl: 'https://www.france24.com/en/live',
+    officialLabel: 'France 24 English',
+    description: 'Round-the-clock world news from Paris with business, diplomacy, and conflict updates.',
+  },
+  {
+    id: 'bloomberg',
+    label: 'Bloomberg',
+    channelId: 'UCIALMKvObZNtJ6AmdCLP7Lg',
+    officialUrl: 'https://www.bloomberg.com/live/us',
+    officialLabel: 'Bloomberg Television',
+    description: 'Live market-moving coverage, macro updates, and financial interviews.',
+  },
+];
+
+const defaultChannel = channels[0];
+---
+
+<section
+  class:list={[
+    'rounded-[1.5rem] border border-lazarus-border bg-[linear-gradient(180deg,rgba(26,26,26,0.98),rgba(15,15,15,0.98))] shadow-[0_24px_60px_rgba(0,0,0,0.25)] overflow-hidden',
+    className,
+  ]}
+  data-live-tv-root={instanceId}
+  data-default-channel={defaultChannel.id}
+>
+  <div class="border-b border-lazarus-border/70 bg-[radial-gradient(circle_at_top,rgba(212,175,55,0.12),transparent_58%)] px-4 py-4 sm:px-5">
+    <div class="flex items-start justify-between gap-4">
+      <div>
+        <p class="text-[10px] font-semibold uppercase tracking-[0.28em] text-lazarus-gold/85">Broadcast Monitor</p>
+        <h2 class="mt-2 font-serif text-xl text-lazarus-headline sm:text-2xl">{title}</h2>
+        {!compact && (
+          <p class="mt-2 max-w-xl text-sm leading-6 text-lazarus-muted">
+            Live YouTube feeds curated for fast geopolitical and market situational awareness.
+          </p>
+        )}
+      </div>
+      <a
+        href="/live-tv"
+        class="hidden shrink-0 rounded-full border border-lazarus-border/80 px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.22em] text-lazarus-gold transition hover:border-lazarus-gold/70 hover:bg-lazarus-gold/10 lg:inline-flex"
+      >
+        Full Page
+      </a>
+    </div>
+
+    <div class="mt-4 flex flex-wrap gap-2" role="tablist" aria-label="Live TV channels">
+      {channels.map((channel, index) => (
+        <button
+          type="button"
+          id={`${instanceId}-tab-${channel.id}`}
+          role="tab"
+          aria-selected={index === 0 ? 'true' : 'false'}
+          aria-controls={`${instanceId}-panel-${channel.id}`}
+          data-live-tv-tab={channel.id}
+          class:list={[
+            'rounded-full border px-3 py-2 text-xs font-semibold tracking-[0.16em] uppercase transition focus:outline-none focus:ring-2 focus:ring-lazarus-gold/40 focus:ring-offset-0',
+            index === 0
+              ? 'border-lazarus-gold bg-lazarus-gold text-lazarus-black'
+              : 'border-lazarus-border/80 bg-lazarus-black/30 text-lazarus-muted hover:border-lazarus-gold/60 hover:text-lazarus-gold',
+          ]}
+        >
+          {channel.label}
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <div class="p-4 sm:p-5">
+    {channels.map((channel, index) => (
+      <article
+        id={`${instanceId}-panel-${channel.id}`}
+        role="tabpanel"
+        aria-labelledby={`${instanceId}-tab-${channel.id}`}
+        data-live-tv-panel={channel.id}
+        class:list={[index === 0 ? 'block' : 'hidden']}
+      >
+        <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-lazarus-gold/90">
+              Live <span aria-hidden="true">&bull;</span> Powered by{' '}
+              <a
+                href={channel.officialUrl}
+                target="_blank"
+                rel="noreferrer"
+                class="text-lazarus-gold underline decoration-lazarus-gold/40 underline-offset-4 hover:text-lazarus-gold-light"
+              >
+                {channel.officialLabel}
+              </a>
+            </p>
+            <p class="mt-1 text-sm text-lazarus-muted">{channel.description}</p>
+          </div>
+          <span class="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-emerald-300">
+            Live Feed
+          </span>
+        </div>
+
+        <div class="relative overflow-hidden rounded-[1.25rem] border border-lazarus-border/70 bg-black shadow-[inset_0_0_0_1px_rgba(212,175,55,0.06)]">
+          <div class="pointer-events-none absolute inset-x-0 top-0 z-10 h-14 bg-[linear-gradient(180deg,rgba(212,175,55,0.12),transparent)]"></div>
+          <iframe
+            title={`${channel.officialLabel} live stream`}
+            src={`https://www.youtube.com/embed/live_stream?channel=${channel.channelId}&autoplay=0&mute=1`}
+            class="h-64 w-full md:h-96 lg:h-[450px]"
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+            referrerpolicy="strict-origin-when-cross-origin"
+          ></iframe>
+        </div>
+      </article>
+    ))}
+  </div>
+</section>
+
+<script is:inline define:vars={{ instanceId }}>
+  const root = document.querySelector(`[data-live-tv-root="${instanceId}"]`);
+
+  if (root) {
+    const tabs = Array.from(root.querySelectorAll('[data-live-tv-tab]'));
+    const panels = Array.from(root.querySelectorAll('[data-live-tv-panel]'));
+
+    const activateChannel = (channelId) => {
+      tabs.forEach((tab) => {
+        const isActive = tab.getAttribute('data-live-tv-tab') === channelId;
+        tab.setAttribute('aria-selected', String(isActive));
+        tab.classList.toggle('border-lazarus-gold', isActive);
+        tab.classList.toggle('bg-lazarus-gold', isActive);
+        tab.classList.toggle('text-lazarus-black', isActive);
+        tab.classList.toggle('border-lazarus-border/80', !isActive);
+        tab.classList.toggle('bg-lazarus-black/30', !isActive);
+        tab.classList.toggle('text-lazarus-muted', !isActive);
+      });
+
+      panels.forEach((panel) => {
+        const isActive = panel.getAttribute('data-live-tv-panel') === channelId;
+        panel.classList.toggle('hidden', !isActive);
+        panel.classList.toggle('block', isActive);
+      });
+    };
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const channelId = tab.getAttribute('data-live-tv-tab');
+        if (channelId) activateChannel(channelId);
+      });
+    });
+
+    const initialChannel = root.getAttribute('data-default-channel');
+    if (initialChannel) activateChannel(initialChannel);
+  }
+</script>
