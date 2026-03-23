@@ -2,19 +2,21 @@ import { defineMiddleware } from "astro:middleware";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 
-// Initialize Upstash Redis client
-const redis = new Redis({
+// Initialize Upstash Redis client ONLY if environment variables are provided
+const hasUpstash = !!(import.meta.env.UPSTASH_REDIS_REST_URL && import.meta.env.UPSTASH_REDIS_REST_TOKEN);
+
+const redis = hasUpstash ? new Redis({
   url: import.meta.env.UPSTASH_REDIS_REST_URL,
   token: import.meta.env.UPSTASH_REDIS_REST_TOKEN,
-});
+}) : null;
 
-// Create a new ratelimiter, that allows 30 requests per 1 minute
-const ratelimit = new Ratelimit({
+// Create a new ratelimiter ONLY if redis is available
+const ratelimit = redis ? new Ratelimit({
   redis: redis,
   limiter: Ratelimit.slidingWindow(30, "60 s"),
   analytics: true,
   prefix: "@upstash/ratelimit",
-});
+}) : null;
 
 export const onRequest = defineMiddleware(async (context, next) => {
   const { request, url } = context;
@@ -40,7 +42,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
     const ip = request.headers.get("x-forwarded-for") || "anonymous";
     
     // Skip rate limit if Upstash is not configured (to prevent breaking the site)
-    if (import.meta.env.UPSTASH_REDIS_REST_URL && import.meta.env.UPSTASH_REDIS_REST_TOKEN) {
+    if (ratelimit) {
       const { success, limit, reset, remaining } = await ratelimit.limit(ip);
 
       if (!success) {
