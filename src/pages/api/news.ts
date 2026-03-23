@@ -11,6 +11,22 @@ interface NewsArticle {
   isBreaking?: boolean;
 }
 
+// --- Caching System (Memory Map for simple MVP) ---
+const cache = new Map<string, { data: any; expiry: number }>();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+function getCache(key: string) {
+  const cached = cache.get(key);
+  if (cached && Date.now() < cached.expiry) {
+    return cached.data;
+  }
+  return null;
+}
+
+function setCache(key: string, data: any) {
+  cache.set(key, { data, expiry: Date.now() + CACHE_TTL });
+}
+
 // Category mapping for API queries
 const CATEGORY_KEYWORDS: Record<string, string> = {
   geopolitics: 'geopolitics OR diplomacy OR sanctions OR NATO',
@@ -40,10 +56,7 @@ async function fetchNewsData(category: string, query: string): Promise<NewsArtic
     const searchQuery = query || CATEGORY_KEYWORDS[category.toLowerCase()] || 'geopolitics';
     const url = `https://newsdata.io/api/1/latest?apikey=${apiKey}&q=${encodeURIComponent(searchQuery)}&language=en&size=50`;
 
-    const res = await fetch(url, { 
-      signal: AbortSignal.timeout(8000),
-    });
-
+    const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
     if (!res.ok) return [];
 
     const data = await res.json();
@@ -61,9 +74,7 @@ async function fetchNewsData(category: string, query: string): Promise<NewsArtic
       url: item.link || '#',
       isBreaking: false,
     }));
-  } catch {
-    return [];
-  }
+  } catch { return []; }
 }
 
 async function fetchWorldNews(category: string, query: string): Promise<NewsArticle[]> {
@@ -74,10 +85,7 @@ async function fetchWorldNews(category: string, query: string): Promise<NewsArti
     const searchQuery = query || CATEGORY_KEYWORDS[category.toLowerCase()] || 'geopolitics';
     const url = `https://api.worldnewsapi.com/search-news?api-key=${apiKey}&text=${encodeURIComponent(searchQuery)}&language=en&number=50&sort=publish-time&sort-direction=DESC`;
 
-    const res = await fetch(url, {
-      signal: AbortSignal.timeout(8000),
-    });
-
+    const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
     if (!res.ok) return [];
 
     const data = await res.json();
@@ -95,25 +103,18 @@ async function fetchWorldNews(category: string, query: string): Promise<NewsArti
       url: item.url || '#',
       isBreaking: false,
     }));
-  } catch {
-    return [];
-  }
+  } catch { return []; }
 }
 
 async function fetchFinnhubNews(category: string): Promise<NewsArticle[]> {
   const apiKey = import.meta.env.FINNHUB_API_KEY;
   if (!apiKey || apiKey === 'your_finnhub_api_key_here') return [];
 
-  // Finnhub is mainly for market/finance news
   if (!['markets', 'finance', 'crypto', 'all'].includes(category.toLowerCase())) return [];
 
   try {
     const url = `https://finnhub.io/api/v1/news?category=general&token=${apiKey}`;
-
-    const res = await fetch(url, {
-      signal: AbortSignal.timeout(8000),
-    });
-
+    const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
     if (!res.ok) return [];
 
     const data = await res.json();
@@ -131,12 +132,9 @@ async function fetchFinnhubNews(category: string): Promise<NewsArticle[]> {
       url: item.url || '#',
       isBreaking: false,
     }));
-  } catch {
-    return [];
-  }
+  } catch { return []; }
 }
 
-// Fallback articles when no API keys are configured
 const FALLBACK_ARTICLES: NewsArticle[] = [
   {
     title: 'NATO Allies Discuss New Defense Strategy Amid Rising Global Tensions',
@@ -165,50 +163,15 @@ const FALLBACK_ARTICLES: NewsArticle[] = [
     url: '#',
     image: 'https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?w=600&h=340&fit=crop',
   },
-  {
-    title: 'Bitcoin Breaks $70,000 Barrier as Institutional Adoption Accelerates',
-    category: 'Crypto',
-    excerpt: 'Major financial institutions increase Bitcoin holdings as the cryptocurrency hits all-time highs.',
-    date: 'March 19, 2026',
-    source: 'Lazarus Report',
-    url: '#',
-    image: 'https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=600&h=340&fit=crop',
-  },
-  {
-    title: 'China Expands Military Presence in South China Sea',
-    category: 'Military',
-    excerpt: 'Satellite imagery reveals new construction on disputed islands, raising concerns among ASEAN nations.',
-    date: 'March 18, 2026',
-    source: 'Lazarus Report',
-    url: '#',
-    image: 'https://images.unsplash.com/photo-1569163139394-de4e4f43e4e3?w=600&h=340&fit=crop',
-  },
-  {
-    title: 'OPEC+ Emergency Meeting Called Over Supply Concerns',
-    category: 'Oil & Energy',
-    excerpt: 'Saudi Arabia leads push for production cuts amid geopolitical instability in major oil producing regions.',
-    date: 'March 18, 2026',
-    source: 'Lazarus Report',
-    url: '#',
-    image: 'https://images.unsplash.com/photo-1474314005122-3c07c4df1224?w=600&h=340&fit=crop',
-  },
 ];
 
 // --- Deduplication Helpers ---
 function normalizeTitle(title: string): string {
-  return title
-    .toLowerCase()
-    .trim()
-    .replace(/[!?.,:;"'-]/g, '')
-    .replace(/\s+/g, ' ');
+  return title.toLowerCase().trim().replace(/[!?.,:;"'-]/g, '').replace(/\s+/g, ' ');
 }
 
 function normalizeUrl(url: string): string {
-  return url
-    .toLowerCase()
-    .trim()
-    .replace(/^https?:\/\//, '')
-    .replace(/\/$/, '');
+  return url.toLowerCase().trim().replace(/^https?:\/\//, '').replace(/\/$/, '');
 }
 
 function getUniqueKey(article: NewsArticle): string {
@@ -218,14 +181,21 @@ function getUniqueKey(article: NewsArticle): string {
   return normalizeTitle(article.title);
 }
 
-export const GET: APIRoute = async ({ url, cookies }) => {
+export const GET: APIRoute = async ({ url }) => {
   const category = url.searchParams.get('category') || 'all';
   const query = url.searchParams.get('q') || '';
-  const sort = url.searchParams.get('sort') || 'latest';
-  const lang = cookies.get('lazarus_lang')?.value || 'en';
+  
+  // 1. Check Cache
+  const cacheKey = `news-${category}-${query}`;
+  const cachedData = getCache(cacheKey);
+  if (cachedData) {
+    return new Response(JSON.stringify({ articles: cachedData, cached: true }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+    });
+  }
 
   try {
-    // Fetch from all sources in parallel
     const [newsData, worldNews, finnhub] = await Promise.allSettled([
       fetchNewsData(category, query),
       fetchWorldNews(category, query),
@@ -233,89 +203,54 @@ export const GET: APIRoute = async ({ url, cookies }) => {
     ]);
 
     let articles: NewsArticle[] = [];
-
     if (newsData.status === 'fulfilled') articles.push(...newsData.value);
     if (worldNews.status === 'fulfilled') articles.push(...worldNews.value);
     if (finnhub.status === 'fulfilled') articles.push(...finnhub.value);
 
-    // If no articles from APIs, use fallback
-    if (articles.length === 0) {
-      articles = FALLBACK_ARTICLES;
-    }
+    if (articles.length === 0) articles = FALLBACK_ARTICLES;
 
-    // Filter by category if not "all"
     if (category.toLowerCase() !== 'all') {
-      const filtered = articles.filter(
-        (a) => a.category.toLowerCase() === category.toLowerCase()
-      );
-      if (filtered.length > 0) {
-        articles = filtered;
-      }
+      const filtered = articles.filter(a => a.category.toLowerCase() === category.toLowerCase());
+      if (filtered.length > 0) articles = filtered;
     }
 
-    // --- Advanced Deduplication ---
+    // --- Deduplication ---
     const articleMap = new Map<string, NewsArticle>();
-
     for (const article of articles) {
       const key = getUniqueKey(article);
       const existing = articleMap.get(key);
-
       if (!existing) {
         articleMap.set(key, article);
       } else {
-        // Collision Resolution
         const isNewLazarus = article.source === 'Lazarus Report';
         const isExistingLazarus = existing.source === 'Lazarus Report';
-
-        if (isNewLazarus && !isExistingLazarus) {
-          articleMap.set(key, article); // Lazarus wins
-        } else if (!isNewLazarus && isExistingLazarus) {
-          // Keep existing Lazarus
-        } else {
-          // Compare content richness (excerpt length)
+        if (isNewLazarus && !isExistingLazarus) articleMap.set(key, article);
+        else if (!isNewLazarus && isExistingLazarus) {}
+        else {
           const newLength = article.excerpt?.length || 0;
           const extLength = existing.excerpt?.length || 0;
-          
-          if (newLength > extLength + 20) {
-            articleMap.set(key, article); // Significantly longer content wins
-          } else if (newLength >= extLength - 20) {
-            // Tie-breaker: Newer date wins
-            const newTime = new Date(article.date).getTime();
-            const extTime = new Date(existing.date).getTime();
-            if (newTime > extTime && !isNaN(newTime)) {
-              articleMap.set(key, article);
-            }
-          }
+          if (newLength > extLength + 20) articleMap.set(key, article);
         }
       }
     }
 
-    // Convert Map back to array
-    let uniqueArticles = Array.from(articleMap.values());
+    const uniqueArticles = Array.from(articleMap.values()).slice(0, 100);
+    
+    // 2. Set Cache
+    setCache(cacheKey, uniqueArticles);
 
-    // Sort globally by Date descending
-    if (sort === 'latest') {
-      uniqueArticles.sort((a, b) => {
-        const timeA = new Date(a.date).getTime();
-        const timeB = new Date(b.date).getTime();
-        return (isNaN(timeB) ? 0 : timeB) - (isNaN(timeA) ? 0 : timeA);
-      });
-    }
-
-    return new Response(JSON.stringify({ articles: uniqueArticles.slice(0, 100) }), {
+    return new Response(JSON.stringify({ articles: uniqueArticles }), {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=300, s-maxage=600',
+        'Access-Control-Allow-Origin': '*', // Middleware handles strict CORS
+        'Cache-Control': 'public, max-age=300',
       },
     });
   } catch (error) {
     return new Response(JSON.stringify({ articles: FALLBACK_ARTICLES }), {
       status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=60',
-      },
+      headers: { 'Content-Type': 'application/json' },
     });
   }
 };
