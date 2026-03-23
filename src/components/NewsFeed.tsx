@@ -8,6 +8,7 @@ interface NewsItem {
   image?: string;
   date: string;
   source: string;
+  publisher?: string; // Original source name
   url: string;
   isBreaking?: boolean;
 }
@@ -60,7 +61,7 @@ function NewsCard({ item, t }: { item: NewsItem; t: ReturnType<typeof getTransla
           </span>
           <span className="text-lazarus-muted/80 text-[10px] font-mono uppercase bg-lazarus-black/50 px-2 py-0.5 rounded-sm border border-lazarus-border/50 flex items-center gap-1.5 shadow-inner leading-none">
             <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shadow-[0_0_5px_rgba(96,165,250,0.6)] animate-pulse"></span>
-            {t.sections.source} <span className="text-gray-200 font-semibold">{item.source || 'GLOBAL'}</span>
+            {t.sections.source} <span className="text-gray-200 font-semibold">{item.publisher || item.source || 'GLOBAL'}</span>
           </span>
         </div>
         <a href={item.url} target="_blank" rel="noopener noreferrer" className="block">

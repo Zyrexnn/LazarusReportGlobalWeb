@@ -9,6 +9,7 @@ interface NewsArticle {
   image?: string;
   date: string;
   source: ApiName;
+  publisher?: string; // Original source name (e.g., Reuters, SCMP)
   sourceName?: string; // For debugging and transparency
   url: string;
   isBreaking?: boolean;
@@ -347,7 +348,6 @@ function isWithin3Days(dateStr: string | number | undefined) {
   const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
   return Date.now() - articleTime <= THREE_DAYS_MS;
 }
-
 async function fetchFromApi(selection: ApiSelection, category: string, lang: string): Promise<NewsArticle[]> {
   if (!selection.key || selection.key.startsWith('your_')) return [];
 
@@ -370,6 +370,7 @@ async function fetchFromApi(selection: ApiSelection, category: string, lang: str
           image: item.image_url || undefined,
           date: formatArticleDate(item.pubDate, lang),
           source: sourceName,
+          publisher: item.source_id || 'NewsData',
           sourceName: String(sourceName),
           url: item.link || '#',
         }));
@@ -385,6 +386,7 @@ async function fetchFromApi(selection: ApiSelection, category: string, lang: str
           image: item.image || undefined,
           date: formatArticleDate(item.publish_date, lang),
           source: sourceName,
+          publisher: 'WorldNews',
           sourceName: String(sourceName),
           url: item.url || '#',
         }));
@@ -401,6 +403,7 @@ async function fetchFromApi(selection: ApiSelection, category: string, lang: str
           image: item.image || undefined,
           date: formatArticleDate(item.datetime, lang),
           source: sourceName,
+          publisher: item.source || 'Finnhub',
           sourceName: String(sourceName),
           url: item.url || '#',
         }));
@@ -416,6 +419,7 @@ async function fetchFromApi(selection: ApiSelection, category: string, lang: str
           image: item.image || undefined,
           date: formatArticleDate(item.publishedAt, lang),
           source: sourceName,
+          publisher: item.source?.name || 'GNews',
           sourceName: String(sourceName),
           url: item.url || '#',
         }));
