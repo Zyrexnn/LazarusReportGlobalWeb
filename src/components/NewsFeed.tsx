@@ -302,6 +302,8 @@ function NewsFilterBar({
               className="px-3 py-2.5 bg-lazarus-dark border border-lazarus-border rounded-lg text-sm text-lazarus-body focus:outline-none focus:border-lazarus-gold appearance-none cursor-pointer"
               style={{ minHeight: '44px' }}
             >
+             
+             
               <option value="latest">{t.sections.sortLatest}</option>
               <option value="relevance">{t.sections.sortRelevance}</option>
             </select>
@@ -310,4 +312,6 @@ function NewsFilterBar({
       </div>
     </div>
   );
+
+
 }
