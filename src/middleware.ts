@@ -2,12 +2,20 @@ import { defineMiddleware } from "astro:middleware";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 
-// Initialize Upstash Redis client ONLY if environment variables are provided
-const hasUpstash = !!(import.meta.env.UPSTASH_REDIS_REST_URL && import.meta.env.UPSTASH_REDIS_REST_TOKEN);
+// Initialize Upstash Redis client ONLY if environment variables are provided and VALID
+const upstashUrl = import.meta.env.UPSTASH_REDIS_REST_URL;
+const upstashToken = import.meta.env.UPSTASH_REDIS_REST_TOKEN;
 
-const redis = hasUpstash ? new Redis({
-  url: import.meta.env.UPSTASH_REDIS_REST_URL,
-  token: import.meta.env.UPSTASH_REDIS_REST_TOKEN,
+const isValidUpstash = !!(
+  upstashUrl && 
+  upstashToken && 
+  upstashUrl.startsWith("https://") && 
+  !upstashUrl.includes("your_")
+);
+
+const redis = isValidUpstash ? new Redis({
+  url: upstashUrl,
+  token: upstashToken,
 }) : null;
 
 // Create a new ratelimiter ONLY if redis is available
