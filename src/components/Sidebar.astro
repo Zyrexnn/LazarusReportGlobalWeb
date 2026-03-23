@@ -1,12 +1,10 @@
 ---
-// Sidebar: AIS mini-map, Crypto ticker, Lazarus Exclusive
 import { getTranslation } from '../utils/i18n';
 const lang = Astro.cookies.get('lazarus_lang')?.value || 'en';
 const t = getTranslation(lang);
 ---
 
 <aside class="space-y-6">
-  <!-- AIS Ship Tracker Mini -->
   <div id="sidebar-ais">
     <div class="bg-lazarus-dark border border-lazarus-border rounded-xl overflow-hidden">
       <div class="flex items-center justify-between px-4 pt-4 pb-2">
@@ -20,7 +18,6 @@ const t = getTranslation(lang);
           {t.shipTrackerUI.fullMap}
         </a>
       </div>
-      <!-- Mini map placeholder - replaced by React island on client -->
       <div id="sidebar-map-container" class="h-48 bg-lazarus-black/50 flex items-center justify-center">
         <div class="text-center">
           <div class="w-6 h-6 border-2 border-lazarus-gold border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
@@ -28,15 +25,13 @@ const t = getTranslation(lang);
         </div>
       </div>
       <div class="px-4 py-2 border-t border-lazarus-border/50">
-        <p class="text-lazarus-muted/60 text-[10px]">5 {t.sections.vesselsTracked} • Persian Gulf</p>
+        <p class="text-lazarus-muted/60 text-[10px]">5 {t.sections.vesselsTracked} | {lang === 'id' ? 'Teluk Persia' : 'Persian Gulf'}</p>
       </div>
     </div>
   </div>
 
-  <!-- Crypto Ticker - React Island injected from page level -->
   <div id="sidebar-crypto"></div>
 
-  <!-- Lazarus Exclusive -->
   <div class="bg-lazarus-black border-t-2 border-lazarus-gold/80 pt-4">
     <h3 class="text-lazarus-headline text-xs font-bold tracking-[0.2em] uppercase mb-4 flex items-center gap-2">
       <svg class="w-4 h-4 text-lazarus-gold" fill="currentColor" viewBox="0 0 24 24">
@@ -50,7 +45,7 @@ const t = getTranslation(lang);
         <h4 class="font-serif text-lazarus-headline text-base font-medium leading-snug group-hover:text-lazarus-gold transition-colors">
           {t.sidebar.article1}
         </h4>
-        <span class="text-lazarus-muted/50 text-[10px] font-mono uppercase mt-2 block">March 20, 2026</span>
+        <span class="text-lazarus-muted/50 text-[10px] font-mono uppercase mt-2 block">{lang === 'id' ? '20 Maret 2026' : 'March 20, 2026'}</span>
       </a>
       <div class="border-t border-lazarus-border/30"></div>
       <a href="#" class="block group">
@@ -58,7 +53,7 @@ const t = getTranslation(lang);
         <h4 class="font-serif text-lazarus-headline text-base font-medium leading-snug group-hover:text-lazarus-gold transition-colors">
           {t.sidebar.article2}
         </h4>
-        <span class="text-lazarus-muted/50 text-[10px] font-mono uppercase mt-2 block">March 19, 2026</span>
+        <span class="text-lazarus-muted/50 text-[10px] font-mono uppercase mt-2 block">{lang === 'id' ? '19 Maret 2026' : 'March 19, 2026'}</span>
       </a>
       <div class="border-t border-lazarus-border/30"></div>
       <a href="#" class="block group">
@@ -66,7 +61,7 @@ const t = getTranslation(lang);
         <h4 class="font-serif text-lazarus-headline text-base font-medium leading-snug group-hover:text-lazarus-gold transition-colors">
           {t.sidebar.article3}
         </h4>
-        <span class="text-lazarus-muted/50 text-[10px] font-mono uppercase mt-2 block">March 18, 2026</span>
+        <span class="text-lazarus-muted/50 text-[10px] font-mono uppercase mt-2 block">{lang === 'id' ? '18 Maret 2026' : 'March 18, 2026'}</span>
       </a>
     </div>
   </div>

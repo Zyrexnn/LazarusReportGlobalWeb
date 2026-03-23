@@ -45,7 +45,7 @@ const t = getTranslation(lang);
     <div class="ais-skeleton absolute inset-0 bg-[#0B0E11] flex items-center justify-center z-20 transition-opacity duration-1000">
       <div class="text-center">
         <div class="w-10 h-10 border-2 border-lazarus-gold border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-        <p class="text-lazarus-gold/80 text-[11px] tracking-[0.3em] font-mono uppercase animate-pulse">Establishing Live Feed</p>
+        <p class="text-lazarus-gold/80 text-[11px] tracking-[0.3em] font-mono uppercase animate-pulse">{t.shipTrackerUI.feedLoading}</p>
       </div>
     </div>
   </div>
@@ -54,10 +54,10 @@ const t = getTranslation(lang);
   <div class="px-4 py-3 border-t border-lazarus-border/30 bg-lazarus-black/80 flex items-center justify-between relative z-20">
     <div class="flex items-center gap-2">
       <span class="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
-      <span class="text-lazarus-muted/70 text-[10px] uppercase tracking-widest font-mono text-balance">Live AIS Relay Active</span>
+      <span class="text-lazarus-muted/70 text-[10px] uppercase tracking-widest font-mono text-balance">{t.shipTrackerUI.relayActive}</span>
     </div>
     <span class="text-lazarus-gold/30 text-[9px] tracking-[0.3em] uppercase font-mono">
-      // ENCRYPTED FEED
+      // {t.shipTrackerUI.encryptedFeed}
     </span>
   </div>
 </div>

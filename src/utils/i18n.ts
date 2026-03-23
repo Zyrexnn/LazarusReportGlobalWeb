@@ -10,22 +10,47 @@ export const translations = {
       about: 'About',
     },
     hero: {
-      breakingLabel: 'Breaking Analysis',
-      readAnalysis: 'Read Analysis',
-      aboutLazarus: 'About Lazarus',
+      breakingLabel: 'Hot Intelligence',
+      headlineLead: 'Middle East heats up.',
+      headlineFocus: 'Who is pushing the line now?',
+      subtitle: 'Sharp updates on pressure points, troop moves, energy routes, and market shocks. Fast, clear, no fluff.',
+      readAnalysis: 'Read The Brief',
+      aboutLazarus: 'Why Lazarus',
       timeAgo: 'hours ago',
+      cards: [
+        {
+          category: 'Geopolitics',
+          title: 'NATO pressure rises in Eastern Europe. Diplomatic fallout next?',
+          time: '2'
+        },
+        {
+          category: 'Military',
+          title: 'US carrier group enters the Gulf. Deterrence move or setup?',
+          time: '4'
+        },
+        {
+          category: 'Breaking',
+          title: 'Hormuz tension hits oil hard. How far can this run?',
+          time: '6'
+        },
+        {
+          category: 'Crypto',
+          title: 'Bitcoin jumps again as big money piles in. FOMO starts now?',
+          time: '8'
+        }
+      ]
     },
     sections: {
-      latestIntelligence: 'Latest Intelligence',
-      lazarusExclusive: 'Lazarus Exclusive',
-      liveMarkets: 'Live Markets',
+      latestIntelligence: 'Intelligence Update',
+      lazarusExclusive: 'Lazarus Spotlight',
+      liveMarkets: 'Market Pulse',
       filter: 'Filter',
       searchPlaceholder: 'Search...',
       sortLatest: 'Latest',
       sortRelevance: 'Relevance',
       noArticles: 'No articles found.',
-      adjustFilters: 'Try adjusting your filters.',
-      source: 'SOURCE:',
+      adjustFilters: 'Try another filter or keyword.',
+      source: 'FEED',
       loadingMap: 'Loading map...',
       vesselsTracked: 'vessels tracked',
     },
@@ -38,16 +63,16 @@ export const translations = {
     },
     about: {
       title: 'About Lazarus Report',
-      philosophyTitle: 'The Philosophy of Lazarus',
-      philosophyText: 'The name "Lazarus" symbolizes rebirth and resurrection—specifically, the resurrection of information. In an era dominated by corporate media narratives and selective reporting, the Lazarus Report Global exists to unearth the buried truths behind global power shifts.',
+      philosophyTitle: 'Why Lazarus',
+      philosophyText: 'Lazarus stands for information brought back to life. When headlines get polished and facts get buried, we dig again until the picture is clear.',
       whoWeAreTitle: 'Who We Are',
-      whoWeAreText: 'We are an independent civilian media organization with no state or corporate affiliations. Our focus is strictly on penetrating geopolitical analysis, global security, military deployments, and macroeconomic forces.',
-      coverageTitle: 'What We Cover',
-      coverageText: 'Our intelligence desk monitors global flashpoints, providing objective tracking through our real-time AIS mapping, alongside deep-dive analysis into conflicts, energy corridors, and decentralized finance markets.',
-      commitmentTitle: 'Our Commitment',
-      commitmentText: 'Absolute independence. Ruthless transparency. Uncompromising accuracy. We do not tell you what to think; we provide the raw data and analytical framework for you to understand the shifting world order.',
-      disclaimer: 'Disclaimer: The information provided on this platform is for educational and informational purposes only and does not constitute financial, investment, or security advice.',
-      followCta: 'Join the Intelligence Network',
+      whoWeAreText: 'We are an independent media desk. No state ties. No corporate leash. We track geopolitics, military risk, energy stress, and market shocks.',
+      coverageTitle: 'What We Track',
+      coverageText: 'We watch global flashpoints, live maritime traffic, conflict zones, oil routes, and crypto flows. Why guess when the movement is visible?',
+      commitmentTitle: 'What We Promise',
+      commitmentText: 'Independent. Direct. Precise. We do not spoon-feed conclusions. We give you the facts, the context, and the pressure points that matter.',
+      disclaimer: 'This platform is for information only. It is not financial, investment, legal, or security advice.',
+      followCta: 'Stay close to the signal',
     },
     categories: {
       all: 'All',
@@ -66,27 +91,27 @@ export const translations = {
     pages: {
       geopolitics: {
         title: 'Geopolitics',
-        description: 'Power dynamics, alliances, and the forces reshaping the global order.',
-        metaDescription: 'In-depth geopolitical analysis covering power dynamics, alliances, diplomatic shifts, and international relations.'
+        description: 'Power pressure, alliance shifts, and the moves that keep redrawing the map.',
+        metaDescription: 'Sharp geopolitical analysis on alliances, diplomatic stress, power shifts, and global fallout.'
       },
       military: {
         title: 'Military & Defense',
-        description: 'Force deployments, defense strategies, and global conflict analysis.',
-        metaDescription: 'Military deployments, defense strategy, weapons systems, and conflict analysis.'
+        description: 'Troop moves, deterrence signals, and conflicts that can turn fast.',
+        metaDescription: 'Military deployments, defense posture, weapons systems, and real conflict analysis.'
       },
       markets: {
         title: 'Markets & Finance',
-        description: 'Global markets, crypto, oil, and financial intelligence.',
-        metaDescription: 'Live market data, financial analysis, cryptocurrency tracking, and global economic intelligence.'
+        description: 'Oil, crypto, and global markets under pressure. Where does the money run next?',
+        metaDescription: 'Live market data, financial pressure points, crypto tracking, and global economic intelligence.'
       },
       crypto: {
         title: 'Crypto',
-        description: 'Digital asset intelligence, market analysis, and institutional flows.',
+        description: 'Digital asset flows, sentiment shifts, and the money behind the move.',
         metaDescription: 'Cryptocurrency market analysis, Bitcoin, Ethereum, and digital asset intelligence.'
       },
       analysis: {
         title: 'Analysis',
-        description: 'Long-form intelligence reports and investigative deep-dives.',
+        description: 'Long reads for when headlines are not enough.',
         metaDescription: 'In-depth analytical reports on geopolitics, security, economics, and global trends.'
       },
       liveTv: {
@@ -96,13 +121,13 @@ export const translations = {
       }
     },
     footer: {
-      description: 'Independent Geopolitical Analysis & Global Security. Uncovering the buried truths behind global power shifts.',
+      description: 'Independent intelligence on geopolitics, military risk, markets, and maritime pressure points. Clear facts. Sharp framing.',
       coverage: 'Coverage',
       connect: 'Connect',
-      disclaimer: 'All content is for informational purposes only and does not constitute financial, legal, or strategic advice.',
+      disclaimer: 'For information only. Not financial, legal, investment, or strategic advice.',
       rights: 'Lazarus Report Global. All rights reserved.',
       builtWith: 'Built with',
-      forTruth: 'for truth'
+      forTruth: 'for clarity'
     },
     shipTrackerUI: {
       globalLiveTracking: 'Global Live Tracking',
@@ -110,8 +135,11 @@ export const translations = {
       coords: 'COORDINATES: CLASSIFIED',
       encryption: 'ENCRYPTION: AES-256',
       chokepointTraffic: 'Chokepoint Traffic',
-      fullMap: 'Full Map →',
+      fullMap: 'Open Full Map',
       tacticalAlerts: 'TACTICAL ALERTS',
+      feedLoading: 'Opening live feed',
+      relayActive: 'Live AIS relay is on',
+      encryptedFeed: 'encrypted feed',
       alerts: [
         '> US CARRIER STRIKE GROUP DETECTED IN PERSIAN GULF',
         '> Houthi missile activity reported near RED SEA',
@@ -130,9 +158,9 @@ export const translations = {
       ]
     },
     sidebar: {
-      article1: 'The Hidden Corridors of Power: BRICS Realignment',
-      article2: 'Satellite Imagery Reveals New Military Installations',
-      article3: "Energy Wars: Who Controls Tomorrow's Resources"
+      article1: 'BRICS shifts again. New bloc, new pressure, new game.',
+      article2: 'Fresh satellite shots show military build-up. Routine move? Hardly.',
+      article3: 'Energy war is back on. Who controls tomorrow now?'
     }
   },
   id: {
@@ -144,22 +172,47 @@ export const translations = {
       about: 'Tentang',
     },
     hero: {
-      breakingLabel: 'Analisis Terkini',
-      readAnalysis: 'Baca Analisis',
-      aboutLazarus: 'Tentang Lazarus',
+      breakingLabel: 'Berita Panas',
+      headlineLead: 'Tekanan Timur Tengah makin parah.',
+      headlineFocus: 'Siapa yang sedang dorong situasi ke batas?',
+      subtitle: 'Update jitu soal titik panas, gerak militer, jalur energi, dan pasar yang bisa berbalik habis dalam hitungan jam.',
+      readAnalysis: 'Baca Update',
+      aboutLazarus: 'Kenapa Lazarus',
       timeAgo: 'jam lalu',
+      cards: [
+        {
+          category: 'Geopolitik',
+          title: 'Tekanan NATO di Eropa Timur naik lagi. Krisis diplomatik baru?',
+          time: '2'
+        },
+        {
+          category: 'Militer',
+          title: 'Kapal induk AS masuk Teluk. Cuma jaga-jaga atau sinyal keras?',
+          time: '4'
+        },
+        {
+          category: 'Berita Panas',
+          title: 'Hormuz memanas, minyak langsung lompat. Baru mulai?',
+          time: '6'
+        },
+        {
+          category: 'Crypto',
+          title: 'Bitcoin naik tajam lagi. Uang besar masuk diam-diam?',
+          time: '8'
+        }
+      ]
     },
     sections: {
-      latestIntelligence: 'Intelijen Terbaru',
-      lazarusExclusive: 'Eksklusif Lazarus',
-      liveMarkets: 'Pasar Langsung',
+      latestIntelligence: 'Intelijen Terkini',
+      lazarusExclusive: 'Sorotan Lazarus',
+      liveMarkets: 'Update Pasar Hari Ini',
       filter: 'Filter',
       searchPlaceholder: 'Cari...',
       sortLatest: 'Terbaru',
       sortRelevance: 'Relevansi',
-      noArticles: 'Tidak ada artikel ditemukan.',
-      adjustFilters: 'Coba sesuaikan filter Anda.',
-      source: 'SUMBER:',
+      noArticles: 'Belum ada artikel yang cocok.',
+      adjustFilters: 'Coba geser filter. Mungkin ada yang kelewat.',
+      source: 'FEED',
       loadingMap: 'Memuat peta...',
       vesselsTracked: 'kapal dilacak',
     },
@@ -172,27 +225,27 @@ export const translations = {
     },
     about: {
       title: 'Tentang Lazarus Report',
-      philosophyTitle: 'Filosofi Lazarus',
-      philosophyText: 'Nama "Lazarus" melambangkan kebangkitan—secara khusus, kebangkitan informasi. Di era yang didominasi oleh narasi media korporat dan pelaporan selektif, Lazarus Report Global hadir untuk menggali fakta-fakta yang terkubur di balik pergeseran kekuatan global.',
-      whoWeAreTitle: 'Siapa Kami',
-      whoWeAreText: 'Kami adalah organisasi media sipil independen tanpa afiliasi negara atau korporat. Fokus kami semata-mata pada analisis geopolitik mendalam, keamanan global, penempatan militer, dan kekuatan makroekonomi.',
-      coverageTitle: 'Cakupan Kami',
-      coverageText: 'Meja intelijen kami memantau titik-titik konflik global, memberikan pelacakan objektif melalui pemetaan AIS real-time kami, bersama dengan analisis mendalam mengenai konflik, koridor energi, dan pasar keuangan terdesentralisasi.',
-      commitmentTitle: 'Komitmen Kami',
-      commitmentText: 'Independensi mutlak. Transparansi tanpa ampun. Akurasi tanpa kompromi. Kami tidak mendikte apa yang harus Anda pikirkan; kami menyediakan data mentah dan kerangka analitis agar Anda memahami tatanan dunia yang berubah.',
-      disclaimer: 'Sangkalan: Informasi yang disediakan di platform ini hanya untuk tujuan edukasi dan informasi, dan bukan merupakan nasihat keuangan, investasi, atau keamanan.',
-      followCta: 'Bergabung dengan Jaringan Intelijen',
+      philosophyTitle: 'Kenapa Namanya Lazarus',
+      philosophyText: 'Buat kita, Lazarus itu simbol satu hal: fakta yang dihidupkan lagi. Saat narasi rapi menutup detail penting, kita bongkar ulang sampai jelas.',
+      whoWeAreTitle: 'Siapa Kita',
+      whoWeAreText: 'Kita media independen. Tidak bawa agenda negara. Tidak disetir korporasi. Fokus kita geopolitik, risiko militer, energi, dan pasar global.',
+      coverageTitle: 'Apa Yang Kita Pantau',
+      coverageText: 'Kita pantau titik panas dunia, pergerakan kapal, konflik, jalur energi, sampai arus crypto. Datanya bergerak cepat. Kamu harus lihat yang penting.',
+      commitmentTitle: 'Pegangan Kita',
+      commitmentText: 'Mandiri. Tajam. Akurat. Kita tidak suruh kamu percaya mentah-mentah. Kita kasih fakta, konteks, dan sudut yang sering sengaja dilewatkan.',
+      disclaimer: 'Semua info di sini buat informasi. Bukan nasihat keuangan, investasi, hukum, atau keamanan.',
+      followCta: 'Masuk ke jaringan update kita',
     },
     categories: {
       all: 'Semua',
       geopolitics: 'Geopolitik',
       military: 'Militer',
       markets: 'Pasar',
-      finance: 'Keuangan',
-      crypto: 'Kripto',
-      oilEnergy: 'Minyak & Energi',
-      middleEast: 'Timur Tengah',
-      breaking: 'Berita Utama',
+      finance: 'Pasar',
+      crypto: 'Crypto',
+      oilEnergy: 'Pasar',
+      middleEast: 'Geopolitik',
+      breaking: 'Berita Panas',
       analysis: 'Analisis',
       intelligence: 'Intelijen',
       deepDive: 'Kajian Mendalam',
@@ -200,28 +253,28 @@ export const translations = {
     pages: {
       geopolitics: {
         title: 'Geopolitik',
-        description: 'Dinamika kekuasaan, aliansi, dan kekuatan yang menata ulang tatanan global.',
-        metaDescription: 'Analisis geopolitik mendalam yang mencakup dinamika kekuasaan, aliansi, pergeseran diplomatik, dan hubungan internasional.'
+        description: 'Tarik-menarik kekuasaan global. Siapa tekan siapa, dan kenapa itu penting.',
+        metaDescription: 'Update geopolitik tajam soal aliansi, tekanan diplomatik, pergeseran kekuatan, dan dampaknya ke kawasan.'
       },
       military: {
         title: 'Militer & Pertahanan',
-        description: 'Penempatan pasukan, strategi pertahanan, dan analisis konflik global.',
-        metaDescription: 'Penempatan militer, strategi pertahanan, sistem senjata, dan analisis konflik.'
+        description: 'Gerak pasukan, sinyal deterrence, dan konflik yang bisa meledak kapan saja.',
+        metaDescription: 'Pantau penempatan militer, strategi pertahanan, sistem senjata, dan eskalasi konflik global.'
       },
       markets: {
-        title: 'Pasar & Keuangan',
-        description: 'Pasar global, kripto, minyak, dan intelijen keuangan.',
-        metaDescription: 'Data pasar langsung, analisis keuangan, pelacakan mata uang kripto, dan intelijen ekonomi global.'
+        title: 'Pasar',
+        description: 'Minyak, indeks, crypto, dan arus uang besar. Kena sentuh geopolitik, langsung gerak.',
+        metaDescription: 'Pantau pasar global, minyak, crypto, dan tekanan ekonomi yang muncul dari krisis geopolitik.'
       },
       crypto: {
-        title: 'Kripto',
-        description: 'Intelijen aset digital, analisis pasar, dan arus institusional.',
-        metaDescription: 'Analisis pasar mata uang kripto, Bitcoin, Ethereum, dan intelijen aset digital.'
+        title: 'Crypto',
+        description: 'Bitcoin, Ethereum, dan aliran dana besar. Hype doang atau sinyal jitu?',
+        metaDescription: 'Update crypto tajam soal Bitcoin, Ethereum, arus institusional, dan sentimen pasar digital.'
       },
       analysis: {
         title: 'Analisis',
-        description: 'Laporan intelijen panjang dan analisis mendalam investigatif.',
-        metaDescription: 'Laporan analitis mendalam tentang geopolitik, keamanan, ekonomi, dan tren global.'
+        description: 'Laporan panjang saat berita cepat saja tidak cukup. Butuh konteks? Di sini tempatnya.',
+        metaDescription: 'Analisis mendalam soal geopolitik, keamanan, ekonomi, dan tren global yang sedang membentuk peta baru.'
       },
       liveTv: {
         title: 'Live TV',
@@ -230,13 +283,13 @@ export const translations = {
       }
     },
     footer: {
-      description: 'Analisis Geopolitik & Keamanan Global Independen. Mengungkap kebenaran tersembunyi di balik pergeseran kekuatan global.',
+      description: 'Update independen soal geopolitik, militer, pasar, dan jalur maritim. Singkat, tajam, dan langsung kena inti.',
       coverage: 'Cakupan',
       connect: 'Terhubung',
-      disclaimer: 'Semua konten hanya untuk tujuan informasi dan bukan merupakan nasihat keuangan, hukum, atau strategis.',
+      disclaimer: 'Konten ini buat informasi. Bukan nasihat keuangan, hukum, investasi, atau strategi.',
       rights: 'Lazarus Report Global. Seluruh hak cipta dilindungi.',
       builtWith: 'Dibuat dengan',
-      forTruth: 'atas kebenaran'
+      forTruth: 'biar tetap jernih'
     },
     shipTrackerUI: {
       globalLiveTracking: 'Pelacakan Global Langsung',
@@ -244,8 +297,11 @@ export const translations = {
       coords: 'KOORDINAT: RAHASIA',
       encryption: 'ENKRIPSI: AES-256',
       chokepointTraffic: 'Lalu Lintas Titik Sempit',
-      fullMap: 'Peta Penuh →',
+      fullMap: 'Buka Peta Penuh',
       tacticalAlerts: 'PERINGATAN TAKTIKAL',
+      feedLoading: 'Membuka feed langsung',
+      relayActive: 'Relay AIS langsung aktif',
+      encryptedFeed: 'feed terenkripsi',
       alerts: [
         '> KELOMPOK TEMPUR KAPAL INDUK AS TERDETEKSI DI TELUK PERSIA',
         '> Aktivitas rudal Houthi dilaporkan dekat LAUT MERAH',
@@ -264,9 +320,9 @@ export const translations = {
       ]
     },
     sidebar: {
-      article1: 'Koridor Kekuasaan Tersembunyi: Penataan Ulang BRICS',
-      article2: 'Citra Satelit Mengungkap Instalasi Militer Baru',
-      article3: 'Perang Energi: Siapa yang Mengendalikan Sumber Daya Besok'
+      article1: 'BRICS geser lagi. Peta pengaruh global ikut berubah.',
+      article2: 'Foto satelit buka instalasi baru. Kebetulan? Rasanya tidak.',
+      article3: 'Perang energi balik panas. Siapa pegang keran, dia pegang arah.'
     }
   }
 };

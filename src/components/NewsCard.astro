@@ -1,4 +1,5 @@
 ---
+import { getTranslation } from '../utils/i18n';
 export interface Props {
   title: string;
   category: string;
@@ -11,6 +12,8 @@ export interface Props {
 }
 
 const { title, category, excerpt, image, date, source, url = '#', isBreaking = false } = Astro.props;
+const lang = Astro.cookies.get('lazarus_lang')?.value || 'en';
+const t = getTranslation(lang);
 
 const categoryColors: Record<string, string> = {
   geopolitics: 'text-lazarus-gold',
@@ -39,7 +42,7 @@ const colorClass = categoryColors[category?.toLowerCase()] || categoryColors.def
       />
       {isBreaking && (
         <div class="absolute top-3 left-3 px-2 py-1 bg-lazarus-alert text-white text-xs font-bold tracking-wider uppercase rounded">
-          Breaking
+          {t.categories.breaking}
         </div>
       )}
     </div>

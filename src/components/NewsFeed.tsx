@@ -17,7 +17,6 @@ interface NewsFeedProps {
   lang?: string;
 }
 
-// Skeleton card component
 function SkeletonCard() {
   return (
     <div className="bg-lazarus-dark border border-lazarus-border/30 rounded-none overflow-hidden animate-pulse">
@@ -32,8 +31,7 @@ function SkeletonCard() {
   );
 }
 
-// News card component
-function NewsCard({ item, t }: { item: NewsItem; t: any }) {
+function NewsCard({ item, t }: { item: NewsItem; t: ReturnType<typeof getTranslation> }) {
   return (
     <article className="group bg-lazarus-dark border border-lazarus-border/30 rounded-none overflow-hidden hover:bg-lazarus-dark/80 transition-all duration-300">
       {item.image && (
@@ -50,13 +48,13 @@ function NewsCard({ item, t }: { item: NewsItem; t: any }) {
           />
           {item.isBreaking && (
             <div className="absolute top-3 left-3 px-2 py-1 bg-lazarus-alert text-white text-[10px] font-bold tracking-widest uppercase rounded-sm shadow-md">
-              Breaking
+              {t.categories.breaking}
             </div>
           )}
         </div>
       )}
       <div className="p-5">
-        <div className="flex items-center justify-between mb-3 border-b border-lazarus-border/30 pb-2">
+        <div className="flex items-center justify-between mb-3 border-b border-lazarus-border/30 pb-2 gap-3">
           <span className="text-[10px] font-bold tracking-widest uppercase text-lazarus-black bg-lazarus-gold px-2 py-0.5 rounded-sm">
             {item.category}
           </span>
@@ -81,62 +79,128 @@ function NewsCard({ item, t }: { item: NewsItem; t: any }) {
   );
 }
 
-// Fallback / demo data
-const FALLBACK_NEWS: NewsItem[] = [
-  {
-    title: 'NATO Allies Discuss New Defense Strategy Amid Rising Global Tensions',
-    category: 'Geopolitics',
-    excerpt: 'Senior defense officials from NATO member states convene for emergency talks on reshaping alliance strategy.',
-    date: 'March 20, 2026',
-    source: 'Lazarus Report',
-    url: '#',
-    image: 'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=600&h=340&fit=crop',
-  },
-  {
-    title: 'US Carrier Strike Group Enters Persian Gulf Amid Escalating Maritime Threats',
-    category: 'Military',
-    excerpt: 'The USS Eisenhower carrier strike group has entered the Strait of Hormuz as part of increased naval presence.',
-    date: 'March 20, 2026',
-    source: 'Lazarus Report',
-    url: '#',
-    image: 'https://images.unsplash.com/photo-1580752300992-559f8e0734e0?w=600&h=340&fit=crop',
-  },
-  {
-    title: 'Oil Prices Spike 5% as Tensions Rise in Key Shipping Lanes',
-    category: 'Markets',
-    excerpt: 'Brent crude surges past $95 per barrel following reports of naval confrontation near the Strait of Hormuz.',
-    date: 'March 19, 2026',
-    source: 'Finnhub',
-    url: '#',
-    image: 'https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?w=600&h=340&fit=crop',
-  },
-  {
-    title: 'Bitcoin Breaks $70,000 Barrier as Institutional Adoption Accelerates',
-    category: 'Crypto',
-    excerpt: 'Major financial institutions increase Bitcoin holdings as the cryptocurrency hits all-time highs.',
-    date: 'March 19, 2026',
-    source: 'Binance',
-    url: '#',
-    image: 'https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=600&h=340&fit=crop',
-  },
-  {
-    title: 'China Expands Military Presence in South China Sea',
-    category: 'Military',
-    excerpt: 'Satellite imagery reveals new construction on disputed islands, raising concerns among ASEAN nations.',
-    date: 'March 18, 2026',
-    source: 'WorldNews',
-    url: '#',
-    image: 'https://images.unsplash.com/photo-1569163139394-de4e4f43e4e3?w=600&h=340&fit=crop',
-  },
-  {
-    title: 'OPEC+ Emergency Meeting Called Over Supply Concerns',
-    category: 'Oil & Energy',
-    excerpt: 'Saudi Arabia leads push for production cuts amid geopolitical instability in major oil producing regions.',
-    date: 'March 18, 2026',
-    source: 'NewsData',
-    url: '#',
-    image: 'https://images.unsplash.com/photo-1474314005122-3c07c4df1224?w=600&h=340&fit=crop',
-  },
+function getFallbackNews(lang: string): NewsItem[] {
+  if (lang === 'id') {
+    return [
+      {
+        title: 'NATO tambah tekanan di Eropa Timur. Rusia bakal diam saja?',
+        category: 'Geopolitik',
+        excerpt: 'Gerak diplomasi makin keras. Jalur negosiasi justru terlihat makin sempit. Ini cuma pemanasan?',
+        date: '23 Maret 2026',
+        source: 'Lazarus Report',
+        url: '#',
+        image: 'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=600&h=340&fit=crop',
+      },
+      {
+        title: 'Kapal induk AS masuk Teluk. Pesan ke Iran makin terang.',
+        category: 'Militer',
+        excerpt: 'Armada besar bergerak saat risiko maritim naik. Kalau ini deterrence, kenapa momentumnya segini keras?',
+        date: '23 Maret 2026',
+        source: 'Lazarus Report',
+        url: '#',
+        image: 'https://images.unsplash.com/photo-1580752300992-559f8e0734e0?w=600&h=340&fit=crop',
+        isBreaking: true,
+      },
+      {
+        title: 'Minyak melonjak setelah Hormuz memanas. Pasar kaget lagi.',
+        category: 'Pasar',
+        excerpt: 'Risiko jalur kirim bikin harga loncat cepat. Kalau kapal terganggu lebih lama, seberapa parah dampaknya?',
+        date: '22 Maret 2026',
+        source: 'Finnhub',
+        url: '#',
+        image: 'https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?w=600&h=340&fit=crop',
+      },
+      {
+        title: 'Bitcoin tembus level psikologis lagi. Uang besar masuk?',
+        category: 'Crypto',
+        excerpt: 'Volume naik dan sentimen ikut panas. Rally ini sehat, atau pasar cuma lagi keburu nafsu?',
+        date: '22 Maret 2026',
+        source: 'Binance',
+        url: '#',
+        image: 'https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=600&h=340&fit=crop',
+      },
+      {
+        title: 'Beijing tambah jejak militer di Laut China Selatan. Sinyal biasa? Jelas tidak.',
+        category: 'Militer',
+        excerpt: 'Foto satelit buka aktivitas baru di pulau sengketa. ASEAN makin tertekan, lalu siapa yang berani dorong balik?',
+        date: '21 Maret 2026',
+        source: 'WorldNews',
+        url: '#',
+        image: 'https://images.unsplash.com/photo-1569163139394-de4e4f43e4e3?w=600&h=340&fit=crop',
+      },
+      {
+        title: 'OPEC+ panggil rapat darurat. Pasokan bikin pasar deg-degan.',
+        category: 'Pasar',
+        excerpt: 'Arab Saudi dorong langkah cepat saat risiko kawasan naik. Kalau produksi dipotong, siapa yang kena duluan?',
+        date: '21 Maret 2026',
+        source: 'NewsData',
+        url: '#',
+        image: 'https://images.unsplash.com/photo-1474314005122-3c07c4df1224?w=600&h=340&fit=crop',
+      },
+    ];
+  }
+
+  return [
+    {
+      title: 'NATO ramps up pressure in Eastern Europe. Will Moscow hold the line?',
+      category: 'Geopolitics',
+      excerpt: 'Diplomatic traffic is rising fast while room to de-escalate looks thinner. Is this just the opening move?',
+      date: 'March 23, 2026',
+      source: 'Lazarus Report',
+      url: '#',
+      image: 'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=600&h=340&fit=crop',
+    },
+    {
+      title: 'US carrier group enters the Gulf. The signal to Iran is getting louder.',
+      category: 'Military',
+      excerpt: 'A major naval move lands as maritime risk climbs. If this is deterrence, why does it look this sharp?',
+      date: 'March 23, 2026',
+      source: 'Lazarus Report',
+      url: '#',
+      image: 'https://images.unsplash.com/photo-1580752300992-559f8e0734e0?w=600&h=340&fit=crop',
+      isBreaking: true,
+    },
+    {
+      title: 'Oil jumps as Hormuz tension hits shipping nerves again.',
+      category: 'Markets',
+      excerpt: 'Freight risk is back in focus and traders reacted fast. If vessels slow down, how ugly does this get?',
+      date: 'March 22, 2026',
+      source: 'Finnhub',
+      url: '#',
+      image: 'https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?w=600&h=340&fit=crop',
+    },
+    {
+      title: 'Bitcoin clears another key level. Big money stepping in?',
+      category: 'Crypto',
+      excerpt: 'Volume is up and sentiment is hot again. Clean breakout or late-cycle rush?',
+      date: 'March 22, 2026',
+      source: 'Binance',
+      url: '#',
+      image: 'https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=600&h=340&fit=crop',
+    },
+    {
+      title: 'China expands its military footprint in the South China Sea. Routine move? Not really.',
+      category: 'Military',
+      excerpt: 'New satellite images point to fresh activity on disputed ground. ASEAN is watching, but who will push back?',
+      date: 'March 21, 2026',
+      source: 'WorldNews',
+      url: '#',
+      image: 'https://images.unsplash.com/photo-1569163139394-de4e4f43e4e3?w=600&h=340&fit=crop',
+    },
+    {
+      title: 'OPEC+ calls an emergency meeting. Supply stress is back on the table.',
+      category: 'Markets',
+      excerpt: 'Saudi Arabia wants fast action as regional risk builds. If cuts return, who gets hit first?',
+      date: 'March 21, 2026',
+      source: 'NewsData',
+      url: '#',
+      image: 'https://images.unsplash.com/photo-1474314005122-3c07c4df1224?w=600&h=340&fit=crop',
+    },
+  ];
+}
+
+const CATEGORIES = [
+  'All', 'Geopolitics', 'Military', 'Markets', 'Crypto'
 ];
 
 export default function NewsFeed({ initialCategory = 'All', lang = 'en' }: NewsFeedProps) {
@@ -145,8 +209,9 @@ export default function NewsFeed({ initialCategory = 'All', lang = 'en' }: NewsF
   const [category, setCategory] = useState(initialCategory);
   const [query, setQuery] = useState('');
   const [sort, setSort] = useState('latest');
-  
+
   const t = useMemo(() => getTranslation(lang), [lang]);
+  const fallbackNews = useMemo(() => getFallbackNews(lang), [lang]);
 
   const fetchNews = useCallback(async () => {
     setLoading(true);
@@ -162,23 +227,22 @@ export default function NewsFeed({ initialCategory = 'All', lang = 'en' }: NewsF
         if (data.articles && data.articles.length > 0) {
           setNews(data.articles);
         } else {
-          setNews(FALLBACK_NEWS);
+          setNews(fallbackNews);
         }
       } else {
-        setNews(FALLBACK_NEWS);
+        setNews(fallbackNews);
       }
     } catch {
-      setNews(FALLBACK_NEWS);
+      setNews(fallbackNews);
     } finally {
       setLoading(false);
     }
-  }, [category, query, sort]);
+  }, [category, query, sort, fallbackNews]);
 
   useEffect(() => {
     fetchNews();
   }, [fetchNews]);
 
-  // Listen for filter changes from NewsFilter component
   useEffect(() => {
     const handler = (e: CustomEvent<{ category: string; query: string; sort: string }>) => {
       setCategory(e.detail.category);
@@ -191,23 +255,20 @@ export default function NewsFeed({ initialCategory = 'All', lang = 'en' }: NewsF
 
   return (
     <div>
-      {/* Filter Bar */}
       <NewsFilterBar
         category={category}
         query={query}
         sort={sort}
         lang={lang}
-        onCategoryChange={(c) => { setCategory(c); }}
-        onQueryChange={(q) => { setQuery(q); }}
-        onSortChange={(s) => { setSort(s); }}
+        onCategoryChange={setCategory}
+        onQueryChange={setQuery}
+        onSortChange={setSort}
       />
 
-      {/* News Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         {loading
           ? Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
-          : news.map((item, i) => <NewsCard key={i} item={item} t={t} />)
-        }
+          : news.map((item, i) => <NewsCard key={i} item={item} t={t} />)}
       </div>
 
       {!loading && news.length === 0 && (
@@ -219,12 +280,6 @@ export default function NewsFeed({ initialCategory = 'All', lang = 'en' }: NewsF
     </div>
   );
 }
-
-// Integrated filter bar
-const CATEGORIES = [
-  'All', 'Geopolitics', 'Military', 'Markets', 'Finance',
-  'Crypto', 'Oil & Energy', 'Middle East', 'Breaking'
-];
 
 function NewsFilterBar({
   category, query, sort, lang,
@@ -238,25 +293,23 @@ function NewsFilterBar({
   const [isOpen, setIsOpen] = useState(false);
   const t = useMemo(() => getTranslation(lang), [lang]);
 
-  // Translate categories
-  const mappedCategories = CATEGORIES.map(cat => {
-    const lower = cat.toLowerCase().replace(' ', '') as any;
-    if (lower === 'all') return { val: cat, label: t.categories.all };
-    if (lower === 'oil&energy') return { val: cat, label: t.categories.oilEnergy };
-    if (lower === 'middleeast') return { val: cat, label: t.categories.middleEast };
-    return { val: cat, label: (t.categories as any)[lower] || cat };
+  const mappedCategories = CATEGORIES.map((cat) => {
+    if (cat === 'All') return { val: cat, label: t.categories.all };
+    if (cat === 'Geopolitics') return { val: cat, label: t.categories.geopolitics };
+    if (cat === 'Military') return { val: cat, label: t.categories.military };
+    if (cat === 'Markets') return { val: cat, label: t.categories.markets };
+    return { val: cat, label: t.categories.crypto };
   });
 
   return (
     <div className="mb-6">
-      {/* Mobile toggle */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="md:hidden w-full flex items-center justify-between px-4 py-3 bg-lazarus-dark border border-lazarus-border rounded-lg mb-3"
         style={{ minHeight: '44px' }}
       >
         <span className="text-lazarus-body text-sm font-medium">
-          {t.sections.filter}: <span className="text-lazarus-gold">{mappedCategories.find(c => c.val === category)?.label || category}</span>
+          {t.sections.filter}: <span className="text-lazarus-gold">{mappedCategories.find((c) => c.val === category)?.label || category}</span>
         </span>
         <svg className={`w-5 h-5 text-lazarus-gold transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
@@ -302,8 +355,6 @@ function NewsFilterBar({
               className="px-3 py-2.5 bg-lazarus-dark border border-lazarus-border rounded-lg text-sm text-lazarus-body focus:outline-none focus:border-lazarus-gold appearance-none cursor-pointer"
               style={{ minHeight: '44px' }}
             >
-             
-             
               <option value="latest">{t.sections.sortLatest}</option>
               <option value="relevance">{t.sections.sortRelevance}</option>
             </select>
@@ -312,6 +363,4 @@ function NewsFilterBar({
       </div>
     </div>
   );
-
-
 }
