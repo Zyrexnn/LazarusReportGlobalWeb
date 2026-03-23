@@ -16,16 +16,25 @@ const t = getTranslation(lang);
 >
   <Header />
 
-  <main class="max-w-7xl mx-auto px-4 py-10 sm:px-6 lg:px-8">
-    <section class="mb-8 rounded-[1.75rem] border border-lazarus-border bg-[linear-gradient(135deg,rgba(212,175,55,0.08),rgba(15,15,15,0.96)_42%,rgba(15,15,15,0.98))] px-5 py-8 sm:px-8">
-      <p class="text-[11px] font-semibold uppercase tracking-[0.3em] text-lazarus-gold/85">Signal Desk</p>
-      <h1 class="mt-3 max-w-3xl font-serif text-3xl text-lazarus-headline sm:text-4xl">{t.pages.liveTv.title}</h1>
-      <p class="mt-3 max-w-2xl text-sm leading-7 text-lazarus-muted sm:text-base">
-        {t.pages.liveTv.description}
-      </p>
+  <main class="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
+    <section class="relative mb-12 overflow-hidden rounded-[2rem] border border-lazarus-gold-dark/20 bg-[linear-gradient(135deg,rgba(212,175,55,0.05),rgba(15,15,15,0.98)_50%,rgba(15,15,15,1))] px-6 py-12 sm:px-12">
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(212,175,55,0.05),transparent_40%)]"></div>
+      <div class="relative z-10">
+        <p class="text-[10px] font-bold uppercase tracking-[0.4em] text-lazarus-gold/70">Signal Monitoring Desk</p>
+        <h1 class="mt-4 max-w-3xl font-serif text-4xl text-lazarus-headline sm:text-5xl lg:text-6xl tracking-tight leading-[1.1]">
+          {t.pages.liveTv.title}
+        </h1>
+        <p class="mt-6 max-w-2xl text-[15px] leading-relaxed text-lazarus-muted/90 font-light sm:text-lg">
+          {t.pages.liveTv.description}
+        </p>
+        <div class="mt-8 flex items-center gap-4">
+          <span class="h-px w-12 bg-lazarus-gold/30"></span>
+          <span class="text-[9px] font-bold uppercase tracking-[0.3em] text-lazarus-gold/50">Production Ready Feed</span>
+        </div>
+      </div>
     </section>
 
-    <LiveTV />
+    <LiveTV title="Global Stream Monitor" />
   </main>
 
   <Footer />

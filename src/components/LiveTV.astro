@@ -54,32 +54,35 @@ const defaultChannel = channels[0];
 
 <section
   class:list={[
-    'rounded-[1.5rem] border border-lazarus-border bg-[linear-gradient(180deg,rgba(26,26,26,0.98),rgba(15,15,15,0.98))] shadow-[0_24px_60px_rgba(0,0,0,0.25)] overflow-hidden',
+    'rounded-[1.5rem] border border-lazarus-border/40 bg-[linear-gradient(180deg,rgba(26,26,26,0.95),rgba(15,15,15,0.98))] shadow-[0_32px_80px_rgba(0,0,0,0.3)] overflow-hidden transition-all duration-500',
     className,
   ]}
   data-live-tv-root={instanceId}
   data-default-channel={defaultChannel.id}
 >
-  <div class="border-b border-lazarus-border/70 bg-[radial-gradient(circle_at_top,rgba(212,175,55,0.12),transparent_58%)] px-4 py-4 sm:px-5">
+  <div class="relative border-b border-lazarus-gold-dark/20 bg-[radial-gradient(circle_at_top,rgba(212,175,55,0.08),transparent_70%)] px-5 py-5 sm:px-6">
     <div class="flex items-start justify-between gap-4">
       <div>
-        <p class="text-[10px] font-semibold uppercase tracking-[0.28em] text-lazarus-gold/85">Broadcast Monitor</p>
-        <h2 class="mt-2 font-serif text-xl text-lazarus-headline sm:text-2xl">{title}</h2>
+        <p class="text-[9px] font-bold uppercase tracking-[0.4em] text-lazarus-gold/70">Broadcast Monitor</p>
+        <h2 class="mt-2 font-serif text-2xl tracking-tight text-lazarus-headline sm:text-3xl">{title}</h2>
         {!compact && (
-          <p class="mt-2 max-w-xl text-sm leading-6 text-lazarus-muted">
-            Live YouTube feeds curated for fast geopolitical and market situational awareness.
+          <p class="mt-3 max-w-xl text-[13px] leading-relaxed text-lazarus-muted/90 font-light">
+            Live YouTube feeds curated for real-time geopolitical and market situational awareness.
           </p>
         )}
       </div>
-      <a
-        href="/live-tv"
-        class="hidden shrink-0 rounded-full border border-lazarus-border/80 px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.22em] text-lazarus-gold transition hover:border-lazarus-gold/70 hover:bg-lazarus-gold/10 lg:inline-flex"
-      >
-        Full Page
-      </a>
+      {!compact && (
+        <a
+          href="/live-tv"
+          class="hidden shrink-0 items-center gap-2 rounded-full border border-lazarus-border/50 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-lazarus-gold transition-all duration-300 hover:border-lazarus-gold/60 hover:bg-lazarus-gold/5 lg:inline-flex"
+        >
+          <span>Monitor Desk</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
+        </a>
+      )}
     </div>
 
-    <div class="mt-4 flex flex-wrap gap-2" role="tablist" aria-label="Live TV channels">
+    <div class="mt-6 flex flex-wrap gap-3" role="tablist" aria-label="Live TV channels">
       {channels.map((channel, index) => (
         <button
           type="button"
@@ -89,53 +92,69 @@ const defaultChannel = channels[0];
           aria-controls={`${instanceId}-panel-${channel.id}`}
           data-live-tv-tab={channel.id}
           class:list={[
-            'rounded-full border px-3 py-2 text-xs font-semibold tracking-[0.16em] uppercase transition focus:outline-none focus:ring-2 focus:ring-lazarus-gold/40 focus:ring-offset-0',
+            'relative overflow-hidden group min-w-[100px] rounded-lg border px-4 py-2.5 text-[11px] font-bold tracking-[0.18em] uppercase transition-all duration-300 focus:outline-none',
             index === 0
-              ? 'border-lazarus-gold bg-lazarus-gold text-lazarus-black'
-              : 'border-lazarus-border/80 bg-lazarus-black/30 text-lazarus-muted hover:border-lazarus-gold/60 hover:text-lazarus-gold',
+              ? 'border-lazarus-gold/30 bg-lazarus-gold/5 text-lazarus-gold'
+              : 'border-white/5 bg-white/[0.02] text-lazarus-muted hover:border-lazarus-gold/30 hover:text-lazarus-gold',
           ]}
         >
-          {channel.label}
+          <span class="relative z-10">{channel.label}</span>
+          {index === 0 && (
+            <span class="active-indicator absolute bottom-0 left-1/2 h-[2px] w-8 -translate-x-1/2 bg-lazarus-gold shadow-[0_0_10px_rgba(212,175,55,0.5)]" />
+          )}
         </button>
       ))}
     </div>
   </div>
 
-  <div class="p-4 sm:p-5">
+  <div class="p-5 sm:p-6 bg-lazarus-black/20">
     {channels.map((channel, index) => (
       <article
         id={`${instanceId}-panel-${channel.id}`}
         role="tabpanel"
         aria-labelledby={`${instanceId}-tab-${channel.id}`}
         data-live-tv-panel={channel.id}
-        class:list={[index === 0 ? 'block' : 'hidden']}
+        class:list={[index === 0 ? 'animate-fade-in block' : 'hidden']}
       >
-        <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-lazarus-gold/90">
-              Live <span aria-hidden="true">&bull;</span> Powered by{' '}
-              <a
-                href={channel.officialUrl}
-                target="_blank"
-                rel="noreferrer"
-                class="text-lazarus-gold underline decoration-lazarus-gold/40 underline-offset-4 hover:text-lazarus-gold-light"
-              >
-                {channel.officialLabel}
-              </a>
-            </p>
-            <p class="mt-1 text-sm text-lazarus-muted">{channel.description}</p>
+        <div class="mb-5 flex flex-wrap items-end justify-between gap-4">
+          <div class="max-w-2xl">
+            <div class="flex items-center gap-3">
+              <span class="flex h-2 w-2">
+                <span class="absolute inline-flex h-2 w-2 animate-ping rounded-full bg-red-500 opacity-75"></span>
+                <span class="relative inline-flex h-2 w-2 rounded-full bg-red-600"></span>
+              </span>
+              <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-lazarus-gold/90">
+                LIVE <span class="mx-1 text-white/20">•</span> 
+                <a
+                  href={channel.officialUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  class="font-extrabold hover:text-white transition-colors"
+                >
+                  {channel.officialLabel}
+                </a>
+              </p>
+            </div>
+            <p class="mt-2 text-[13px] leading-relaxed text-lazarus-muted font-light">{channel.description}</p>
           </div>
-          <span class="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-emerald-300">
-            Live Feed
-          </span>
+          <div class="hidden sm:block">
+            <span class="inline-flex items-center rounded-sm border border-lazarus-gold/20 bg-lazarus-gold/5 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.2em] text-lazarus-gold/80">
+              SECURE FEED
+            </span>
+          </div>
         </div>
 
-        <div class="relative overflow-hidden rounded-[1.25rem] border border-lazarus-border/70 bg-black shadow-[inset_0_0_0_1px_rgba(212,175,55,0.06)]">
-          <div class="pointer-events-none absolute inset-x-0 top-0 z-10 h-14 bg-[linear-gradient(180deg,rgba(212,175,55,0.12),transparent)]"></div>
+        <div class="group relative overflow-hidden rounded-xl border border-white/5 bg-black ring-1 ring-lazarus-gold/5 transition-all duration-700 hover:ring-lazarus-gold/20">
+          <div class="pointer-events-none absolute inset-0 z-10 bg-[linear-gradient(180deg,rgba(0,0,0,0.2)_0%,transparent_15%,transparent_85%,rgba(0,0,0,0.4)_100%)]"></div>
+          <div class="absolute inset-x-0 top-0 z-10 h-px bg-gradient-to-r from-transparent via-lazarus-gold/20 to-transparent opacity-0 transition-opacity duration-700 group-hover:opacity-100"></div>
+          
           <iframe
             title={`${channel.officialLabel} live stream`}
-            src={`https://www.youtube.com/embed/live_stream?channel=${channel.channelId}&autoplay=0&mute=1`}
-            class="h-64 w-full md:h-96 lg:h-[450px]"
+            src={`https://www.youtube.com/embed/live_stream?channel=${channel.channelId}&autoplay=0&mute=1&rel=0&modestbranding=1`}
+            class:list={[
+              'w-full aspect-video',
+              compact ? 'h-56' : 'h-64 sm:h-[400px] lg:h-[500px]'
+            ]}
             loading="lazy"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowfullscreen
@@ -158,18 +177,34 @@ const defaultChannel = channels[0];
       tabs.forEach((tab) => {
         const isActive = tab.getAttribute('data-live-tv-tab') === channelId;
         tab.setAttribute('aria-selected', String(isActive));
-        tab.classList.toggle('border-lazarus-gold', isActive);
-        tab.classList.toggle('bg-lazarus-gold', isActive);
-        tab.classList.toggle('text-lazarus-black', isActive);
-        tab.classList.toggle('border-lazarus-border/80', !isActive);
-        tab.classList.toggle('bg-lazarus-black/30', !isActive);
-        tab.classList.toggle('text-lazarus-muted', !isActive);
+        
+        // Update tab styling
+        if (isActive) {
+          tab.classList.add('border-lazarus-gold/30', 'bg-lazarus-gold/5', 'text-lazarus-gold');
+          tab.classList.remove('border-white/5', 'bg-white/[0.02]', 'text-lazarus-muted');
+          
+          // Add underline if not present
+          if (!tab.querySelector('.active-indicator')) {
+            const indicator = document.createElement('span');
+            indicator.className = 'active-indicator absolute bottom-0 left-1/2 h-[2px] w-8 -translate-x-1/2 bg-lazarus-gold shadow-[0_0_10px_rgba(212,175,55,0.5)]';
+            tab.appendChild(indicator);
+          }
+        } else {
+          tab.classList.remove('border-lazarus-gold/30', 'bg-lazarus-gold/5', 'text-lazarus-gold');
+          tab.classList.add('border-white/5', 'bg-white/[0.02]', 'text-lazarus-muted');
+          
+          const indicator = tab.querySelector('.active-indicator');
+          if (indicator) indicator.remove();
+        }
       });
 
       panels.forEach((panel) => {
         const isActive = panel.getAttribute('data-live-tv-panel') === channelId;
         panel.classList.toggle('hidden', !isActive);
         panel.classList.toggle('block', isActive);
+        if (isActive) {
+          panel.classList.add('animate-fade-in');
+        }
       });
     };
 
