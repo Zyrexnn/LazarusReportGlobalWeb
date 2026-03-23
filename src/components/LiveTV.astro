@@ -6,7 +6,7 @@ interface Channel {
   officialLabel: string;
   description: string;
   streamUrl: string;
-  fallbackYoutubeId: string;
+  youtubeId: string;
 }
 
 export interface Props {
@@ -29,27 +29,54 @@ const channels: Channel[] = [
     label: 'Al Jazeera',
     officialUrl: 'https://www.aljazeera.com/live',
     officialLabel: 'Al Jazeera English',
-    description: '24/7 international coverage with a strong Middle East and global affairs focus.',
+    description: '24/7 global coverage with a heavy emphasis on Middle East and African geopolitics.',
     streamUrl: 'https://live-hls-web-aje.getaj.net/AJE/index.m3u8',
-    fallbackYoutubeId: 'UCNye-wNBqNL5ZzHSJj3l8Bg',
+    youtubeId: 'UCNye-wNBqNL5ZzHSJj3l8Bg',
   },
   {
     id: 'france24',
     label: 'France 24',
     officialUrl: 'https://www.france24.com/en/live',
     officialLabel: 'France 24 English',
-    description: 'Round-the-clock world news from Paris with business, diplomacy, and conflict updates.',
+    description: 'International news from a European perspective, broadcast from Paris.',
     streamUrl: 'https://static.france24.com/live/F24_EN_LO_HLS/live_tv.m3u8',
-    fallbackYoutubeId: 'UCQfwfsi5VrQ8yKZ-UWmAEFg',
+    youtubeId: 'UCQfwfsi5VrQ8yKZ-UWmAEFg',
+  },
+  {
+    id: 'nhkworld',
+    label: 'NHK World',
+    officialUrl: 'https://www3.nhk.or.jp/nhkworld/en/live/',
+    officialLabel: 'NHK World Japan',
+    description: 'The latest news and analysis from Japan and across Asia.',
+    streamUrl: 'https://nhkwlive-ojp.akamaized.net/hls/live/2003459/nhkwlive-ojp-en/index.m3u8',
+    youtubeId: 'UCKnLrEdhRCp1aegoMqRaCZg',
+  },
+  {
+    id: 'dwnews',
+    label: 'DW News',
+    officialUrl: 'https://www.dw.com/en/live-tv/s-100825',
+    officialLabel: 'Deutsche Welle News',
+    description: 'Germany\'s world channel providing news and analysis from the heart of Europe.',
+    streamUrl: 'https://dwamdstream102.akamaized.net/hls/live/2015525/dwstream102/stream05/streamPlaylist.m3u8',
+    youtubeId: 'UCknLrEdhRCp1aegoMqRaCZg',
   },
   {
     id: 'bloomberg',
     label: 'Bloomberg',
-    officialUrl: 'https://www.bloomberg.com/live/us',
-    officialLabel: 'Bloomberg Television',
-    description: 'Live market-moving coverage, macro updates, and financial interviews.',
+    officialUrl: 'https://www.bloomberg.com/live',
+    officialLabel: 'Bloomberg TV',
+    description: 'Live financial news, market updates, and expert economic interviews.',
     streamUrl: 'https://live-streaming.bloomberg.com/bc/bloomberg_en_480.m3u8',
-    fallbackYoutubeId: 'UCIALMKvObZNtJ6AmdCLP7Lg',
+    youtubeId: 'UCIALMKvObZNtJ6AmdCLP7Lg',
+  },
+  {
+    id: 'trtworld',
+    label: 'TRT World',
+    officialUrl: 'https://www.trtworld.com/live',
+    officialLabel: 'TRT World',
+    description: 'International news platform reporting from the center of Istanbul.',
+    streamUrl: 'https://tv-trtworld.live.trt.com.tr/master.m3u8',
+    youtubeId: 'UC7fWeaHhqgM4Ry-RMpM2YYw',
   },
 ];
 
@@ -86,7 +113,7 @@ const defaultChannel = channels[0];
       )}
     </div>
 
-    <div class="mt-6 flex flex-wrap gap-3" role="tablist" aria-label="Live TV channels">
+    <div class="mt-6 flex flex-wrap gap-2.5" role="tablist" aria-label="Live TV channels">
       {channels.map((channel, index) => (
         <button
           type="button"
@@ -96,7 +123,7 @@ const defaultChannel = channels[0];
           aria-controls={`${instanceId}-panel-${channel.id}`}
           data-live-tv-tab={channel.id}
           class:list={[
-            'relative overflow-hidden group min-w-[100px] rounded-lg border px-4 py-2.5 text-[11px] font-bold tracking-[0.18em] uppercase transition-all duration-300 focus:outline-none',
+            'relative overflow-hidden group min-w-[90px] rounded-lg border px-3 py-2 text-[10px] sm:text-[11px] font-bold tracking-[0.15em] uppercase transition-all duration-300 focus:outline-none',
             index === 0
               ? 'border-lazarus-gold/30 bg-lazarus-gold/5 text-lazarus-gold'
               : 'border-white/5 bg-white/[0.02] text-lazarus-muted hover:border-lazarus-gold/30 hover:text-lazarus-gold',
@@ -104,7 +131,7 @@ const defaultChannel = channels[0];
         >
           <span class="relative z-10">{channel.label}</span>
           {index === 0 && (
-            <span class="active-indicator absolute bottom-0 left-1/2 h-[2px] w-8 -translate-x-1/2 bg-lazarus-gold shadow-[0_0_10px_rgba(212,175,55,0.5)]" />
+            <span class="active-indicator absolute bottom-0 left-1/2 h-[22px] w-8 -translate-x-1/2 bg-lazarus-gold shadow-[0_0_10px_rgba(212,175,55,0.5)]" />
           )}
         </button>
       ))}
@@ -120,8 +147,8 @@ const defaultChannel = channels[0];
         data-live-tv-panel={channel.id}
         class:list={[index === 0 ? 'animate-fade-in block' : 'hidden']}
       >
-        <div class="mb-5 flex flex-wrap items-end justify-between gap-4">
-          <div class="max-w-2xl">
+        <div class="mb-5 flex flex-wrap items-center justify-between gap-4">
+          <div class="max-w-xl">
             <div class="flex items-center gap-3">
               <span class="flex h-2 w-2">
                 <span class="absolute inline-flex h-2 w-2 animate-ping rounded-full bg-red-500 opacity-75"></span>
@@ -129,44 +156,58 @@ const defaultChannel = channels[0];
               </span>
               <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-lazarus-gold/90">
                 LIVE <span class="mx-1 text-white/20">•</span> 
-                <a
-                  href={channel.officialUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  class="font-extrabold hover:text-white transition-colors"
-                >
+                <a href={channel.officialUrl} target="_blank" rel="noreferrer" class="font-extrabold hover:text-white transition-colors">
                   {channel.officialLabel}
                 </a>
               </p>
             </div>
             <p class="mt-2 text-[13px] leading-relaxed text-lazarus-muted font-light">{channel.description}</p>
           </div>
-          <div class="hidden sm:block">
-            <span class="inline-flex items-center rounded-sm border border-lazarus-gold/20 bg-lazarus-gold/5 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.2em] text-lazarus-gold/80">
-              DIRECT MEDIA STREAM
+          <div class="flex items-center gap-3">
+            <button
+               data-player-toggle={channel.id}
+               class="inline-flex items-center gap-2 rounded-sm border border-lazarus-gold/30 bg-lazarus-gold/5 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.1em] text-lazarus-gold transition-all hover:bg-lazarus-gold/10"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8"/><path d="M2 12h10"/><path d="M9 18H3l3-8 3 8Z"/><path d="M17 12h5"/></svg>
+              <span>SWITCH PLAYER</span>
+            </button>
+            <span class="status-badge hidden sm:inline-flex items-center rounded-sm border border-green-500/20 bg-green-500/5 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.2em] text-green-500/80">
+              OPTIMIZED FEED
             </span>
           </div>
         </div>
 
-        <div class="group relative overflow-hidden rounded-xl border border-white/5 bg-black ring-1 ring-lazarus-gold/5 transition-all duration-700 hover:ring-lazarus-gold/20">
-          <div class="pointer-events-none absolute inset-0 z-10 bg-[linear-gradient(180deg,rgba(0,0,0,0.2)_0%,transparent_15%,transparent_85%,rgba(0,0,0,0.4)_100%)]"></div>
-          
+        <div class="group relative overflow-hidden rounded-xl border border-white/5 bg-black ring-1 ring-lazarus-gold/5 transition-all duration-700 hover:ring-lazarus-gold/20 shadow-2xl">
           <div class:list={[
             'relative w-full aspect-video flex items-center justify-center bg-black',
             compact ? 'h-48' : 'h-64 sm:h-[400px] lg:h-[500px]'
           ]}>
-            <video
-              id={`${instanceId}-video-${channel.id}`}
-              class="w-full h-full object-contain"
-              controls
-              muted
-              playsinline
-              poster={`https://img.youtube.com/vi_webp/${channel.fallbackYoutubeId}/hqdefault.webp`}
-              data-stream-url={channel.streamUrl}
-            >
-              Your browser does not support the video tag.
-            </video>
+            <div data-player-container={channel.id} class="w-full h-full">
+              <!-- HLS Player (Default) -->
+              <video
+                id={`${instanceId}-video-${channel.id}`}
+                class="w-full h-full object-contain hls-player"
+                controls
+                muted
+                playsinline
+                poster={`https://img.youtube.com/vi_webp/${channel.youtubeId}/maxresdefault.webp`}
+                data-stream-url={channel.streamUrl}
+              >
+                Your browser does not support the video tag.
+              </video>
+              <!-- Hidden YouTube Fallback -->
+              <iframe
+                id={`${instanceId}-yt-${channel.id}`}
+                class="hidden w-full h-full border-none yt-player"
+                title={`${channel.officialLabel} fallback stream`}
+                src={`https://www.youtube.com/embed/live_stream?channel=${channel.youtubeId}&autoplay=0&mute=1&rel=0&modestbranding=1&enablejsapi=1`}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+              ></iframe>
+            </div>
           </div>
+          <!-- Overlay to protect player interactions -->
+          <div class="pointer-events-none absolute inset-0 z-10 bg-[linear-gradient(180deg,rgba(0,0,0,0.1)_0%,transparent_100%)]"></div>
         </div>
       </article>
     ))}
@@ -187,13 +228,72 @@ const defaultChannel = channels[0];
       const streamUrl = videoEl.getAttribute('data-stream-url');
       if (!streamUrl) return;
 
+      const container = videoEl.closest('[data-player-container]');
+      const ytPlayer = container.querySelector('.yt-player');
+
       if (Hls.isSupported()) {
-        const hls = new Hls();
+        const hls = new Hls({
+          manifestLoadingMaxRetry: 2,
+          levelLoadingMaxRetry: 2,
+          fragLoadingMaxRetry: 2
+        });
+        
+        hls.on(Hls.Events.ERROR, (event, data) => {
+          if (data.fatal) {
+            console.warn(`HLS fatal error for ${videoEl.id}, switching to YouTube fallback.`);
+            hls.destroy();
+            useFallback(videoEl, ytPlayer);
+          }
+        });
+
         hls.loadSource(streamUrl);
         hls.attachMedia(videoEl);
         players.set(videoEl.id, hls);
+
+        videoEl.oncanplay = () => {
+          videoEl.play().catch(() => {});
+        };
+
+        // Safety timeout: if it doesn't play in 8 seconds, fallback
+        setTimeout(() => {
+          if (videoEl.readyState < 2 && !videoEl.paused) {
+             useFallback(videoEl, ytPlayer);
+          }
+        }, 8000);
+
       } else if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {
         videoEl.src = streamUrl;
+      } else {
+        useFallback(videoEl, ytPlayer);
+      }
+    };
+
+    const useFallback = (videoEl, ytPlayer) => {
+      if (videoEl) {
+        videoEl.classList.add('hidden');
+        if (players.has(videoEl.id)) {
+           players.get(videoEl.id).destroy();
+           players.delete(videoEl.id);
+        }
+      }
+      if (ytPlayer) {
+        ytPlayer.classList.remove('hidden');
+        ytPlayer.src = ytPlayer.src.replace('autoplay=0', 'autoplay=1');
+      }
+    };
+
+    const togglePlayer = (channelId) => {
+      const panel = root.querySelector(`[data-live-tv-panel="${channelId}"]`);
+      if (!panel) return;
+      const video = panel.querySelector('.hls-player');
+      const yt = panel.querySelector('.yt-player');
+      
+      if (video.classList.contains('hidden')) {
+        yt.classList.add('hidden');
+        video.classList.remove('hidden');
+        if (!players.has(video.id)) initHls(video);
+      } else {
+        useFallback(video, yt);
       }
     };
 
@@ -223,14 +323,16 @@ const defaultChannel = channels[0];
         panel.classList.toggle('hidden', !isActive);
         panel.classList.toggle('block', isActive);
         
-        const video = panel.querySelector('video');
+        const video = panel.querySelector('.hls-player');
+        const yt = panel.querySelector('.yt-player');
         if (isActive) {
           panel.classList.add('animate-fade-in');
-          if (video && !players.has(video.id)) {
+          if (video && !video.classList.contains('hidden') && !players.has(video.id)) {
             initHls(video);
           }
         } else {
           if (video) video.pause();
+          if (yt) yt.src = yt.src; // stop yt
         }
       });
     };
@@ -239,6 +341,12 @@ const defaultChannel = channels[0];
       tab.addEventListener('click', () => {
         const channelId = tab.getAttribute('data-live-tv-tab');
         if (channelId) activateChannel(channelId);
+      });
+    });
+
+    root.querySelectorAll('[data-player-toggle]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        togglePlayer(btn.getAttribute('data-player-toggle'));
       });
     });
 
