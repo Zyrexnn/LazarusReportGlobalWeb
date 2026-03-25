@@ -6,6 +6,7 @@ import Footer from '../components/Footer.astro';
 import NewsFeed from '../components/NewsFeed.tsx';
 import CryptoTicker from '../components/CryptoTicker.tsx';
 import AISMap from '../components/AISMap.astro';
+import FlightTracker from '../components/FlightTracker.astro';
 import LiveTV from '../components/LiveTV.astro';
 import '../styles/global.css';
 import { getTranslation } from '../utils/i18n';
@@ -45,6 +46,9 @@ const t = getTranslation(lang);
 
           <!-- AIS Map -->
           <AISMap />
+
+          <!-- Flight Tracker -->
+          <FlightTracker />
 
           <!-- Crypto Ticker -->
           <CryptoTicker client:load lang={lang} />
