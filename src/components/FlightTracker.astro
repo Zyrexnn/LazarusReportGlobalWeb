@@ -1,0 +1,89 @@
+---
+// FlightTracker.astro
+// Premium Global Flight Tracking with Cyberpunk/Dark filtering
+import { getTranslation } from '../utils/i18n';
+
+export interface Props {
+  fullPage?: boolean;
+}
+
+const { fullPage = false } = Astro.props;
+const containerHeight = fullPage ? 'h-[75vh]' : 'h-80 md:h-96';
+const lang = Astro.cookies.get('lazarus_lang')?.value || 'en';
+const t = getTranslation(lang);
+---
+
+<div 
+  class="bg-lazarus-dark border border-lazarus-border rounded-xl overflow-hidden group relative flight-map-root"
+  data-full-page={fullPage ? "true" : "false"}
+>
+  {!fullPage && (
+    <div class="flex items-center justify-between px-4 pt-4 pb-2 relative z-20 bg-lazarus-dark">
+      <h3 class="text-lazarus-gold text-xs font-bold tracking-[0.2em] uppercase flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" />
+        </svg>
+        {t.flightTrackerUI.globalLiveTracking}
+      </h3>
+      <a href="/flight-tracker" class="text-lazarus-muted hover:text-lazarus-gold text-xs transition-colors">
+        {t.flightTrackerUI.fullMap}
+      </a>
+    </div>
+  )}
+
+  <div class={`relative w-full ${containerHeight} overflow-hidden bg-[#0B0E11] z-10`}>
+    <!-- Map Container with targeted cropping (Keep Left, Hide Right/Top) -->
+    <div 
+      class="flight-container w-full h-full absolute inset-0 overflow-hidden"
+    >
+      <iframe 
+        src="https://globe.adsb.fi/?hideSidebar&hideHeader&mini" 
+        class="absolute border-none opacity-0 transition-opacity duration-1000"
+        style="
+          width: 130%; /* Make it wider to push the right-side menu out */
+          height: 110%; /* Slightly taller to push the top menu out */
+          top: -20px; /* Hide only the very top bar */
+          left: 0%; /* Keep the left side (Aircraft Details) visible */
+          filter: invert(1) hue-rotate(180deg) brightness(1) contrast(1.1) saturate(1.2);
+        "
+        onload="this.style.opacity='1'; const skel = document.querySelector('.flight-skeleton'); if(skel) { skel.style.opacity='0'; setTimeout(() => skel.remove(), 1000); }"
+      ></iframe>
+    </div>
+    
+    <!-- Gradient Overlay to blend with site background -->
+    <div class="absolute inset-0 pointer-events-none z-10 bg-gradient-to-t from-lazarus-black/80 via-transparent to-lazarus-black/20"></div>
+    <div class="absolute inset-0 pointer-events-none z-10 shadow-[inset_0_0_100px_rgba(0,0,0,0.9)]"></div>
+
+    <!-- Skeleton Loader -->
+    <div class="flight-skeleton absolute inset-0 bg-[#0B0E11] flex items-center justify-center z-20 transition-opacity duration-1000">
+      <div class="text-center">
+        <div class="w-10 h-10 border-2 border-lazarus-gold border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <p class="text-lazarus-gold/80 text-[11px] tracking-[0.3em] font-mono uppercase animate-pulse">{t.flightTrackerUI.feedLoading}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Info -->
+  <div class="px-4 py-3 border-t border-lazarus-border/30 bg-lazarus-black/80 flex items-center justify-between relative z-20">
+    <div class="flex items-center gap-2">
+      <span class="w-1.5 h-1.5 rounded-full bg-lazarus-gold shadow-[0_0_8px_rgba(212,175,55,0.6)] animate-pulse"></span>
+      <span class="text-lazarus-gold/70 text-[10px] uppercase tracking-widest font-mono">{t.flightTrackerUI.relayActive}</span>
+    </div>
+    <span class="text-lazarus-gold/30 text-[9px] tracking-[0.3em] uppercase font-mono">
+      {t.flightTrackerUI.encryptedFeed}
+    </span>
+  </div>
+</div>
+
+<script is:inline>
+  // Safety timeout: force reveal if map is slow or blocked
+  setTimeout(() => {
+    const skel = document.querySelector('.flight-skeleton');
+    if(skel) {
+      skel.style.opacity = '0';
+      setTimeout(() => skel.remove(), 1000);
+    }
+    const ifr = document.querySelector('.flight-container iframe');
+    if(ifr) ifr.style.opacity = '1';
+  }, 8000);
+</script>

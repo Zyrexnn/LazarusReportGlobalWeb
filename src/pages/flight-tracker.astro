@@ -1,0 +1,89 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import FlightTracker from '../components/FlightTracker.astro';
+import '../styles/global.css';
+
+import { getTranslation } from '../utils/i18n';
+const lang = Astro.cookies.get('lazarus_lang')?.value || 'en';
+const t = getTranslation(lang);
+---
+
+<BaseLayout
+  title={`${t.pages.flightTracker.title} — Lazarus Report Global`}
+  description={t.pages.flightTracker.metaDescription}
+>
+  <Header />
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <!-- Page Header -->
+    <div class="mb-10">
+      <div class="flex items-center gap-3 mb-2">
+        <div class="w-1.5 h-10 bg-lazarus-gold rounded-full"></div>
+        <div>
+          <h1 class="font-serif text-3xl sm:text-4xl text-lazarus-headline">{t.pages.flightTracker.title}</h1>
+          <p class="text-lazarus-muted text-sm mt-1">{t.pages.flightTracker.description}</p>
+        </div>
+      </div>
+      
+      <!-- Tactical Info Bar -->
+      <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-lazarus-dark border border-lazarus-border/30 p-3 rounded-lg">
+          <p class="text-[10px] text-lazarus-gold/50 font-mono uppercase tracking-widest mb-1">System Status</p>
+          <p class="text-xs text-lazarus-body font-mono">{t.flightTrackerUI.statusOnline}</p>
+        </div>
+        <div class="bg-lazarus-dark border border-lazarus-border/30 p-3 rounded-lg">
+          <p class="text-[10px] text-lazarus-gold/50 font-mono uppercase tracking-widest mb-1">Encryption</p>
+          <p class="text-xs text-lazarus-body font-mono">{t.flightTrackerUI.encryption}</p>
+        </div>
+        <div class="bg-lazarus-dark border border-lazarus-border/30 p-3 rounded-lg">
+          <p class="text-[10px] text-lazarus-gold/50 font-mono uppercase tracking-widest mb-1">Protocol</p>
+          <p class="text-xs text-lazarus-body font-mono">{t.flightTrackerUI.airTraffic}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-8">
+      <!-- Main Map -->
+      <div class="flex-1 lg:w-[70%]">
+        <FlightTracker fullPage={true} />
+      </div>
+
+      <!-- Tactical Sidebar -->
+      <div class="lg:w-[30%] space-y-6">
+        <div class="bg-lazarus-dark border border-lazarus-border rounded-xl p-5">
+          <h3 class="text-lazarus-gold text-xs font-bold tracking-[0.2em] uppercase mb-4 flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {t.flightTrackerUI.tacticalAlerts}
+          </h3>
+          <div class="space-y-3 font-mono">
+            {t.flightTrackerUI.alerts.map((alert) => (
+              <div class="text-[11px] text-lazarus-body/80 border-l-2 border-lazarus-gold/30 pl-3 py-1 bg-lazarus-gold/5">
+                {alert}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div class="bg-lazarus-dark border border-lazarus-border rounded-xl p-5">
+          <h3 class="text-lazarus-muted/50 text-xs font-bold tracking-[0.2em] uppercase mb-4">
+            {t.flightTrackerUI.rawFeed}
+          </h3>
+          <div class="space-y-1.5 font-mono text-[10px]">
+            {t.flightTrackerUI.logs.map((log) => (
+              <div class="text-green-500/60 leading-tight">
+                {log}
+              </div>
+            ))}
+            <div class="text-green-500 animate-pulse">_</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</BaseLayout>
