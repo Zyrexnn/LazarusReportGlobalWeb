@@ -53,11 +53,11 @@ const t = getTranslation(lang);
   <!-- Bottom Info -->
   <div class="px-4 py-3 border-t border-lazarus-border/30 bg-lazarus-black/80 flex items-center justify-between relative z-20">
     <div class="flex items-center gap-2">
-      <span class="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
-      <span class="text-lazarus-muted/70 text-[10px] uppercase tracking-widest font-mono text-balance">{t.shipTrackerUI.relayActive}</span>
+      <span class="w-1.5 h-1.5 rounded-full bg-lazarus-gold shadow-[0_0_8px_rgba(212,175,55,0.6)] animate-pulse"></span>
+      <span class="text-lazarus-gold/70 text-[10px] uppercase tracking-widest font-mono text-balance">{t.shipTrackerUI.relayActive}</span>
     </div>
     <span class="text-lazarus-gold/30 text-[9px] tracking-[0.3em] uppercase font-mono">
-      // {t.shipTrackerUI.encryptedFeed}
+      {t.shipTrackerUI.encryptedFeed}
     </span>
   </div>
 </div>
@@ -102,6 +102,15 @@ const t = getTranslation(lang);
       
       container.appendChild(iframe);
 
+      // Add Overlay Mask (Programmatic)
+      const overlay = document.createElement('div');
+      overlay.className = "absolute inset-0 pointer-events-none z-10 bg-gradient-to-t from-lazarus-black/80 via-transparent to-lazarus-black/20";
+      container.parentNode.appendChild(overlay);
+
+      const shadow = document.createElement('div');
+      shadow.className = "absolute inset-0 pointer-events-none z-10 shadow-[inset_0_0_100px_rgba(0,0,0,0.9)]";
+      container.parentNode.appendChild(shadow);
+
       // Short delay for the iframe's window to be available
       setTimeout(() => {
         try {
@@ -116,7 +125,7 @@ const t = getTranslation(lang);
             '<style>',
             'body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #0B0E11; }',
             'iframe { width: 100% !important; height: 100% !important; border: none !important;',
-            'filter: invert(0.92) hue-rotate(180deg) brightness(0.8) contrast(1.2) saturate(0.8);',
+            'filter: invert(1) hue-rotate(180deg) brightness(1) contrast(1.1) saturate(1.2);',
             'background: #0B0E11 !important; }',
             '</style>',
             '</head>',
