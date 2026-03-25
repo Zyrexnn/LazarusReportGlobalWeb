@@ -6,6 +6,7 @@ export const translations = {
       home: 'Home',
       liveTv: 'Live TV',
       shipTracker: 'Ship Tracker',
+      flightTracker: 'Flight Tracker',
       analysis: 'Analysis',
       about: 'About',
     },
@@ -118,6 +119,11 @@ export const translations = {
         title: 'Live TV',
         description: 'Track live coverage from Al Jazeera English, France 24, and Bloomberg Television in one focused monitoring desk.',
         metaDescription: 'Watch live YouTube news streams from Al Jazeera English, France 24 English, and Bloomberg Television in a production-ready monitoring page.'
+      },
+      flightTracker: {
+        title: 'Global Flight Intelligence',
+        description: 'Real-time Strategic Air Traffic Monitoring',
+        metaDescription: 'Track live global flight data, military transponders, and strategic air corridors.'
       }
     },
     footer: {
@@ -157,6 +163,34 @@ export const translations = {
         '> Packets decoded.'
       ]
     },
+    flightTrackerUI: {
+      globalLiveTracking: 'Global Air Intelligence',
+      statusOnline: 'SYS.STATUS: ONLINE | LATENCY: 8ms | SAT.UPLINK: ACTIVE',
+      coords: 'FLIGHT_PATH: CLASSIFIED',
+      encryption: 'ENCRYPTION: AES-256',
+      airTraffic: 'Strategic Air Corridor',
+      fullMap: 'Open Tactical Map',
+      tacticalAlerts: 'AIRSPACE ALERTS',
+      feedLoading: 'Syncing transponder data',
+      relayActive: 'Live ADSB relay is on',
+      encryptedFeed: 'encrypted air digits',
+      alerts: [
+        '> NATO AWACS DETECTED IN POLAND-UKRAINE BORDER',
+        '> US Air Force Global Hawk activity in Black Sea',
+        '> Tanker fleet movement near STRAIT OF HORMUZ'
+      ],
+      rawFeed: 'ADSB_RAW:',
+      logs: [
+        '> Handshaking with ADSB-FI nodes...',
+        '> Fetching transponder packets [Batch 0x9B1C]',
+        '> Decrypting squawk codes...',
+        '> Filtering civil-military mix...',
+        '> Mapping altitude & velocity vectors...',
+        '> Validating hex-id signatures...',
+        '> Secure uplink maintained.',
+        '> Digits synced.'
+      ]
+    },
     sidebar: {
       article1: 'BRICS shifts again. New bloc, new pressure, new game.',
       article2: 'Fresh satellite shots show military build-up. Routine move? Hardly.',
@@ -168,6 +202,7 @@ export const translations = {
       home: 'Beranda',
       liveTv: 'Live TV',
       shipTracker: 'Pelacak Kapal',
+      flightTracker: 'Pelacak Pesawat',
       analysis: 'Analisis',
       about: 'Tentang',
     },
@@ -280,6 +315,11 @@ export const translations = {
         title: 'Live TV',
         description: 'Pantau siaran langsung Al Jazeera English, France 24, dan Bloomberg Television dalam satu desk monitoring yang fokus.',
         metaDescription: 'Tonton live stream YouTube dari Al Jazeera English, France 24 English, dan Bloomberg Television dalam halaman monitoring yang siap produksi.'
+      },
+      flightTracker: {
+        title: 'Intelijen Penerbangan Global',
+        description: 'Pemantauan Lalu Lintas Udara Strategis Real-time',
+        metaDescription: 'Pantau data penerbangan global langsung, transponder militer, dan koridor udara strategis.'
       }
     },
     footer: {
@@ -317,6 +357,34 @@ export const translations = {
         '> Memvalidasi checksum...',
         '> Menjalin ulang sambungan...',
         '> Paket berhasil didekode.'
+      ]
+    },
+    flightTrackerUI: {
+      globalLiveTracking: 'Intelijen Udara Global',
+      statusOnline: 'SYS.STATUS: ONLINE | LATENCY: 8ms | SAT.UPLINK: ACTIVE',
+      coords: 'JALUR_TERBANG: RAHASIA',
+      encryption: 'ENKRIPSI: AES-256',
+      airTraffic: 'Koridor Udara Strategis',
+      fullMap: 'Buka Peta Taktikal',
+      tacticalAlerts: 'PERINGATAN UDARA',
+      feedLoading: 'Sinkronisasi data transponder',
+      relayActive: 'Relay ADSB langsung aktif',
+      encryptedFeed: 'data udara terenkripsi',
+      alerts: [
+        '> AWACS NATO TERDETEKSI DI PERBATASAN POLANDIA-UKRAINA',
+        '> Aktivitas US Air Force Global Hawk di Laut Hitam',
+        '> Pergerakan armada Tanker dekat SELAT HORMUZ'
+      ],
+      rawFeed: 'MENTAH_ADSB:',
+      logs: [
+        '> Handshake dengan node ADSB-FI...',
+        '> Mengambil paket transponder [Batch 0x9B1C]',
+        '> Mendekripsi kode squawk...',
+        '> Menyaring campuran sipil-militer...',
+        '> Memetakan vektor ketinggian & kecepatan...',
+        '> Validasi tanda hex-id...',
+        '> Uplink aman terjaga.',
+        '> Data sinkron.'
       ]
     },
     sidebar: {
