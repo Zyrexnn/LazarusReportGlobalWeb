@@ -36,9 +36,25 @@ export const onRequest = defineMiddleware(async (context, next) => {
     const referer = request.headers.get("referer");
     const host = request.headers.get("host");
 
-    // In production, you might want to be stricter
-    // For now, we allow if origin matches host or is empty (direct browser access for testing)
-    if (origin && !origin.includes(host || "")) {
+    // Strict origin checking to prevent bypasses (e.g., evil-example.com bypassing example.com)
+    if (origin && host) {
+      try {
+        const originUrl = new URL(origin);
+        // Allow same host or local development
+        if (originUrl.host !== host && !originUrl.host.startsWith('localhost:')) {
+          return new Response(JSON.stringify({ error: "Unauthorized origin" }), {
+            status: 403,
+            headers: { "Content-Type": "application/json" },
+          });
+        }
+      } catch {
+        return new Response(JSON.stringify({ error: "Invalid origin format" }), {
+          status: 403,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+    } else if (origin && !host) {
+      // If origin exists but no host header, block
       return new Response(JSON.stringify({ error: "Unauthorized origin" }), {
         status: 403,
         headers: { "Content-Type": "application/json" },
