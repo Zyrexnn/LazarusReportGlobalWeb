@@ -43,6 +43,14 @@ const MAX_FAIL_COUNT = 3; // Block after 3 consecutive failures
 const BLOCK_DURATION = 10 * 60 * 1000; // Block for 10 minutes
 const HEALTH_RESET_TIME = 30 * 60 * 1000; // Reset health after 30 minutes of no failures
 
+// Rate limit detection patterns
+const RATE_LIMIT_MESSAGES = [
+  'rate limit',
+  'too many requests',
+  'quota exceeded',
+  'limit exceeded',
+];
+
 const CATEGORY_KEYWORDS: Record<string, string> = {
   all: 'geopolitics OR military OR markets OR crypto',
   geopolitik: 'Iran OR Israel OR sanctions OR diplomacy OR NATO OR "Middle East"',
@@ -502,6 +510,7 @@ function getValidImage(imgUrl: string | undefined): string {
 
 async function fetchFromApi(selection: ApiSelection, category: string, lang: string): Promise<NewsArticle[]> {
   if (!selection.key || selection.key.startsWith('your_')) {
+    console.warn(`[API] ${selection.name} - Invalid or missing API key`);
     markApiFailure(selection.name);
     return [];
   }
@@ -512,8 +521,19 @@ async function fetchFromApi(selection: ApiSelection, category: string, lang: str
     
     // Check for rate limit or API errors
     if (!res.ok) {
-      if (res.status === 429 || res.status === 403 || res.status >= 500) {
-        console.warn(`[API] ${selection.name} returned ${res.status}, marking as failed`);
+      const errorText = await res.text().catch(() => '');
+      const isRateLimit = RATE_LIMIT_MESSAGES.some(msg => 
+        errorText.toLowerCase().includes(msg)
+      );
+      
+      if (res.status === 429 || isRateLimit) {
+        console.warn(`[API] ${selection.name} - Rate limit detected (${res.status})`);
+        markApiFailure(selection.name);
+      } else if (res.status === 403) {
+        console.warn(`[API] ${selection.name} - Access forbidden (${res.status})`);
+        markApiFailure(selection.name);
+      } else if (res.status >= 500) {
+        console.warn(`[API] ${selection.name} - Server error (${res.status})`);
         markApiFailure(selection.name);
       }
       return [];
