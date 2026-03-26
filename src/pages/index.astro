@@ -50,6 +50,26 @@ const t = getTranslation(lang);
           <!-- Flight Tracker -->
           <FlightTracker />
 
+          <!-- Conflict Intelligence Mini Card -->
+          <div class="bg-lazarus-dark border border-lazarus-border rounded-xl p-4 md:p-5 relative overflow-hidden group">
+            <div class="absolute -right-12 -bottom-12 w-32 h-32 bg-lazarus-gold/5 rounded-full blur-2xl group-hover:bg-lazarus-gold/10 transition-colors duration-500 pointer-events-none"></div>
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-lazarus-gold text-xs font-bold tracking-[0.2em] uppercase flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_5px_rgba(239,68,68,0.8)] animate-pulse"></span>
+                {t.nav.conflictTracker}
+              </h3>
+            </div>
+            <p class="text-lazarus-headline font-serif text-sm mb-4 leading-relaxed">
+              {lang === 'id' ? 'Pantau data real-time, gelombang serangan, dan intelijen taktis pada konflik multipolar menggunakan sumber OSINT.' : 'Track real-time data, waves, and tactical intelligence on the multipolar conflict operations using OSINT sources.'}
+            </p>
+            <a href="/conflict-tracker" class="inline-flex items-center gap-2 text-xs font-mono text-lazarus-gold hover:text-white transition-colors uppercase tracking-widest">
+              {lang === 'id' ? 'Buka Laporan Penuh' : 'Open Full Report'}
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </a>
+          </div>
+
           <!-- Crypto Ticker -->
           <CryptoTicker client:load lang={lang} />
 

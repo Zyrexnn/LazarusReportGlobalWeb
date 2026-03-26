@@ -7,6 +7,7 @@ export const translations = {
       liveTv: 'Live TV',
       shipTracker: 'Ship Tracker',
       flightTracker: 'Flight Tracker',
+      conflictTracker: 'Conflict Tracker',
       analysis: 'Analysis',
       about: 'About',
     },
@@ -124,6 +125,11 @@ export const translations = {
         title: 'Global Flight Intelligence',
         description: 'Real-time Strategic Air Traffic Monitoring',
         metaDescription: 'Track live global flight data, military transponders, and strategic air corridors.'
+      },
+      conflictTracker: {
+        title: 'Conflict Intelligence',
+        description: 'OSINT tracker for the Iran-US-Israel conflict operations and associated geopolitical data.',
+        metaDescription: 'Track real-time data, waves, and tactical intelligence on the Iran-Israel-US conflict using OSINT sources.'
       }
     },
     footer: {
@@ -162,6 +168,24 @@ export const translations = {
         '> Re-establishing handshake...',
         '> Packets decoded.'
       ]
+    },
+    conflictTrackerUI: {
+      title: 'CONFLICT INTELLIGENCE',
+      statusOnline: 'SYS.STATUS: ONLINE | DATA LINK: SECURE',
+      totalWaves: 'Total Waves',
+      totalFatalities: 'Reported Fatalities',
+      countriesTargeted: 'Countries Targeted',
+      daysActive: 'Days Active',
+      timeline: 'Operational Timeline',
+      latestIncidents: 'Latest Tactical Incidents',
+      wave: 'Wave',
+      date: 'Date',
+      weapons: 'Payload',
+      targets: 'Targets',
+      outcome: 'Outcome',
+      casualties: 'Casualties',
+      loading: 'Decrypting intel feed...',
+      source: 'Data Source:'
     },
     flightTrackerUI: {
       globalLiveTracking: 'Global Air Intelligence',
@@ -203,6 +227,7 @@ export const translations = {
       liveTv: 'Live TV',
       shipTracker: 'Pelacak Kapal',
       flightTracker: 'Pelacak Pesawat',
+      conflictTracker: 'Pelacak Konflik',
       analysis: 'Analisis',
       about: 'Tentang',
     },
@@ -320,6 +345,11 @@ export const translations = {
         title: 'Intelijen Penerbangan Global',
         description: 'Pemantauan Lalu Lintas Udara Strategis Real-time',
         metaDescription: 'Pantau data penerbangan global langsung, transponder militer, dan koridor udara strategis.'
+      },
+      conflictTracker: {
+        title: 'Intelijen Konflik',
+        description: 'Pelacak OSINT untuk operasi konflik Iran-AS-Israel dan data geopolitik terkait.',
+        metaDescription: 'Pantau data real-time, gelombang serangan, dan intelijen taktis pada konflik Iran-Israel-AS menggunakan sumber OSINT.'
       }
     },
     footer: {
@@ -358,6 +388,24 @@ export const translations = {
         '> Menjalin ulang sambungan...',
         '> Paket berhasil didekode.'
       ]
+    },
+    conflictTrackerUI: {
+      title: 'INTELIJEN KONFLIK',
+      statusOnline: 'SYS.STATUS: ONLINE | DATA LINK: AMAN',
+      totalWaves: 'Total Gelombang',
+      totalFatalities: 'Korban Jiwa Dilaporkan',
+      countriesTargeted: 'Negara Ditargetkan',
+      daysActive: 'Hari Aktif',
+      timeline: 'Linimasa Operasional',
+      latestIncidents: 'Insiden Taktis Terbaru',
+      wave: 'Gel.',
+      date: 'Tanggal',
+      weapons: 'Muatan',
+      targets: 'Target',
+      outcome: 'Hasil',
+      casualties: 'Korban',
+      loading: 'Mendekripsi feed intelijen...',
+      source: 'Sumber Data:'
     },
     flightTrackerUI: {
       globalLiveTracking: 'Intelijen Udara Global',

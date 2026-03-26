@@ -1,0 +1,436 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+import { getTranslation } from '../utils/i18n';
+
+const lang = Astro.cookies.get('lazarus_lang')?.value || 'en';
+const t = getTranslation(lang);
+
+const isID = lang === 'id';
+
+// Page labels (bilingual)
+const labels = {
+  pageTitle: isID ? 'Intelijen Konflik' : 'Conflict Intelligence',
+  pageDesc: isID
+    ? 'Dashboard OSINT — Peta serangan, peringatan roket, dan data gelombang konflik Iran-Israel-AS dari sumber terbuka terverifikasi.'
+    : 'OSINT Dashboard — Strike maps, rocket alerts, and Iran-Israel-US conflict wave data from verified open sources.',
+  live: 'LIVE',
+  verified: 'VERIFIED',
+  osintFeed: 'OSINT FEED',
+  updating: isID ? 'MEMPERBARUI' : 'UPDATING',
+
+  // Section titles
+  strikeMap: isID ? 'Peta Serangan Iran — Real-Time' : 'Iran Strike Map — Real-Time',
+  strikeMapDesc: isID
+    ? '115+ lokasi serangan terverifikasi. Peluru kendali, drone, nuklir, dan sasaran pemerintah. Diperbarui setiap 30 mnt.'
+    : '115+ verified strike locations. Missiles, drones, nuclear, and government targets. Updated every 30 min.',
+  rocketAlert: isID ? 'Peringatan Roket Israel — Live' : 'Israel Rocket Alerts — Live',
+  rocketAlertDesc: isID
+    ? 'Peringatan real-time serangan udara dan roket di wilayah Israel.'
+    : 'Real-time rocket and aerial threat alerts across Israeli territory.',
+  storyMap: isID ? 'Peta Taktis & Analisis StoryMap' : 'Tactical Map & StoryMap Analysis',
+  storyMapDesc: isID
+    ? 'Visualisasi ArcGIS mendalam — kronologi, lokasi sasaran, dan konteks geopolitik.'
+    : 'Deep ArcGIS visualization — timeline, target locations, and geopolitical context.',
+  intelDash: isID ? 'Dashboard Intelijen ArcGIS' : 'ArcGIS Intelligence Dashboard',
+  intelDashDesc: isID
+    ? 'Dashboard interaktif dengan data serangan, korban, dan peralatan militer.'
+    : 'Interactive dashboard with strike data, casualties, and military hardware.',
+  osintData: isID ? 'Data OSINT — Ringkasan Gelombang' : 'OSINT Data — Wave Summary',
+  osintDataDesc: isID
+    ? 'Data terstruktur dari dataset GitHub danielrosehill/Iran-Israel-War-2026-OSINT-Data.'
+    : 'Structured data from the danielrosehill/Iran-Israel-War-2026-OSINT-Data GitHub dataset.',
+
+  // Stats
+  totalWaves: isID ? 'Total Gelombang' : 'Total Waves',
+  fatalities: isID ? 'Korban Jiwa' : 'Reported Fatalities',
+  countriesHit: isID ? 'Negara Terdampak' : 'Countries Targeted',
+  daysActive: isID ? 'Hari Aktif' : 'Days Active',
+  timeline: isID ? 'Linimasa Operasi' : 'Operational Timeline',
+  latestWaves: isID ? 'Gelombang Terbaru' : 'Latest Tactical Waves',
+  wave: isID ? 'Gel.' : 'Wave',
+  date: isID ? 'Tanggal' : 'Date',
+  payload: isID ? 'Muatan' : 'Payload',
+  targets: isID ? 'Sasaran' : 'Targets',
+  outcome: isID ? 'Hasil' : 'Outcome',
+  loading: isID ? 'Mengambil data intelijen...' : 'Fetching intelligence data...',
+  error: isID ? 'Gagal memuat data konflik.' : 'Failed to load conflict data.',
+  dataSource: isID ? 'Sumber Data:' : 'Data Source:',
+
+  // Sources section
+  sourcesTitle: isID ? 'Sumber Data & Kredit' : 'Data Sources & Credits',
+  notice: isID ? 'Pemberitahuan' : 'Notice',
+  noticeText: isID
+    ? 'Data yang ditampilkan merupakan Open Source Intelligence (OSINT) dari sumber publik terverifikasi. Lazarus Report Global bertindak sebagai agregator dan platform visualisasi. Detail, linimasa, dan spesifikasi merupakan perkiraan yang dipengaruhi oleh ketidakpastian medan perang.'
+    : 'The intelligence data presented represents Open Source Intelligence (OSINT) from verified public sources. Lazarus Report Global serves as an aggregator and visualization platform. Details, timelines, and specifications are estimates subject to the fog of war.',
+};
+---
+
+<BaseLayout
+  title={`${labels.pageTitle} - Lazarus Report Global`}
+  description={t.pages.conflictTracker.metaDescription}
+>
+  <Header />
+
+  <main class="min-h-screen bg-lazarus-black text-lazarus-muted font-sans pt-20 pb-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4">
+      
+      <!-- Page Hero -->
+      <div class="mb-10">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="w-2.5 h-2.5 rounded-full bg-red-600 shadow-[0_0_12px_rgba(220,38,38,0.8)] animate-pulse"></span>
+          <span class="text-red-500 text-[10px] font-mono tracking-[0.3em] uppercase">ACTIVE CONFLICT ZONE</span>
+        </div>
+        <h1 class="text-3xl md:text-5xl font-serif text-lazarus-headline uppercase tracking-wide flex items-center gap-4">
+          <div class="w-1.5 h-10 bg-gradient-to-b from-lazarus-gold to-red-600 rounded"></div>
+          {labels.pageTitle}
+        </h1>
+        <p class="text-lazarus-gold/60 font-mono text-xs md:text-sm mt-3 ml-6 max-w-3xl leading-relaxed">
+          {labels.pageDesc}
+        </p>
+      </div>
+
+      <div class="w-full h-px bg-gradient-to-r from-lazarus-gold/40 via-lazarus-border to-transparent mb-10 max-w-3xl"></div>
+
+      <!-- ═══════════════════════════════════════════════════ -->
+      <!-- SECTION 1: IRAN STRIKE MAP (Full Width, Primary) -->
+      <!-- ═══════════════════════════════════════════════════ -->
+      <section class="mb-10">
+        <div class="w-full bg-lazarus-dark border border-lazarus-border rounded-xl overflow-hidden shadow-2xl relative group">
+          <div class="absolute inset-0 border border-red-600/10 rounded-xl pointer-events-none group-hover:border-red-600/30 transition-[border-color] duration-500 z-10"></div>
+          <div class="bg-lazarus-black/90 px-4 py-3 border-b border-lazarus-border/50 flex flex-col sm:flex-row sm:items-center justify-between gap-2 z-20 relative">
+            <div class="flex items-center gap-3">
+              <span class="w-2 h-2 rounded-full bg-red-600 shadow-[0_0_8px_rgba(220,38,38,0.8)] animate-pulse"></span>
+              <h2 class="text-lazarus-gold text-xs font-bold tracking-[0.2em] uppercase">{labels.strikeMap}</h2>
+            </div>
+            <div class="flex items-center gap-4">
+              <span class="text-[10px] font-mono text-red-400 uppercase tracking-widest flex items-center gap-1.5">
+                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                {labels.live}
+              </span>
+              <a href="https://iranstrikemap.com/" target="_blank" rel="noopener" class="text-[9px] font-mono text-lazarus-muted/50 hover:text-lazarus-gold transition-colors uppercase tracking-wider">
+                iranstrikemap.com ↗
+              </a>
+            </div>
+          </div>
+          <p class="px-4 py-2 text-[10px] font-mono text-lazarus-muted/50 bg-lazarus-black/60 border-b border-lazarus-border/30">
+            {labels.strikeMapDesc}
+          </p>
+          <iframe 
+            src="https://iranstrikemap.com/" 
+            class="w-full h-[500px] md:h-[700px] lg:h-[800px] border-0 bg-lazarus-black relative z-20" 
+            allowfullscreen
+            title="Iran Strike Map - Real-Time"
+            loading="lazy"
+          ></iframe>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════ -->
+      <!-- SECTION 2: TWO COLUMNS — Rocket Alerts + OSINT Stats -->
+      <!-- ═══════════════════════════════════════════════════ -->
+      <section class="mb-10 grid grid-cols-1 lg:grid-cols-5 gap-6">
+        <!-- LEFT: Rocket Alerts (3 cols) -->
+        <div class="lg:col-span-3 bg-lazarus-dark border border-lazarus-border rounded-xl overflow-hidden shadow-2xl relative group">
+          <div class="absolute inset-0 border border-orange-500/10 rounded-xl pointer-events-none group-hover:border-orange-500/30 transition-[border-color] duration-500 z-10"></div>
+          <div class="bg-lazarus-black/90 px-4 py-3 border-b border-lazarus-border/50 flex flex-col sm:flex-row sm:items-center justify-between gap-2 z-20 relative">
+            <div class="flex items-center gap-3">
+              <span class="w-2 h-2 rounded-full bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.8)] animate-pulse"></span>
+              <h2 class="text-lazarus-gold text-xs font-bold tracking-[0.2em] uppercase">{labels.rocketAlert}</h2>
+            </div>
+            <div class="flex items-center gap-4">
+              <span class="text-[10px] font-mono text-orange-400 uppercase tracking-widest flex items-center gap-1.5">
+                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                {labels.live}
+              </span>
+              <a href="https://rocketalert.live/" target="_blank" rel="noopener" class="text-[9px] font-mono text-lazarus-muted/50 hover:text-lazarus-gold transition-colors uppercase tracking-wider">
+                rocketalert.live ↗
+              </a>
+            </div>
+          </div>
+          <p class="px-4 py-2 text-[10px] font-mono text-lazarus-muted/50 bg-lazarus-black/60 border-b border-lazarus-border/30">
+            {labels.rocketAlertDesc}
+          </p>
+          <iframe 
+            src="https://rocketalert.live/" 
+            class="w-full h-[450px] md:h-[550px] border-0 bg-lazarus-black relative z-20" 
+            allowfullscreen
+            title="Rocket Alert Live"
+            loading="lazy"
+          ></iframe>
+        </div>
+
+        <!-- RIGHT: OSINT Quick Stats (2 cols) -->
+        <div class="lg:col-span-2 flex flex-col gap-4" id="osint-stats-panel">
+          <!-- Stats Cards - populated by JS -->
+          <div class="grid grid-cols-2 gap-3" id="stats-grid">
+            <div class="stat-card p-4 rounded-xl border border-lazarus-border bg-lazarus-dark relative overflow-hidden group hover:border-lazarus-gold/50 transition-colors">
+              <h3 class="text-lazarus-muted text-[9px] uppercase tracking-widest font-mono mb-1.5">{labels.totalWaves}</h3>
+              <span class="text-2xl md:text-3xl font-serif font-bold text-lazarus-headline" id="stat-waves">—</span>
+              <div class="absolute -right-4 -bottom-4 w-16 h-16 bg-lazarus-gold/5 rounded-full blur-xl group-hover:scale-150 transition-transform duration-700"></div>
+            </div>
+            <div class="stat-card p-4 rounded-xl border border-red-900/50 bg-red-950/10 relative overflow-hidden group hover:border-red-500/50 transition-colors">
+              <h3 class="text-lazarus-muted text-[9px] uppercase tracking-widest font-mono mb-1.5">{labels.fatalities}</h3>
+              <span class="text-2xl md:text-3xl font-serif font-bold text-red-500" id="stat-fatalities">—</span>
+              <div class="absolute -right-4 -bottom-4 w-16 h-16 bg-red-900/10 rounded-full blur-xl group-hover:scale-150 transition-transform duration-700"></div>
+            </div>
+            <div class="stat-card p-4 rounded-xl border border-lazarus-border bg-lazarus-dark relative overflow-hidden group hover:border-lazarus-gold/50 transition-colors">
+              <h3 class="text-lazarus-muted text-[9px] uppercase tracking-widest font-mono mb-1.5">{labels.countriesHit}</h3>
+              <span class="text-2xl md:text-3xl font-serif font-bold text-lazarus-headline" id="stat-countries">—</span>
+              <div class="absolute -right-4 -bottom-4 w-16 h-16 bg-lazarus-gold/5 rounded-full blur-xl group-hover:scale-150 transition-transform duration-700"></div>
+            </div>
+            <div class="stat-card p-4 rounded-xl border border-lazarus-border bg-lazarus-dark relative overflow-hidden group hover:border-lazarus-gold/50 transition-colors">
+              <h3 class="text-lazarus-muted text-[9px] uppercase tracking-widest font-mono mb-1.5">{labels.daysActive}</h3>
+              <span class="text-2xl md:text-3xl font-serif font-bold text-lazarus-headline" id="stat-days">—</span>
+              <div class="absolute -right-4 -bottom-4 w-16 h-16 bg-lazarus-gold/5 rounded-full blur-xl group-hover:scale-150 transition-transform duration-700"></div>
+            </div>
+          </div>
+
+          <!-- Timeline (populated by JS) -->
+          <div class="flex-1 bg-lazarus-dark border border-lazarus-border rounded-xl p-4 md:p-5 overflow-y-auto max-h-[350px] custom-scrollbar">
+            <h2 class="text-lazarus-gold text-[10px] font-bold tracking-[0.2em] uppercase mb-4 flex items-center gap-2">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              {labels.timeline}
+            </h2>
+            <div id="timeline-container" class="relative border-l border-lazarus-border ml-2 space-y-5 pb-2">
+              <p class="pl-5 text-lazarus-muted/50 text-xs font-mono animate-pulse">{labels.loading}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════ -->
+      <!-- SECTION 3: ArcGIS Maps (Two Columns on Desktop) -->
+      <!-- ═══════════════════════════════════════════════════ -->
+      <section class="mb-10 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- ArcGIS StoryMap -->
+        <div class="bg-lazarus-dark border border-lazarus-border rounded-xl overflow-hidden shadow-2xl relative group">
+          <div class="absolute inset-0 border border-lazarus-gold/10 rounded-xl pointer-events-none group-hover:border-lazarus-gold/40 transition-[border-color] duration-500 z-10"></div>
+          <div class="bg-lazarus-black/90 px-4 py-3 border-b border-lazarus-border/50 flex items-center justify-between z-20 relative">
+            <div class="flex items-center gap-3">
+              <span class="w-2 h-2 rounded-full bg-lazarus-gold shadow-[0_0_6px_rgba(212,175,55,0.6)] animate-pulse"></span>
+              <h2 class="text-lazarus-gold text-[10px] font-bold tracking-[0.2em] uppercase">{labels.storyMap}</h2>
+            </div>
+            <span class="text-[9px] font-mono text-lazarus-muted/40 uppercase tracking-widest">{labels.verified}</span>
+          </div>
+          <p class="px-4 py-1.5 text-[9px] font-mono text-lazarus-muted/40 bg-lazarus-black/60 border-b border-lazarus-border/20">
+            {labels.storyMapDesc}
+          </p>
+          <iframe 
+            src="https://storymaps.arcgis.com/stories/089bc1a2fe684405a67d67f13bd31324" 
+            class="w-full h-[500px] md:h-[600px] border-0 bg-lazarus-black relative z-20" 
+            allowfullscreen 
+            allow="geolocation"
+            title="ArcGIS StoryMap"
+            loading="lazy"
+          ></iframe>
+        </div>
+
+        <!-- ArcGIS Dashboard -->
+        <div class="bg-lazarus-dark border border-lazarus-border rounded-xl overflow-hidden shadow-2xl relative group">
+          <div class="absolute inset-0 border border-lazarus-gold/10 rounded-xl pointer-events-none group-hover:border-lazarus-gold/40 transition-[border-color] duration-500 z-10"></div>
+          <div class="bg-lazarus-black/90 px-4 py-3 border-b border-lazarus-border/50 flex items-center justify-between z-20 relative">
+            <div class="flex items-center gap-3">
+              <span class="w-2 h-2 rounded-full bg-lazarus-gold shadow-[0_0_6px_rgba(212,175,55,0.6)] animate-pulse"></span>
+              <h2 class="text-lazarus-gold text-[10px] font-bold tracking-[0.2em] uppercase">{labels.intelDash}</h2>
+            </div>
+            <span class="text-[9px] font-mono text-lazarus-muted/40 uppercase tracking-widest">{labels.verified}</span>
+          </div>
+          <p class="px-4 py-1.5 text-[9px] font-mono text-lazarus-muted/40 bg-lazarus-black/60 border-b border-lazarus-border/20">
+            {labels.intelDashDesc}
+          </p>
+          <iframe 
+            src="https://arcg.is/1SHTKa1" 
+            class="w-full h-[500px] md:h-[600px] border-0 bg-lazarus-black relative z-20" 
+            allowfullscreen
+            title="ArcGIS Intelligence Dashboard"
+            loading="lazy"
+          ></iframe>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════ -->
+      <!-- SECTION 4: OSINT Data Table (Full Width) -->
+      <!-- ═══════════════════════════════════════════════════ -->
+      <section class="mb-10">
+        <div class="w-full bg-lazarus-dark border border-lazarus-border rounded-xl overflow-hidden shadow-2xl">
+          <div class="bg-lazarus-black/90 px-4 py-3 border-b border-lazarus-border/50 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div class="flex items-center gap-3">
+              <span class="w-2 h-2 rounded-full bg-cyan-500 shadow-[0_0_6px_rgba(6,182,212,0.6)] animate-pulse"></span>
+              <h2 class="text-lazarus-gold text-xs font-bold tracking-[0.2em] uppercase">{labels.latestWaves}</h2>
+            </div>
+            <span class="text-[10px] font-mono text-cyan-400/60 uppercase tracking-widest flex items-center gap-1.5">
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" /></svg>
+              {labels.osintFeed}
+            </span>
+          </div>
+          <p class="px-4 py-2 text-[10px] font-mono text-lazarus-muted/50 bg-lazarus-black/60 border-b border-lazarus-border/30">
+            {labels.osintDataDesc}
+          </p>
+
+          <div class="overflow-x-auto p-4" id="incidents-table-container">
+            <p class="text-lazarus-muted/50 text-xs font-mono animate-pulse text-center py-8">{labels.loading}</p>
+          </div>
+
+          <div class="px-4 py-3 border-t border-lazarus-border/50 flex flex-wrap items-center justify-between gap-2">
+            <span class="text-[9px] font-mono text-lazarus-muted/40 uppercase tracking-widest">
+              {labels.dataSource}
+              <a href="https://github.com/danielrosehill/Iran-Israel-War-2026-OSINT-Data" target="_blank" rel="noopener" class="text-lazarus-gold/60 hover:text-lazarus-gold transition-colors ml-1">
+                danielrosehill/Iran-Israel-War-2026-OSINT-Data ↗
+              </a>
+            </span>
+            <span class="text-[9px] font-mono text-lazarus-muted/30" id="last-update-label">—</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════ -->
+      <!-- SECTION 5: Sources & Credits -->
+      <!-- ═══════════════════════════════════════════════════ -->
+      <section class="mb-10">
+        <div class="bg-lazarus-dark/60 border border-lazarus-border/40 rounded-xl p-5 md:p-6">
+          <h3 class="text-lazarus-gold text-xs font-bold tracking-[0.2em] uppercase mb-4 flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+            {labels.sourcesTitle}
+          </h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <a href="https://iranstrikemap.com/" target="_blank" rel="noopener"
+              class="block p-3 bg-lazarus-black/50 border border-lazarus-border/30 rounded-lg hover:border-lazarus-gold/50 transition-colors group">
+              <span class="block text-lazarus-headline text-xs font-semibold group-hover:text-lazarus-gold transition-colors">Iran Strike Map</span>
+              <span class="block text-lazarus-muted/50 text-[9px] font-mono mt-0.5">Live interactive strike map</span>
+            </a>
+            <a href="https://rocketalert.live/" target="_blank" rel="noopener"
+              class="block p-3 bg-lazarus-black/50 border border-lazarus-border/30 rounded-lg hover:border-lazarus-gold/50 transition-colors group">
+              <span class="block text-lazarus-headline text-xs font-semibold group-hover:text-lazarus-gold transition-colors">Rocket Alert Live</span>
+              <span class="block text-lazarus-muted/50 text-[9px] font-mono mt-0.5">Real-time rocket alerts Israel</span>
+            </a>
+            <a href="https://github.com/danielrosehill/Iran-Israel-War-2026-OSINT-Data" target="_blank" rel="noopener"
+              class="block p-3 bg-lazarus-black/50 border border-lazarus-border/30 rounded-lg hover:border-lazarus-gold/50 transition-colors group">
+              <span class="block text-lazarus-headline text-xs font-semibold group-hover:text-lazarus-gold transition-colors">OSINT Dataset (GitHub)</span>
+              <span class="block text-lazarus-muted/50 text-[9px] font-mono mt-0.5">Iran-Israel War 2026 data</span>
+            </a>
+            <a href="https://promisedenied.com/" target="_blank" rel="noopener"
+              class="block p-3 bg-lazarus-black/50 border border-lazarus-border/30 rounded-lg hover:border-lazarus-gold/50 transition-colors group">
+              <span class="block text-lazarus-headline text-xs font-semibold group-hover:text-lazarus-gold transition-colors">Promise Denied</span>
+              <span class="block text-lazarus-muted/50 text-[9px] font-mono mt-0.5">Interactive OSINT dashboard</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Data Notice -->
+      <div class="bg-lazarus-dark/30 border border-lazarus-border/30 rounded-lg p-5">
+        <h3 class="text-lazarus-gold text-xs font-bold tracking-[0.2em] uppercase mb-2">{labels.notice}</h3>
+        <p class="text-lazarus-muted/60 text-xs leading-relaxed max-w-4xl">
+          {labels.noticeText}
+        </p>
+      </div>
+
+    </div>
+  </main>
+
+  <Footer />
+</BaseLayout>
+
+<script is:inline>
+  // Fetch OSINT data from our API
+  (async function loadConflictData() {
+    try {
+      const res = await fetch('/api/conflict-data');
+      if (!res.ok) throw new Error('API error');
+      const data = await res.json();
+
+      // Populate stats
+      const setEl = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = val;
+      };
+      setEl('stat-waves', (data.stats?.totalWaves || 0).toLocaleString());
+      setEl('stat-fatalities', (data.stats?.totalFatalities || 0).toLocaleString());
+      setEl('stat-countries', (data.stats?.targetedCountriesCount || 0).toLocaleString());
+      setEl('stat-days', (data.stats?.conflictDays || 0).toLocaleString() + '+');
+
+      // Populate timeline
+      const timelineEl = document.getElementById('timeline-container');
+      if (timelineEl && data.timeline) {
+        timelineEl.innerHTML = data.timeline.map(ev => `
+          <div class="relative pl-5">
+            <div class="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-lazarus-gold shadow-[0_0_5px_rgba(212,175,55,0.5)]"></div>
+            <h3 class="text-lazarus-headline font-semibold text-xs mb-0.5">${ev.phase}</h3>
+            <span class="block text-lazarus-gold/60 text-[9px] font-mono tracking-wider mb-1.5">${ev.dateRange}</span>
+            <p class="text-lazarus-muted text-[10px] leading-relaxed mb-1.5">${ev.description}</p>
+            <div class="flex gap-3">
+              <span class="text-lazarus-muted/60 text-[9px] font-mono">INC: <strong class="text-lazarus-headline">${ev.incidents}</strong></span>
+              <span class="text-lazarus-muted/60 text-[9px] font-mono">KIA: <strong class="text-red-400/80">${ev.fatalities}</strong></span>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Populate incidents table
+      const tableEl = document.getElementById('incidents-table-container');
+      if (tableEl && data.latestIncidents && data.latestIncidents.length > 0) {
+        const rows = data.latestIncidents.map(inc => {
+          const d = inc.date ? new Date(inc.date) : null;
+          const dateStr = d ? d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—';
+          const statusClass = (inc.interceptStatus || '').includes('Intercept')
+            ? 'bg-green-900/30 text-green-400'
+            : 'bg-red-900/30 text-red-400';
+          return `
+            <tr class="hover:bg-lazarus-black/50 transition-colors border-b border-lazarus-border/20">
+              <td class="py-2.5 px-3 text-xs font-mono text-lazarus-gold/80">${inc.wave || '—'}</td>
+              <td class="py-2.5 px-3 text-xs text-lazarus-muted whitespace-nowrap">${dateStr}</td>
+              <td class="py-2.5 px-3 text-xs text-lazarus-headline truncate max-w-[180px]" title="${inc.weapons || ''}">${inc.weapons || '—'}</td>
+              <td class="py-2.5 px-3 text-xs text-lazarus-muted truncate max-w-[200px]" title="${inc.targets || ''}">${inc.targets || '—'}</td>
+              <td class="py-2.5 px-3 text-xs">
+                <span class="inline-block px-2 py-0.5 rounded text-[9px] font-mono uppercase ${statusClass}">${inc.interceptStatus || '—'}</span>
+              </td>
+            </tr>`;
+        }).join('');
+
+        tableEl.innerHTML = `
+          <table class="w-full text-left border-collapse min-w-[600px]">
+            <thead>
+              <tr class="border-b border-lazarus-border/50">
+                <th class="py-2.5 px-3 text-[9px] font-bold text-lazarus-muted uppercase tracking-wider">Wave</th>
+                <th class="py-2.5 px-3 text-[9px] font-bold text-lazarus-muted uppercase tracking-wider">Date</th>
+                <th class="py-2.5 px-3 text-[9px] font-bold text-lazarus-muted uppercase tracking-wider">Payload</th>
+                <th class="py-2.5 px-3 text-[9px] font-bold text-lazarus-muted uppercase tracking-wider">Targets</th>
+                <th class="py-2.5 px-3 text-[9px] font-bold text-lazarus-muted uppercase tracking-wider">Outcome</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>`;
+      }
+
+      // Update label
+      setEl('last-update-label', 'Last updated: ' + new Date(data.lastUpdate).toLocaleString());
+
+    } catch (e) {
+      console.error('Conflict data error:', e);
+      const tableEl = document.getElementById('incidents-table-container');
+      if (tableEl) tableEl.innerHTML = '<p class="text-red-400 text-xs font-mono text-center py-8">Failed to load conflict data. Retrying...</p>';
+    }
+  })();
+</script>
+
+<style>
+  /* Custom scrollbar for timeline */
+  .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.3); border-radius: 2px; }
+
+  /* Subtle fade-in for sections */
+  section {
+    animation: fade-in 0.6s ease-out forwards;
+  }
+
+  /* Staggered animation */
+  section:nth-child(2) { animation-delay: 0.1s; }
+  section:nth-child(3) { animation-delay: 0.2s; }
+  section:nth-child(4) { animation-delay: 0.3s; }
+  section:nth-child(5) { animation-delay: 0.4s; }
+</style>
