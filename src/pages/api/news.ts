@@ -106,29 +106,20 @@ function normalizeUrl(url: string | undefined): string {
     .split('?')[0]; // Remove query params
 }
 
-// Pure JS Levenshtein Distance
-function levenshtein(a: string, b: string): number {
-  const tmp = [];
-  for (let i = 0; i <= a.length; i++) tmp[i] = [i];
-  for (let j = 0; j <= b.length; j++) tmp[0][j] = j;
-  for (let i = 1; i <= a.length; i++) {
-    for (let j = 1; j <= b.length; j++) {
-      tmp[i][j] = Math.min(
-        tmp[i - 1][j] + 1,
-        tmp[i][j - 1] + 1,
-        tmp[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)
-      );
-    }
-  }
-  return tmp[a.length][b.length];
-}
-
+// Simple Word Overlap Similarity (Jaccard Index-like)
 function calculateSimilarity(a: string, b: string): number {
   if (a === b) return 1.0;
-  const longer = a.length > b.length ? a : b;
-  const shorter = a.length > b.length ? b : a;
-  if (longer.length === 0) return 1.0;
-  return (longer.length - levenshtein(longer, shorter)) / longer.length;
+  const wordsA = new Set(a.split(' '));
+  const wordsB = new Set(b.split(' '));
+  if (wordsA.size === 0 || wordsB.size === 0) return 0;
+  
+  let intersection = 0;
+  for (const w of wordsA) {
+    if (wordsB.has(w)) intersection++;
+  }
+  
+  // Return the Dice coefficient
+  return (2.0 * intersection) / (wordsA.size + wordsB.size);
 }
 
 // Source priority weight (Lower is better/higher)
@@ -165,7 +156,7 @@ function deduplicateArticles(articles: NewsArticle[]): NewsArticle[] {
     else {
       for (const [key, existing] of uniqueArticles.entries()) {
         const existingNormTitle = normalizeString(existing.title);
-        if (calculateSimilarity(normTitle, existingNormTitle) > 0.8) {
+        if (calculateSimilarity(normTitle, existingNormTitle) > 0.45) {
           isDuplicate = true;
           duplicateKey = key;
           break;
@@ -254,7 +245,8 @@ function getRotatedProviders(category: string): ApiName[] {
 function getApiToUse(category: string, query: string, lang: string, provider?: ApiName): ApiSelection {
   const providerName = provider || getRotatedProviders(category)[0];
   const searchQuery = getSearchKeyword(category, query);
-  const normalizedLang = lang === 'id' ? 'id' : 'en';
+  // Force language to English for API calls to prevent local non-global media (like local Indonesian news) from polluting the global feed.
+  const apiLanguage = 'en';
 
   switch (providerName) {
     case 'NewsData':
@@ -264,9 +256,9 @@ function getApiToUse(category: string, query: string, lang: string, provider?: A
         key: import.meta.env.NEWSDATA_API_KEY || '',
         params: {
           q: searchQuery,
-          language: normalizedLang,
-          size: 15, // Slightly more to help dedup
-          removeduplicate: 1, // API-side deduplication
+          language: apiLanguage,
+          size: 15,
+          removeduplicate: 1,
         },
       };
     case 'WorldNews':
@@ -276,7 +268,7 @@ function getApiToUse(category: string, query: string, lang: string, provider?: A
         key: import.meta.env.WORLDNEWS_API_KEY || '',
         params: {
           text: searchQuery,
-          language: normalizedLang,
+          language: apiLanguage,
           number: 15,
           sort: 'publish-time',
           'sort-direction': 'DESC',
@@ -299,7 +291,7 @@ function getApiToUse(category: string, query: string, lang: string, provider?: A
         key: import.meta.env.GNEWS_API_KEY || '',
         params: {
           q: searchQuery,
-          lang: normalizedLang,
+          lang: apiLanguage,
           max: 15,
           category: GNEWS_CATEGORY_MAP[category] || 'world',
         },
@@ -348,6 +340,22 @@ function isWithin3Days(dateStr: string | number | undefined) {
   const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
   return Date.now() - articleTime <= THREE_DAYS_MS;
 }
+
+const FALLBACK_IMAGES = [
+  'https://images.unsplash.com/photo-1616423640778-28d1b53229bd?w=600&h=340&fit=crop', // Map/tactical
+  'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=600&h=340&fit=crop', // Political
+  'https://images.unsplash.com/photo-1627856013091-fed6e4e30025?w=600&h=340&fit=crop', // Finance/market
+];
+
+function getValidImage(imgUrl: string | undefined): string {
+  if (!imgUrl) return FALLBACK_IMAGES[Math.floor(Math.random() * FALLBACK_IMAGES.length)];
+  // Filter out ugly Reuters placeholders from APIs
+  if (imgUrl.toLowerCase().includes('logo') || imgUrl.toLowerCase().includes('favicon') || imgUrl.includes('reuters.com/resizer')) {
+    return FALLBACK_IMAGES[Math.floor(Math.random() * FALLBACK_IMAGES.length)];
+  }
+  return imgUrl;
+}
+
 async function fetchFromApi(selection: ApiSelection, category: string, lang: string): Promise<NewsArticle[]> {
   if (!selection.key || selection.key.startsWith('your_')) return [];
 
@@ -367,7 +375,7 @@ async function fetchFromApi(selection: ApiSelection, category: string, lang: str
           title: item.title || 'Untitled',
           category: categoryLabel,
           excerpt: item.description || item.content || '',
-          image: item.image_url || undefined,
+          image: getValidImage(item.image_url),
           date: formatArticleDate(item.pubDate, lang),
           source: sourceName,
           publisher: item.source_id || 'NewsData',
@@ -383,7 +391,7 @@ async function fetchFromApi(selection: ApiSelection, category: string, lang: str
           title: item.title || 'Untitled',
           category: categoryLabel,
           excerpt: item.text?.substring(0, 220) || item.summary || '',
-          image: item.image || undefined,
+          image: getValidImage(item.image),
           date: formatArticleDate(item.publish_date, lang),
           source: sourceName,
           publisher: 'WorldNews',
@@ -400,7 +408,7 @@ async function fetchFromApi(selection: ApiSelection, category: string, lang: str
           title: item.headline || 'Untitled',
           category: category === 'crypto' ? 'Crypto' : getCategoryLabel(category),
           excerpt: item.summary || '',
-          image: item.image || undefined,
+          image: getValidImage(item.image),
           date: formatArticleDate(item.datetime, lang),
           source: sourceName,
           publisher: item.source || 'Finnhub',
@@ -416,7 +424,7 @@ async function fetchFromApi(selection: ApiSelection, category: string, lang: str
           title: item.title || 'Untitled',
           category: categoryLabel,
           excerpt: item.description || item.content || '',
-          image: item.image || undefined,
+          image: getValidImage(item.image),
           date: formatArticleDate(item.publishedAt, lang),
           source: sourceName,
           publisher: item.source?.name || 'GNews',
@@ -519,4 +527,3 @@ export const GET: APIRoute = async ({ url }) => {
   }
 };
 
-export { getApiToUse, rotateApi };
