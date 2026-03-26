@@ -8,7 +8,7 @@ export interface Props {
 const {
   title = 'Lazarus Report Global — Independent Geopolitical Analysis',
   description = 'Independent Geopolitical Analysis & Global Security. Uncovering the buried truths behind global power shifts.',
-  ogImage = '/og-image.png',
+  ogImage = '/logolazarusreport.png',
 } = Astro.props;
 ---
 
@@ -31,6 +31,7 @@ const {
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content={title} />
   <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={ogImage} />
 
   <title>{title}</title>
 
