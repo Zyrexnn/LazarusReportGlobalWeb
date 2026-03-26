@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { getTranslation } from '../utils/i18n';
+import { subscribeToBinance } from '../utils/binanceWS';
 
 interface CryptoData {
   symbol: string;
@@ -61,50 +62,24 @@ export default function CryptoTicker({ lang = 'en' }: { lang?: string }) {
   const t = useMemo(() => getTranslation(lang), [lang]);
 
   useEffect(() => {
-    // Try to connect to Binance WebSocket for live data
-    let ws: WebSocket | null = null;
-
-    try {
-      const streams = ['btcusdt@ticker', 'ethusdt@ticker'].join('/');
-      ws = new WebSocket(`wss://stream.binance.com:9443/stream?streams=${streams}`);
-
-      ws.onmessage = (event) => {
-        try {
-          const msg = JSON.parse(event.data);
-          if (msg.data) {
-            const { s, c, P } = msg.data;
-            setCryptoData((prev) =>
-              prev.map((item) => {
-                if (s === 'BTCUSDT' && item.symbol === 'BTC') {
-                  const price = parseFloat(c);
-                  return {
-                    ...item,
-                    price: price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-                    change: parseFloat(P),
-                    sparkline: [...item.sparkline.slice(1), price],
-                  };
-                }
-                if (s === 'ETHUSDT' && item.symbol === 'ETH') {
-                  const price = parseFloat(c);
-                  return {
-                    ...item,
-                    price: price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-                    change: parseFloat(P),
-                    sparkline: [...item.sparkline.slice(1), price],
-                  };
-                }
-                return item;
-              })
-            );
+    const unsubscribe = subscribeToBinance(({ symbol, price, change }) => {
+      setCryptoData((prev) =>
+        prev.map((item) => {
+          if (item.symbol === symbol) {
+            return {
+              ...item,
+              price: price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+              change: change,
+              sparkline: [...item.sparkline.slice(1), price],
+            };
           }
-        } catch { /* ignore parse errors */ }
-      };
-
-      ws.onerror = () => { /* fallback to static data */ };
-    } catch { /* WebSocket not available, use static data */ }
+          return item;
+        })
+      );
+    });
 
     return () => {
-      ws?.close();
+      unsubscribe();
     };
   }, []);
 

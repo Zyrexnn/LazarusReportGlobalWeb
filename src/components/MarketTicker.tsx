@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { subscribeToBinance } from '../utils/binanceWS';
 
 interface TickerData {
   symbol: string;
@@ -18,29 +19,16 @@ export default function MarketTicker() {
   const [data, setData] = useState(INITIAL_DATA);
 
   useEffect(() => {
-    // 1. Live Crypto via Binance WebSocket
-    let ws: WebSocket | null = null;
-    try {
-      const streams = ['btcusdt@ticker', 'ethusdt@ticker'].join('/');
-      ws = new WebSocket(`wss://stream.binance.com:9443/stream?streams=${streams}`);
-
-      ws.onmessage = (event) => {
-        try {
-          const msg = JSON.parse(event.data);
-          if (msg.data) {
-            const { s, c, P } = msg.data;
-            const price = parseFloat(c).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            const isPos = parseFloat(P) >= 0;
-            
-            if (s === 'BTCUSDT') {
-              setData(prev => ({ ...prev, BTC: { symbol: 'BTC', price, isPositive: isPos } }));
-            } else if (s === 'ETHUSDT') {
-              setData(prev => ({ ...prev, ETH: { symbol: 'ETH', price, isPositive: isPos } }));
-            }
-          }
-        } catch {}
-      };
-    } catch {}
+    const unsubscribeCrypto = subscribeToBinance(({ symbol, price, change }) => {
+      setData(prev => ({
+        ...prev,
+        [symbol]: {
+          ...prev[symbol],
+          price: price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+          isPositive: change >= 0
+        }
+      }));
+    });
 
     // 2. Simulated Jitter for Commodities/Indices (to avoid API limits while looking professional)
     const interval = setInterval(() => {
@@ -61,7 +49,7 @@ export default function MarketTicker() {
     }, 2500);
 
     return () => {
-      ws?.close();
+      unsubscribeCrypto();
       clearInterval(interval);
     };
   }, []);
