@@ -327,7 +327,10 @@ function markApiFailure(apiName: ApiName): void {
   if (health.failCount >= MAX_FAIL_COUNT) {
     health.isBlocked = true;
     health.blockUntil = now + BLOCK_DURATION;
-    console.warn(`[API Health] ${apiName} blocked until ${new Date(health.blockUntil).toISOString()}`);
+    const blockUntilDate = new Date(health.blockUntil).toISOString();
+    console.warn(`[API Health] ⛔ ${apiName} BLOCKED until ${blockUntilDate} (${health.failCount} failures)`);
+  } else {
+    console.warn(`[API Health] ⚠️  ${apiName} failure ${health.failCount}/${MAX_FAIL_COUNT}`);
   }
 
   apiHealthMap.set(apiName, health);
@@ -336,11 +339,16 @@ function markApiFailure(apiName: ApiName): void {
 function markApiSuccess(apiName: ApiName): void {
   const health = apiHealthMap.get(apiName);
   if (health) {
+    const hadFailures = health.failCount > 0;
     // Reset failure count on success
     health.failCount = 0;
     health.isBlocked = false;
     health.blockUntil = 0;
     apiHealthMap.set(apiName, health);
+    
+    if (hadFailures) {
+      console.log(`[API Health] ✅ ${apiName} recovered and marked healthy`);
+    }
   }
 }
 
@@ -352,6 +360,7 @@ function isApiHealthy(apiName: ApiName): boolean {
 
   // Reset health if enough time has passed since last failure
   if (health.lastFailTime > 0 && now - health.lastFailTime > HEALTH_RESET_TIME) {
+    console.log(`[API Health] 🔄 ${apiName} auto-reset after ${HEALTH_RESET_TIME / 60000} minutes`);
     health.failCount = 0;
     health.isBlocked = false;
     health.blockUntil = 0;
@@ -361,6 +370,7 @@ function isApiHealthy(apiName: ApiName): boolean {
 
   // Check if block period has expired
   if (health.isBlocked && now >= health.blockUntil) {
+    console.log(`[API Health] 🔓 ${apiName} block period expired, unblocking`);
     health.isBlocked = false;
     health.failCount = 0;
     apiHealthMap.set(apiName, health);
@@ -382,8 +392,14 @@ function getRotatedProviders(category: string): ApiName[] {
   // Filter out unhealthy providers
   const healthyProviders = getHealthyProviders(allProviders);
   
+  console.log(`[API Rotation] Category: ${category}, Healthy: ${healthyProviders.length}/${allProviders.length}`);
+  
   // If all providers are unhealthy, reset and use all
   const providers = healthyProviders.length > 0 ? healthyProviders : allProviders;
+  
+  if (healthyProviders.length === 0) {
+    console.warn(`[API Rotation] ⚠️  All providers unhealthy, using all as fallback`);
+  }
   
   const selected = rotateApi(category, providers);
   const selectedIndex = providers.indexOf(selected);
