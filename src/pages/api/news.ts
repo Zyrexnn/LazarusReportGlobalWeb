@@ -23,8 +23,25 @@ interface ApiSelection {
 }
 
 // Global In-Memory Cache (Simple implementation for demo/dev)
-const cache = new Map<string, { data: NewsArticle[]; expiry: number }>();
+interface CacheEntry {
+  data: NewsArticle[];
+  expiry: number;
+  apiUsed: ApiName | null;
+  timestamp: number;
+}
+
+const cache = new Map<string, CacheEntry>();
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+// Cache statistics
+let cacheHits = 0;
+let cacheMisses = 0;
+
+function getCacheStats() {
+  const total = cacheHits + cacheMisses;
+  const hitRate = total > 0 ? ((cacheHits / total) * 100).toFixed(2) : '0.00';
+  return { hits: cacheHits, misses: cacheMisses, hitRate: `${hitRate}%` };
+}
 
 // API Rotation Context
 const rotationCache = new Map<string, { index: number; expiry: number }>();
@@ -663,14 +680,29 @@ export const GET: APIRoute = async ({ url }) => {
   const cachedData = cache.get(cacheKey);
   
   if (cachedData && Date.now() < cachedData.expiry) {
-    return new Response(JSON.stringify({ articles: cachedData.data, cached: true }), {
+    cacheHits++;
+    const age = Math.floor((Date.now() - cachedData.timestamp) / 1000);
+    console.log(`[Cache] 💾 HIT for ${cacheKey} (age: ${age}s, from: ${cachedData.apiUsed})`);
+    
+    return new Response(JSON.stringify({ 
+      articles: cachedData.data, 
+      cached: true,
+      cacheAge: age,
+      apiUsed: cachedData.apiUsed,
+      cacheStats: getCacheStats(),
+    }), {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
+        'X-Cache': 'HIT',
+        'X-Cache-Age': String(age),
       },
     });
   }
+  
+  cacheMisses++;
+  console.log(`[Cache] ❌ MISS for ${cacheKey}`);
 
   try {
     const providers = getRotatedProviders(category);
@@ -737,10 +769,15 @@ export const GET: APIRoute = async ({ url }) => {
     console.log(`[API] Deduplication: ${allFetched.length} -> ${uniqueArticles.length} articles`);
     
     // Save to cache
+    const now = Date.now();
     cache.set(cacheKey, {
       data: uniqueArticles,
-      expiry: Date.now() + CACHE_TTL,
+      expiry: now + CACHE_TTL,
+      apiUsed: primaryProviderUsed,
+      timestamp: now,
     });
+    
+    console.log(`[Cache] 💾 STORED ${cacheKey} (${uniqueArticles.length} articles, TTL: ${CACHE_TTL / 1000}s)`);
 
     return new Response(JSON.stringify({
       articles: uniqueArticles,
@@ -753,12 +790,15 @@ export const GET: APIRoute = async ({ url }) => {
         after: uniqueArticles.length,
         removed: allFetched.length - uniqueArticles.length,
       },
+      cacheStats: getCacheStats(),
+      cached: false,
     }), {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
         'Cache-Control': 'public, max-age=300',
+        'X-Cache': 'MISS',
       },
     });
   } catch (error) {
