@@ -23,10 +23,6 @@ const labels = {
   updating: isID ? 'MEMPERBARUI' : 'UPDATING',
 
   // Section titles
-  strikeMap: isID ? 'Peta Serangan Iran — Real-Time' : 'Iran Strike Map — Real-Time',
-  strikeMapDesc: isID
-    ? '115+ lokasi serangan terverifikasi. Peluru kendali, drone, nuklir, dan sasaran pemerintah. Diperbarui setiap 30 mnt.'
-    : '115+ verified strike locations. Missiles, drones, nuclear, and government targets. Updated every 30 min.',
   rocketAlert: isID ? 'Peringatan Roket Israel — Live' : 'Israel Rocket Alerts — Live',
   rocketAlertDesc: isID
     ? 'Peringatan real-time serangan udara dan roket di wilayah Israel.'
@@ -96,41 +92,7 @@ const labels = {
       <div class="w-full h-px bg-gradient-to-r from-lazarus-gold/40 via-lazarus-border to-transparent mb-10 max-w-3xl"></div>
 
       <!-- ═══════════════════════════════════════════════════ -->
-      <!-- SECTION 1: IRAN STRIKE MAP (Full Width, Primary) -->
-      <!-- ═══════════════════════════════════════════════════ -->
-      <section class="mb-10">
-        <div class="w-full bg-lazarus-dark border border-lazarus-border rounded-xl overflow-hidden shadow-2xl relative group">
-          <div class="absolute inset-0 border border-red-600/10 rounded-xl pointer-events-none group-hover:border-red-600/30 transition-[border-color] duration-500 z-10"></div>
-          <div class="bg-lazarus-black/90 px-4 py-3 border-b border-lazarus-border/50 flex flex-col sm:flex-row sm:items-center justify-between gap-2 z-20 relative">
-            <div class="flex items-center gap-3">
-              <span class="w-2 h-2 rounded-full bg-red-600 shadow-[0_0_8px_rgba(220,38,38,0.8)] animate-pulse"></span>
-              <h2 class="text-lazarus-gold text-xs font-bold tracking-[0.2em] uppercase">{labels.strikeMap}</h2>
-            </div>
-            <div class="flex items-center gap-4">
-              <span class="text-[10px] font-mono text-red-400 uppercase tracking-widest flex items-center gap-1.5">
-                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                {labels.live}
-              </span>
-              <a href="https://iranstrikemap.com/" target="_blank" rel="noopener" class="text-[9px] font-mono text-lazarus-muted/50 hover:text-lazarus-gold transition-colors uppercase tracking-wider">
-                iranstrikemap.com ↗
-              </a>
-            </div>
-          </div>
-          <p class="px-4 py-2 text-[10px] font-mono text-lazarus-muted/50 bg-lazarus-black/60 border-b border-lazarus-border/30">
-            {labels.strikeMapDesc}
-          </p>
-          <iframe 
-            src="https://iranstrikemap.com/" 
-            class="w-full h-[500px] md:h-[700px] lg:h-[800px] border-0 bg-lazarus-black relative z-20" 
-            allowfullscreen
-            title="Iran Strike Map - Real-Time"
-            loading="lazy"
-          ></iframe>
-        </div>
-      </section>
-
-      <!-- ═══════════════════════════════════════════════════ -->
-      <!-- SECTION 2: TWO COLUMNS — Rocket Alerts + OSINT Stats -->
+      <!-- SECTION 1: TWO COLUMNS — Rocket Alerts + OSINT Stats -->
       <!-- ═══════════════════════════════════════════════════ -->
       <section class="mb-10 grid grid-cols-1 lg:grid-cols-5 gap-6">
         <!-- LEFT: Rocket Alerts (3 cols) -->
@@ -203,7 +165,7 @@ const labels = {
       </section>
 
       <!-- ═══════════════════════════════════════════════════ -->
-      <!-- SECTION 3: ArcGIS Maps (Two Columns on Desktop) -->
+      <!-- SECTION 2: ArcGIS Maps (Two Columns on Desktop) -->
       <!-- ═══════════════════════════════════════════════════ -->
       <section class="mb-10 grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- ArcGIS StoryMap -->
@@ -253,7 +215,7 @@ const labels = {
       </section>
 
       <!-- ═══════════════════════════════════════════════════ -->
-      <!-- SECTION 4: OSINT Data Table (Full Width) -->
+      <!-- SECTION 3: OSINT Data Table (Full Width) -->
       <!-- ═══════════════════════════════════════════════════ -->
       <section class="mb-10">
         <div class="w-full bg-lazarus-dark border border-lazarus-border rounded-xl overflow-hidden shadow-2xl">
@@ -288,7 +250,7 @@ const labels = {
       </section>
 
       <!-- ═══════════════════════════════════════════════════ -->
-      <!-- SECTION 5: Sources & Credits -->
+      <!-- SECTION 4: Sources & Credits -->
       <!-- ═══════════════════════════════════════════════════ -->
       <section class="mb-10">
         <div class="bg-lazarus-dark/60 border border-lazarus-border/40 rounded-xl p-5 md:p-6">
@@ -296,12 +258,7 @@ const labels = {
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
             {labels.sourcesTitle}
           </h3>
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            <a href="https://iranstrikemap.com/" target="_blank" rel="noopener"
-              class="block p-3 bg-lazarus-black/50 border border-lazarus-border/30 rounded-lg hover:border-lazarus-gold/50 transition-colors group">
-              <span class="block text-lazarus-headline text-xs font-semibold group-hover:text-lazarus-gold transition-colors">Iran Strike Map</span>
-              <span class="block text-lazarus-muted/50 text-[9px] font-mono mt-0.5">Live interactive strike map</span>
-            </a>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <a href="https://rocketalert.live/" target="_blank" rel="noopener"
               class="block p-3 bg-lazarus-black/50 border border-lazarus-border/30 rounded-lg hover:border-lazarus-gold/50 transition-colors group">
               <span class="block text-lazarus-headline text-xs font-semibold group-hover:text-lazarus-gold transition-colors">Rocket Alert Live</span>
