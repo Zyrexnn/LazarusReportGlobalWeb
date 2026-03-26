@@ -52,7 +52,7 @@ export const translations = {
       sortRelevance: 'Relevance',
       noArticles: 'No articles found.',
       adjustFilters: 'Try another filter or keyword.',
-      source: 'FEED',
+      source: '',
       loadingMap: 'Loading map...',
       vesselsTracked: 'vessels tracked',
     },
@@ -219,6 +219,14 @@ export const translations = {
       article1: 'BRICS shifts again. New bloc, new pressure, new game.',
       article2: 'Fresh satellite shots show military build-up. Routine move? Hardly.',
       article3: 'Energy war is back on. Who controls tomorrow now?'
+    },
+    verification: {
+      title: 'SECURE ACCESS PROTOCOL',
+      subtitle: 'HUMAN VERIFICATION REQUIRED',
+      slide: 'SLIDE TO UNLOCK SYSTEM',
+      code: 'ENTER ACCESS CODE',
+      status: 'SYS.STATUS: PENDING_VERIFICATION',
+      granted: 'ACCESS GRANTED. DECRYPTING FEED...'
     }
   },
   id: {
@@ -272,7 +280,7 @@ export const translations = {
       sortRelevance: 'Relevansi',
       noArticles: 'Belum ada artikel yang cocok.',
       adjustFilters: 'Coba geser filter. Mungkin ada yang kelewat.',
-      source: 'FEED',
+      source: '',
       loadingMap: 'Memuat peta...',
       vesselsTracked: 'kapal dilacak',
     },
@@ -439,6 +447,14 @@ export const translations = {
       article1: 'BRICS geser lagi. Peta pengaruh global ikut berubah.',
       article2: 'Foto satelit buka instalasi baru. Kebetulan? Rasanya tidak.',
       article3: 'Perang energi balik panas. Siapa pegang keran, dia pegang arah.'
+    },
+    verification: {
+      title: 'PROTOKOL KEAMANAN',
+      subtitle: 'VERIFIKASI MANUSIA DIPERLUKAN',
+      slide: 'GESER UNTUK MEMBUKA SISTEM',
+      code: 'MASUKKAN KODE AKSES',
+      status: 'SYS.STATUS: MENUNGGU_VERIFIKASI',
+      granted: 'AKSES DITERIMA. MENDEKRIPSI DATA...'
     }
   }
 };

@@ -33,27 +33,29 @@ function SkeletonCard() {
 }
 
 function NewsCard({ item, t }: { item: NewsItem; t: ReturnType<typeof getTranslation> }) {
+  const fallbackImg = 'https://images.unsplash.com/photo-1616423640778-28d1b53229bd?w=600&h=340&fit=crop';
+  
   return (
     <article className="group bg-lazarus-dark border border-lazarus-border/30 rounded-none overflow-hidden hover:bg-lazarus-dark/80 transition-all duration-300">
-      {item.image && (
-        <div className="relative overflow-hidden aspect-video border-b border-lazarus-border/20">
-          <img
-            src={item.image}
-            alt={item.title}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-            loading="lazy"
-            decoding="async"
-            onError={(e) => {
-              (e.target as HTMLImageElement).style.display = 'none';
-            }}
-          />
-          {item.isBreaking && (
-            <div className="absolute top-3 left-3 px-2 py-1 bg-lazarus-alert text-white text-[10px] font-bold tracking-widest uppercase rounded-sm shadow-md">
-              {t.categories.breaking}
-            </div>
-          )}
-        </div>
-      )}
+      <div className="relative overflow-hidden aspect-video border-b border-lazarus-border/20">
+        <img
+          src={item.image || fallbackImg}
+          alt={item.title}
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          loading="lazy"
+          decoding="async"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.onerror = null; // Prevent infinite loop
+            target.src = fallbackImg;
+          }}
+        />
+        {item.isBreaking && (
+          <div className="absolute top-3 left-3 px-2 py-1 bg-lazarus-alert text-white text-[10px] font-bold tracking-widest uppercase rounded-sm shadow-md">
+            {t.categories.breaking}
+          </div>
+        )}
+      </div>
       <div className="p-5">
         <div className="flex items-center justify-between mb-3 border-b border-lazarus-border/30 pb-2 gap-3">
           <span className="text-[10px] font-bold tracking-widest uppercase text-lazarus-black bg-lazarus-gold px-2 py-0.5 rounded-sm">
@@ -61,7 +63,8 @@ function NewsCard({ item, t }: { item: NewsItem; t: ReturnType<typeof getTransla
           </span>
           <span className="text-lazarus-muted/80 text-[10px] font-mono uppercase bg-lazarus-black/50 px-2 py-0.5 rounded-sm border border-lazarus-border/50 flex items-center gap-1.5 shadow-inner leading-none">
             <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shadow-[0_0_5px_rgba(96,165,250,0.6)] animate-pulse"></span>
-            {t.sections.source} <span className="text-gray-200 font-semibold">{item.publisher || item.source || 'GLOBAL'}</span>
+            {t.sections.source && `${t.sections.source} `}
+            <span className="text-gray-200 font-semibold">{item.publisher || item.source || 'GLOBAL'}</span>
           </span>
         </div>
         <a href={item.url} target="_blank" rel="noopener noreferrer" className="block">

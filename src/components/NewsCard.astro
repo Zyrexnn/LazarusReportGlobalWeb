@@ -15,6 +15,8 @@ const { title, category, excerpt, image, date, source, url = '#', isBreaking = f
 const lang = Astro.cookies.get('lazarus_lang')?.value || 'en';
 const t = getTranslation(lang);
 
+const fallbackImg = 'https://images.unsplash.com/photo-1616423640778-28d1b53229bd?w=600&h=340&fit=crop';
+
 const categoryColors: Record<string, string> = {
   geopolitics: 'text-lazarus-gold',
   military: 'text-blue-400',
@@ -31,22 +33,21 @@ const colorClass = categoryColors[category?.toLowerCase()] || categoryColors.def
 
 <article class="group bg-lazarus-dark border border-lazarus-border rounded-xl overflow-hidden hover:border-lazarus-gold/40 transition-all duration-300 hover:shadow-lg hover:shadow-lazarus-gold/5">
   <!-- Image -->
-  {image && (
-    <div class="relative overflow-hidden aspect-video">
-      <img
-        src={image}
-        alt={title}
-        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-        loading="lazy"
-        decoding="async"
-      />
-      {isBreaking && (
-        <div class="absolute top-3 left-3 px-2 py-1 bg-lazarus-alert text-white text-xs font-bold tracking-wider uppercase rounded">
-          {t.categories.breaking}
-        </div>
-      )}
-    </div>
-  )}
+  <div class="relative overflow-hidden aspect-video">
+    <img
+      src={image || fallbackImg}
+      alt={title}
+      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+      loading="lazy"
+      decoding="async"
+      onerror={`this.onerror=null;this.src='${fallbackImg}';`}
+    />
+    {isBreaking && (
+      <div class="absolute top-3 left-3 px-2 py-1 bg-lazarus-alert text-white text-xs font-bold tracking-wider uppercase rounded">
+        {t.categories.breaking}
+      </div>
+    )}
+  </div>
 
   <!-- Content -->
   <div class="p-5">
