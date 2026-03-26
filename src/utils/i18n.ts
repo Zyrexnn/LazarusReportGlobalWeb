@@ -222,10 +222,12 @@ export const translations = {
     },
     verification: {
       title: 'SECURE ACCESS PROTOCOL',
-      subtitle: 'HUMAN VERIFICATION REQUIRED',
+      subtitle: 'CHOOSE VERIFICATION METHOD',
+      methodSlide: 'BIO-METRIC SLIDE',
+      methodCode: 'ENCRYPTION CODE',
       slide: 'SLIDE TO UNLOCK SYSTEM',
       code: 'ENTER ACCESS CODE',
-      status: 'SYS.STATUS: PENDING_VERIFICATION',
+      status: 'SYS.STATUS: PENDING_SELECTION',
       granted: 'ACCESS GRANTED. DECRYPTING FEED...'
     }
   },
@@ -450,10 +452,12 @@ export const translations = {
     },
     verification: {
       title: 'PROTOKOL KEAMANAN',
-      subtitle: 'VERIFIKASI MANUSIA DIPERLUKAN',
+      subtitle: 'PILIH METODE VERIFIKASI',
+      methodSlide: 'GESER BIO-METRIK',
+      methodCode: 'KODE ENKRIPSI',
       slide: 'GESER UNTUK MEMBUKA SISTEM',
       code: 'MASUKKAN KODE AKSES',
-      status: 'SYS.STATUS: MENUNGGU_VERIFIKASI',
+      status: 'SYS.STATUS: MENUNGGU_PILIHAN',
       granted: 'AKSES DITERIMA. MENDEKRIPSI DATA...'
     }
   }
