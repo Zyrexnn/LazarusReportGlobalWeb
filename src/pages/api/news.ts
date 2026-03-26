@@ -30,6 +30,19 @@ const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 const rotationCache = new Map<string, { index: number; expiry: number }>();
 const ROTATION_TTL = 2 * 60 * 1000; // 2 minutes
 
+// API Health Tracking - Track failed APIs to avoid them temporarily
+interface ApiHealth {
+  failCount: number;
+  lastFailTime: number;
+  isBlocked: boolean;
+  blockUntil: number;
+}
+
+const apiHealthMap = new Map<ApiName, ApiHealth>();
+const MAX_FAIL_COUNT = 3; // Block after 3 consecutive failures
+const BLOCK_DURATION = 10 * 60 * 1000; // Block for 10 minutes
+const HEALTH_RESET_TIME = 30 * 60 * 1000; // Reset health after 30 minutes of no failures
+
 const CATEGORY_KEYWORDS: Record<string, string> = {
   all: 'geopolitics OR military OR markets OR crypto',
   geopolitik: 'Iran OR Israel OR sanctions OR diplomacy OR NATO OR "Middle East"',
@@ -106,20 +119,49 @@ function normalizeUrl(url: string | undefined): string {
     .split('?')[0]; // Remove query params
 }
 
-// Simple Word Overlap Similarity (Jaccard Index-like)
+// Enhanced similarity check with multiple methods
 function calculateSimilarity(a: string, b: string): number {
   if (a === b) return 1.0;
-  const wordsA = new Set(a.split(' '));
-  const wordsB = new Set(b.split(' '));
-  if (wordsA.size === 0 || wordsB.size === 0) return 0;
+  
+  const wordsA = a.split(' ').filter(w => w.length > 3); // Ignore short words
+  const wordsB = b.split(' ').filter(w => w.length > 3);
+  
+  if (wordsA.length === 0 || wordsB.length === 0) return 0;
+  
+  const setA = new Set(wordsA);
+  const setB = new Set(wordsB);
   
   let intersection = 0;
-  for (const w of wordsA) {
-    if (wordsB.has(w)) intersection++;
+  for (const w of setA) {
+    if (setB.has(w)) intersection++;
   }
   
-  // Return the Dice coefficient
-  return (2.0 * intersection) / (wordsA.size + wordsB.size);
+  // Dice coefficient - more strict
+  const dice = (2.0 * intersection) / (setA.size + setB.size);
+  
+  // Check for substring match (one title contains the other)
+  if (a.includes(b) || b.includes(a)) {
+    return Math.max(dice, 0.85);
+  }
+  
+  return dice;
+}
+
+// Check if two articles have the same image
+function hasSameImage(img1: string | undefined, img2: string | undefined): boolean {
+  if (!img1 || !img2) return false;
+  
+  // Normalize URLs for comparison
+  const norm1 = normalizeUrl(img1);
+  const norm2 = normalizeUrl(img2);
+  
+  if (norm1 === norm2) return true;
+  
+  // Check if they're from the same image host with similar paths
+  const path1 = norm1.split('/').slice(-2).join('/');
+  const path2 = norm2.split('/').slice(-2).join('/');
+  
+  return path1 === path2 && path1.length > 10;
 }
 
 // Source priority weight (Lower is better/higher)
@@ -133,62 +175,94 @@ const SOURCE_PRIORITY: Record<string, number> = {
 
 function deduplicateArticles(articles: NewsArticle[]): NewsArticle[] {
   const uniqueArticles = new Map<string, NewsArticle>();
-  const results: NewsArticle[] = [];
+  const seenTitles = new Map<string, string>(); // normalized title -> key
+  const seenImages = new Map<string, string>(); // normalized image -> key
 
   for (const article of articles) {
     const normUrl = normalizeUrl(article.url);
     const normTitle = normalizeString(article.title);
+    const normImage = normalizeUrl(article.image);
     
     let isDuplicate = false;
-    let duplicateKey = normUrl || normTitle;
+    let duplicateKey = '';
 
-    // 1. Precise Check: URL
+    // 1. STRICT: Exact URL match
     if (normUrl && uniqueArticles.has(normUrl)) {
       isDuplicate = true;
       duplicateKey = normUrl;
-    } 
-    // 2. Precise Check: Title
-    else if (uniqueArticles.has(normTitle)) {
-      isDuplicate = true;
-      duplicateKey = normTitle;
     }
-    // 3. Smart Check: Similarity > 80%
+    // 2. STRICT: Exact title match
+    else if (seenTitles.has(normTitle)) {
+      isDuplicate = true;
+      duplicateKey = seenTitles.get(normTitle)!;
+    }
+    // 3. STRICT: Same image URL (likely same article)
+    else if (normImage && normImage.length > 20 && seenImages.has(normImage)) {
+      isDuplicate = true;
+      duplicateKey = seenImages.get(normImage)!;
+    }
+    // 4. SMART: High similarity in title (>70%)
     else {
-      for (const [key, existing] of uniqueArticles.entries()) {
-        const existingNormTitle = normalizeString(existing.title);
-        if (calculateSimilarity(normTitle, existingNormTitle) > 0.45) {
+      for (const [existingNormTitle, existingKey] of seenTitles.entries()) {
+        const similarity = calculateSimilarity(normTitle, existingNormTitle);
+        
+        if (similarity > 0.70) {
           isDuplicate = true;
-          duplicateKey = key;
+          duplicateKey = existingKey;
           break;
         }
       }
     }
+    
+    // 5. EXTRA CHECK: Same image with different titles (common in news aggregators)
+    if (!isDuplicate && normImage && normImage.length > 20) {
+      for (const [key, existing] of uniqueArticles.entries()) {
+        if (hasSameImage(article.image, existing.image)) {
+          // If images are the same, check if titles are somewhat related
+          const titleSim = calculateSimilarity(normTitle, normalizeString(existing.title));
+          if (titleSim > 0.50) {
+            isDuplicate = true;
+            duplicateKey = key;
+            break;
+          }
+        }
+      }
+    }
 
-    if (isDuplicate) {
+    if (isDuplicate && duplicateKey) {
       const existing = uniqueArticles.get(duplicateKey);
       if (existing) {
-        // CONFLICT RESOLUTION:
-        // A. Source Priority
+        // CONFLICT RESOLUTION: Keep the better article
         const priorityNew = SOURCE_PRIORITY[article.source] ?? 10;
         const priorityExisting = SOURCE_PRIORITY[existing.source] ?? 10;
 
+        // A. Higher priority source wins
         if (priorityNew < priorityExisting) {
-          uniqueArticles.set(duplicateKey, article);
+          uniqueArticles.delete(duplicateKey);
+          uniqueArticles.set(normUrl || normTitle, article);
+          seenTitles.set(normTitle, normUrl || normTitle);
+          if (normImage) seenImages.set(normImage, normUrl || normTitle);
           continue;
-        } 
+        }
         
+        // B. Same priority: longer excerpt wins
         if (priorityNew === priorityExisting) {
-          // B. Longer description/excerpt
-          if ((article.excerpt?.length || 0) > (existing.excerpt?.length || 0) + 10) {
-            uniqueArticles.set(duplicateKey, article);
+          if ((article.excerpt?.length || 0) > (existing.excerpt?.length || 0) + 20) {
+            uniqueArticles.delete(duplicateKey);
+            uniqueArticles.set(normUrl || normTitle, article);
+            seenTitles.set(normTitle, normUrl || normTitle);
+            if (normImage) seenImages.set(normImage, normUrl || normTitle);
             continue;
           }
-          // C. If desc length similar, keep the newer one (though difficult to determine from string dates accurately here)
         }
-        // Keep existing if new doesn't beat logic
+        // Keep existing if new doesn't win
       }
     } else {
-      uniqueArticles.set(normUrl || normTitle, article);
+      // New unique article
+      const key = normUrl || normTitle;
+      uniqueArticles.set(key, article);
+      seenTitles.set(normTitle, key);
+      if (normImage) seenImages.set(normImage, key);
     }
   }
 
@@ -228,10 +302,80 @@ function rotateApi(category: string, providers: ApiName[]): ApiName {
   return (providers[nextIndex] as ApiName);
 }
 
+// API Health Management Functions
+function markApiFailure(apiName: ApiName): void {
+  const now = Date.now();
+  const health = apiHealthMap.get(apiName) || {
+    failCount: 0,
+    lastFailTime: 0,
+    isBlocked: false,
+    blockUntil: 0,
+  };
+
+  health.failCount++;
+  health.lastFailTime = now;
+
+  // Block API if it exceeds max failures
+  if (health.failCount >= MAX_FAIL_COUNT) {
+    health.isBlocked = true;
+    health.blockUntil = now + BLOCK_DURATION;
+    console.warn(`[API Health] ${apiName} blocked until ${new Date(health.blockUntil).toISOString()}`);
+  }
+
+  apiHealthMap.set(apiName, health);
+}
+
+function markApiSuccess(apiName: ApiName): void {
+  const health = apiHealthMap.get(apiName);
+  if (health) {
+    // Reset failure count on success
+    health.failCount = 0;
+    health.isBlocked = false;
+    health.blockUntil = 0;
+    apiHealthMap.set(apiName, health);
+  }
+}
+
+function isApiHealthy(apiName: ApiName): boolean {
+  const health = apiHealthMap.get(apiName);
+  if (!health) return true; // No history = healthy
+
+  const now = Date.now();
+
+  // Reset health if enough time has passed since last failure
+  if (health.lastFailTime > 0 && now - health.lastFailTime > HEALTH_RESET_TIME) {
+    health.failCount = 0;
+    health.isBlocked = false;
+    health.blockUntil = 0;
+    apiHealthMap.set(apiName, health);
+    return true;
+  }
+
+  // Check if block period has expired
+  if (health.isBlocked && now >= health.blockUntil) {
+    health.isBlocked = false;
+    health.failCount = 0;
+    apiHealthMap.set(apiName, health);
+    return true;
+  }
+
+  return !health.isBlocked;
+}
+
+function getHealthyProviders(providers: ApiName[]): ApiName[] {
+  return providers.filter(isApiHealthy);
+}
+
 function getRotatedProviders(category: string): ApiName[] {
   const originalProviders = CATEGORY_API_PRIORITY[category] || CATEGORY_API_PRIORITY.all;
   // Use generic rotation logic, excluding 'Lazarus Report' from external rotation pool
-  const providers = originalProviders.filter(p => p !== 'Lazarus Report') as ApiName[];
+  const allProviders = originalProviders.filter(p => p !== 'Lazarus Report') as ApiName[];
+  
+  // Filter out unhealthy providers
+  const healthyProviders = getHealthyProviders(allProviders);
+  
+  // If all providers are unhealthy, reset and use all
+  const providers = healthyProviders.length > 0 ? healthyProviders : allProviders;
   
   const selected = rotateApi(category, providers);
   const selectedIndex = providers.indexOf(selected);
@@ -357,19 +501,32 @@ function getValidImage(imgUrl: string | undefined): string {
 }
 
 async function fetchFromApi(selection: ApiSelection, category: string, lang: string): Promise<NewsArticle[]> {
-  if (!selection.key || selection.key.startsWith('your_')) return [];
+  if (!selection.key || selection.key.startsWith('your_')) {
+    markApiFailure(selection.name);
+    return [];
+  }
 
   try {
     const url = buildApiUrl(selection);
     const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
-    if (!res.ok) return [];
+    
+    // Check for rate limit or API errors
+    if (!res.ok) {
+      if (res.status === 429 || res.status === 403 || res.status >= 500) {
+        console.warn(`[API] ${selection.name} returned ${res.status}, marking as failed`);
+        markApiFailure(selection.name);
+      }
+      return [];
+    }
 
     const data = await res.json();
     const categoryLabel = getCategoryLabel(category);
     const sourceName = selection.name as ApiName;
 
+    let articles: NewsArticle[] = [];
+
     if (selection.name === 'NewsData' && Array.isArray(data.results)) {
-      return data.results
+      articles = data.results
         .filter((item: any) => isWithin3Days(item.pubDate))
         .map((item: any) => ({
           title: item.title || 'Untitled',
@@ -385,7 +542,7 @@ async function fetchFromApi(selection: ApiSelection, category: string, lang: str
     }
 
     if (selection.name === 'WorldNews' && Array.isArray(data.news)) {
-      return data.news
+      articles = data.news
         .filter((item: any) => isWithin3Days(item.publish_date))
         .map((item: any) => ({
           title: item.title || 'Untitled',
@@ -401,7 +558,7 @@ async function fetchFromApi(selection: ApiSelection, category: string, lang: str
     }
 
     if (selection.name === 'Finnhub' && Array.isArray(data)) {
-      return data
+      articles = data
         .slice(0, 30)
         .filter((item: any) => isWithin3Days(item.datetime))
         .map((item: any) => ({
@@ -418,7 +575,7 @@ async function fetchFromApi(selection: ApiSelection, category: string, lang: str
     }
 
     if (selection.name === 'GNews' && Array.isArray(data.articles)) {
-      return data.articles
+      articles = data.articles
         .filter((item: any) => isWithin3Days(item.publishedAt))
         .map((item: any) => ({
           title: item.title || 'Untitled',
@@ -433,8 +590,17 @@ async function fetchFromApi(selection: ApiSelection, category: string, lang: str
         }));
     }
 
-    return [];
-  } catch {
+    // Mark success if we got articles
+    if (articles.length > 0) {
+      markApiSuccess(selection.name);
+    } else {
+      markApiFailure(selection.name);
+    }
+
+    return articles;
+  } catch (error) {
+    console.error(`[API] ${selection.name} fetch error:`, error);
+    markApiFailure(selection.name);
     return [];
   }
 }
@@ -474,32 +640,65 @@ export const GET: APIRoute = async ({ url }) => {
     const providers = getRotatedProviders(category);
     let allFetched: NewsArticle[] = [];
     let primaryProviderUsed: ApiName | null = null;
+    const failedProviders: ApiName[] = [];
+    const attemptedProviders: { name: ApiName; success: boolean; count: number }[] = [];
 
-    // Try primary rotated choice
-    const firstSelection = getApiToUse(category, query, lang, providers[0]);
-    const firstResult = await fetchFromApi(firstSelection, category, lang);
+    // STRATEGY: Try ONE provider at a time, only move to next if it fails
+    // This prevents mixing articles from multiple sources
+    for (const provider of providers) {
+      const selection = getApiToUse(category, query, lang, provider);
+      
+      console.log(`[API] Attempting ${provider}...`);
+      const result = await fetchFromApi(selection, category, lang);
+      
+      attemptedProviders.push({
+        name: provider,
+        success: result.length > 0,
+        count: result.length,
+      });
 
-    if (firstResult.length > 0) {
-      allFetched = [...firstResult];
-      primaryProviderUsed = providers[0];
-    } else {
-      // Try next in line if first fails
-      for (let i = 1; i < providers.length; i++) {
-        const selection = getApiToUse(category, query, lang, providers[i]);
+      if (result.length > 0) {
+        // SUCCESS: Use ONLY this provider's results
+        allFetched = result;
+        primaryProviderUsed = provider;
+        console.log(`[API] Success with ${provider}, got ${result.length} articles`);
+        break; // STOP here, don't try other providers
+      } else {
+        failedProviders.push(provider);
+        console.warn(`[API] ${provider} failed or returned no results`);
+      }
+    }
+
+    // If still no results after trying all healthy providers, try unhealthy ones as last resort
+    if (allFetched.length === 0) {
+      console.warn('[API] All healthy providers failed, trying blocked providers...');
+      const allProviders = (CATEGORY_API_PRIORITY[category] || CATEGORY_API_PRIORITY.all)
+        .filter(p => p !== 'Lazarus Report') as ApiName[];
+      
+      for (const provider of allProviders) {
+        if (providers.includes(provider)) continue; // Already tried
+        
+        const selection = getApiToUse(category, query, lang, provider);
         const result = await fetchFromApi(selection, category, lang);
+        
         if (result.length > 0) {
           allFetched = result;
-          primaryProviderUsed = providers[i];
+          primaryProviderUsed = provider;
+          console.log(`[API] Fallback success with ${provider}`);
           break;
         }
       }
     }
 
     if (allFetched.length === 0) {
+      console.warn('[API] All providers exhausted, using fallback articles');
       allFetched = FALLBACK_ARTICLES;
     }
 
+    // AGGRESSIVE DEDUPLICATION
     const uniqueArticles = deduplicateArticles(allFetched);
+    
+    console.log(`[API] Deduplication: ${allFetched.length} -> ${uniqueArticles.length} articles`);
     
     // Save to cache
     cache.set(cacheKey, {
@@ -511,6 +710,13 @@ export const GET: APIRoute = async ({ url }) => {
       articles: uniqueArticles,
       apiUsed: primaryProviderUsed,
       providerOrder: providers,
+      attempted: attemptedProviders,
+      failed: failedProviders,
+      deduplication: {
+        before: allFetched.length,
+        after: uniqueArticles.length,
+        removed: allFetched.length - uniqueArticles.length,
+      },
     }), {
       status: 200,
       headers: {
@@ -519,8 +725,12 @@ export const GET: APIRoute = async ({ url }) => {
         'Cache-Control': 'public, max-age=300',
       },
     });
-  } catch {
-    return new Response(JSON.stringify({ articles: FALLBACK_ARTICLES }), {
+  } catch (error) {
+    console.error('[API] Critical error:', error);
+    return new Response(JSON.stringify({ 
+      articles: FALLBACK_ARTICLES,
+      error: 'Critical failure, using fallback',
+    }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
