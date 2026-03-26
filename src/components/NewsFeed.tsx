@@ -209,18 +209,40 @@ export default function NewsFeed({ initialCategory = 'All', lang = 'en' }: NewsF
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState(initialCategory);
   const [query, setQuery] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
   const [sort, setSort] = useState('latest');
 
   const t = useMemo(() => getTranslation(lang), [lang]);
   const fallbackNews = useMemo(() => getFallbackNews(lang), [lang]);
+
+  // Read URL params on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      const urlQuery = searchParams.get('q');
+      if (urlQuery) {
+        setQuery(urlQuery);
+        setDebouncedQuery(urlQuery);
+      }
+    }
+  }, []);
+
+  // Debounce query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedQuery(query);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [query]);
 
   const fetchNews = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
       if (category !== 'All') params.set('category', category.toLowerCase());
-      if (query) params.set('q', query);
+      if (debouncedQuery) params.set('q', debouncedQuery);
       params.set('sort', sort);
+      params.set('lang', lang);
 
       const res = await fetch(`/api/news?${params.toString()}`);
       if (res.ok) {
@@ -238,7 +260,7 @@ export default function NewsFeed({ initialCategory = 'All', lang = 'en' }: NewsF
     } finally {
       setLoading(false);
     }
-  }, [category, query, sort, fallbackNews]);
+  }, [category, debouncedQuery, sort, fallbackNews, lang]);
 
   useEffect(() => {
     fetchNews();
