@@ -13,6 +13,7 @@ const navItems = [
   { href: '/live-tv', label: t.nav.liveTv },
   { href: '/ship-tracker', label: t.nav.shipTracker },
   { href: '/flight-tracker', label: t.nav.flightTracker },
+  { href: '/conflict-tracker', label: t.nav.conflictTracker },
   { href: '/analysis', label: t.nav.analysis },
   { href: '/about', label: t.nav.about },
 ];
@@ -128,7 +129,8 @@ const currentPath = Astro.url.pathname;
           </svg>
         </button>
       </div>
-      <p class="text-lazarus-muted text-sm mt-4 text-center">Press ESC to close</p>
+      <div id="search-results" class="mt-4 flex flex-col gap-2 max-h-[50vh] overflow-y-auto custom-scrollbar"></div>
+      <p class="text-lazarus-muted text-sm mt-4 text-center">Press ESC to close, or ENTER to search full news feed</p>
     </div>
   </div>
 </header>
@@ -172,5 +174,61 @@ const currentPath = Astro.url.pathname;
 
   searchModal?.addEventListener('click', (e) => {
     if (e.target === searchModal) closeSearch();
+  });
+
+  // Live Search Logic with Debounce
+  const searchResultsContainer = document.getElementById('search-results');
+  let searchTimeout = setTimeout(() => {}, 0);
+
+  searchInput?.addEventListener('input', (e) => {
+    const query = (e.target as HTMLInputElement).value.trim();
+    
+    // Clear previous results container immediately
+    if (!query) {
+      if (searchResultsContainer) searchResultsContainer.innerHTML = '';
+      clearTimeout(searchTimeout);
+      return;
+    }
+
+    if (searchResultsContainer) searchResultsContainer.innerHTML = '<p class="text-lazarus-muted text-center animate-pulse py-4">Searching...</p>';
+
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(async () => {
+      try {
+        const lang = document.documentElement.lang === 'id' ? 'id' : 'en';
+        const res = await fetch(`/api/news?q=${encodeURIComponent(query)}&lang=${lang}`);
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        const articles = data.articles?.slice(0, 5) || []; // Top 5 results
+
+        if (articles.length === 0) {
+          if (searchResultsContainer) searchResultsContainer.innerHTML = '<p class="text-lazarus-muted text-center py-4">No results found.</p>';
+          return;
+        }
+
+        if (searchResultsContainer) {
+          searchResultsContainer.innerHTML = articles.map((article: any) => `
+            <a href="${article.url}" target="_blank" rel="noopener" class="block p-3 bg-lazarus-black/50 border border-lazarus-border rounded-lg hover:border-lazarus-gold/50 hover:bg-lazarus-black transition-colors group">
+              <span class="text-[10px] font-bold tracking-widest uppercase text-lazarus-black bg-lazarus-gold px-1.5 py-0.5 rounded-sm inline-block mb-1">
+                ${article.category || 'News'}
+              </span>
+              <h4 class="text-lazarus-headline text-sm font-semibold group-hover:text-lazarus-gold transition-colors line-clamp-1">${article.title}</h4>
+              <p class="text-lazarus-muted text-xs mt-1 line-clamp-1">${article.excerpt}</p>
+            </a>
+          `).join('');
+        }
+      } catch (err) {
+        if (searchResultsContainer) searchResultsContainer.innerHTML = '<p class="text-red-400 text-center py-4 text-sm whitespace-pre-wrap">Failed to load search results.</p>';
+      }
+    }, 400); // 400ms debounce
+  });
+
+  searchInput?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const query = searchInput.value.trim();
+      if (query) {
+        window.location.href = `/?q=${encodeURIComponent(query)}`;
+      }
+    }
   });
 </script>
