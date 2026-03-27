@@ -57,15 +57,17 @@ function NewsCard({ item, t }: { item: NewsItem; t: ReturnType<typeof getTransla
         )}
       </div>
       <div className="p-5">
-        <div className="flex items-center justify-between mb-3 border-b border-lazarus-border/30 pb-2 gap-3">
+        <div className="flex items-center justify-between mb-3 border-b border-lazarus-border/30 pb-2.5 gap-3">
           <span className="text-[10px] font-bold tracking-widest uppercase text-lazarus-black bg-lazarus-gold px-2 py-0.5 rounded-sm">
             {item.category}
           </span>
-          <span className="text-lazarus-muted/80 text-[10px] font-mono uppercase bg-lazarus-black/50 px-2 py-0.5 rounded-sm border border-lazarus-border/50 flex items-center gap-1.5 shadow-inner leading-none">
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shadow-[0_0_5px_rgba(96,165,250,0.6)] animate-pulse"></span>
-            {t.sections.source && `${t.sections.source} `}
-            <span className="text-gray-200 font-semibold">{item.publisher || item.source || 'GLOBAL'}</span>
-          </span>
+          {(item.publisher || item.source) && (
+            <span className="text-lazarus-muted/70 text-[10px] font-mono uppercase bg-lazarus-black/50 px-2 py-0.5 rounded-sm border border-lazarus-border/50 flex items-center gap-1.5 shadow-inner leading-none whitespace-nowrap">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shadow-[0_0_5px_rgba(96,165,250,0.6)] animate-pulse"></span>
+              <span className="text-lazarus-muted/50">{t.sections.source || 'SRC'}:</span>
+              <span className="text-lazarus-headline font-semibold">{item.publisher || item.source}</span>
+            </span>
+          )}
         </div>
         <a href={item.url} target="_blank" rel="noopener noreferrer" className="block">
           <h3 className="font-serif text-lazarus-headline text-lg font-medium leading-[1.3] mb-3 group-hover:text-lazarus-gold transition-colors duration-200 line-clamp-3" dir="auto">

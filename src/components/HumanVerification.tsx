@@ -29,12 +29,17 @@ export default function HumanVerification({ lang = 'en' }: { lang?: string }) {
     const handleMove = (e: MouseEvent | TouchEvent) => {
       if (!isDragging || !sliderRef.current) return;
       
+      e.preventDefault(); // Prevent scrolling on touch devices
+      
       const rect = sliderRef.current.getBoundingClientRect();
       const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
       const pos = ((clientX - rect.left) / rect.width) * 100;
       const clampedPos = Math.max(0, Math.min(100, pos));
       
-      setSliderPos(clampedPos);
+      // Use requestAnimationFrame for smoother updates
+      requestAnimationFrame(() => {
+        setSliderPos(clampedPos);
+      });
       
       if (clampedPos >= 98) {
         setIsDragging(false);
@@ -46,13 +51,18 @@ export default function HumanVerification({ lang = 'en' }: { lang?: string }) {
     const handleEnd = () => {
       if (!isDragging) return;
       setIsDragging(false);
-      if (sliderPos < 98) setSliderPos(0);
+      if (sliderPos < 98) {
+        // Smooth reset animation
+        requestAnimationFrame(() => setSliderPos(0));
+      }
     };
 
-    window.addEventListener('mousemove', handleMove);
-    window.addEventListener('mouseup', handleEnd);
-    window.addEventListener('touchmove', handleMove);
-    window.addEventListener('touchend', handleEnd);
+    if (isDragging) {
+      window.addEventListener('mousemove', handleMove, { passive: false });
+      window.addEventListener('mouseup', handleEnd);
+      window.addEventListener('touchmove', handleMove, { passive: false });
+      window.addEventListener('touchend', handleEnd);
+    }
 
     return () => {
       window.removeEventListener('mousemove', handleMove);
@@ -157,11 +167,14 @@ export default function HumanVerification({ lang = 'en' }: { lang?: string }) {
             <div className="animate-in fade-in slide-in-from-right-4 duration-500">
               <div 
                 ref={sliderRef}
-                className="relative h-14 bg-black/50 border border-lazarus-gold/20 rounded-none overflow-hidden"
+                className="relative h-14 bg-black/50 border border-lazarus-gold/20 rounded-none overflow-hidden touch-none select-none"
               >
                 <div 
-                  className="absolute inset-y-0 left-0 bg-lazarus-gold/10 transition-all duration-75"
-                  style={{ width: `${sliderPos}%` }}
+                  className="absolute inset-y-0 left-0 bg-lazarus-gold/10 will-change-[width]"
+                  style={{ 
+                    width: `${sliderPos}%`,
+                    transition: isDragging ? 'none' : 'width 0.3s ease-out'
+                  }}
                 ></div>
                 
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -173,8 +186,12 @@ export default function HumanVerification({ lang = 'en' }: { lang?: string }) {
                 <div 
                   onMouseDown={handleMouseDown}
                   onTouchStart={handleTouchStart}
-                  className="absolute top-1 bottom-1 w-12 bg-lazarus-gold cursor-grab active:cursor-grabbing flex items-center justify-center shadow-[0_0_15px_rgba(212,175,55,0.4)] transition-transform"
-                  style={{ left: `calc(${sliderPos}% - ${sliderPos > 50 ? '48px' : '0px'})`, transform: sliderPos > 90 ? 'scale(0.95)' : 'scale(1)' }}
+                  className="absolute top-1 bottom-1 w-12 bg-lazarus-gold cursor-grab active:cursor-grabbing flex items-center justify-center shadow-[0_0_15px_rgba(212,175,55,0.4)] will-change-[left,transform]"
+                  style={{ 
+                    left: `calc(${sliderPos}% - ${sliderPos > 50 ? '48px' : '0px'})`, 
+                    transform: sliderPos > 90 ? 'scale(0.95)' : 'scale(1)',
+                    transition: isDragging ? 'none' : 'left 0.3s ease-out, transform 0.2s ease-out'
+                  }}
                 >
                   <div className="flex gap-1">
                     <div className="w-0.5 h-4 bg-lazarus-black/50"></div>
