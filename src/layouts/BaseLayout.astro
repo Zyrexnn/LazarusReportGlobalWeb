@@ -5,15 +5,50 @@ export interface Props {
   title?: string;
   description?: string;
   ogImage?: string;
+  keywords?: string;
+  canonicalURL?: string;
 }
 
 const {
   title = 'Lazarus Report Global — Independent Geopolitical Analysis',
   description = 'Independent Geopolitical Analysis & Global Security. Uncovering the buried truths behind global power shifts.',
   ogImage = '/logolazarusreport.png',
+  keywords = 'geopolitical analysis, global security, conflict tracker, military intelligence, OSINT, international relations, geopolitics, lazarus report',
+  canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://www.lazarusreport.online').href,
 } = Astro.props;
 
 const lang = Astro.cookies.get('lazarus_lang')?.value || 'en';
+
+// Structured Data for Organization and Logo
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Lazarus Report Global",
+  "alternateName": "Lazarus Report",
+  "url": "https://www.lazarusreport.online",
+  "logo": "https://www.lazarusreport.online/logolazarusreport.png",
+  "description": "Independent Geopolitical Analysis & Global Security. Uncovering the buried truths behind global power shifts.",
+  "sameAs": [
+    "https://www.lazarusreport.online"
+  ],
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "Editorial",
+    "url": "https://www.lazarusreport.online/about"
+  }
+};
+
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Lazarus Report Global",
+  "url": "https://www.lazarusreport.online",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://www.lazarusreport.online/?s={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+};
 ---
 
 <!DOCTYPE html>
@@ -23,22 +58,40 @@ const lang = Astro.cookies.get('lazarus_lang')?.value || 'en';
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="google-site-verification" content="google2145b94a9220ab11" />
   <meta name="description" content={description} />
+  <meta name="keywords" content={keywords} />
+  <meta name="author" content="Lazarus Report Global" />
   <meta name="theme-color" content="#0f0f0f" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  
+  <!-- Canonical URL -->
+  <link rel="canonical" href={canonicalURL} />
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
+  <meta property="og:url" content={canonicalURL} />
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
-  <meta property="og:image" content={ogImage} />
+  <meta property="og:image" content={`https://www.lazarusreport.online${ogImage}`} />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta property="og:site_name" content="Lazarus Report Global" />
+  <meta property="og:locale" content={lang === 'id' ? 'id_ID' : 'en_US'} />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content={title} />
   <meta name="twitter:description" content={description} />
-  <meta name="twitter:image" content={ogImage} />
+  <meta name="twitter:image" content={`https://www.lazarusreport.online${ogImage}`} />
+  <meta name="twitter:site" content="@lazarusreport" />
 
   <title>{title}</title>
+
+  <!-- Structured Data -->
+  <script type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
+  
+  <!-- Additional schemas from pages -->
+  <slot name="head" />
 
   <!-- Preconnect for performance -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -46,6 +99,10 @@ const lang = Astro.cookies.get('lazarus_lang')?.value || 'en';
 
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="apple-touch-icon" href="/logolazarusreport.png" />
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json" />
 
   <style>
     /* Critical above-fold styles */

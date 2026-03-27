@@ -1,58 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://www.lazarusreport.online/</loc>
     <lastmod>2026-03-27</lastmod>
+    <changefreq>daily</changefreq>
     <priority>1.00</priority>
+    <image:image>
+      <image:loc>https://www.lazarusreport.online/logolazarusreport.png</image:loc>
+      <image:title>Lazarus Report Global Logo</image:title>
+      <image:caption>Independent Geopolitical Analysis &amp; Global Security</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://www.lazarusreport.online/about</loc>
     <lastmod>2026-03-27</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.80</priority>
   </url>
   <url>
     <loc>https://www.lazarusreport.online/analysis</loc>
     <lastmod>2026-03-27</lastmod>
-    <priority>0.80</priority>
+    <changefreq>daily</changefreq>
+    <priority>0.90</priority>
   </url>
   <url>
     <loc>https://www.lazarusreport.online/conflict-tracker</loc>
     <lastmod>2026-03-27</lastmod>
-    <priority>0.90</priority>
-  </url>
-  <url>
-    <loc>https://www.lazarusreport.online/crypto</loc>
-    <lastmod>2026-03-27</lastmod>
-    <priority>0.70</priority>
-  </url>
-  <url>
-    <loc>https://www.lazarusreport.online/flight-tracker</loc>
-    <lastmod>2026-03-27</lastmod>
-    <priority>0.70</priority>
+    <changefreq>hourly</changefreq>
+    <priority>0.95</priority>
   </url>
   <url>
     <loc>https://www.lazarusreport.online/geopolitics</loc>
     <lastmod>2026-03-27</lastmod>
-    <priority>0.80</priority>
-  </url>
-  <url>
-    <loc>https://www.lazarusreport.online/live-tv</loc>
-    <lastmod>2026-03-27</lastmod>
-    <priority>0.70</priority>
-  </url>
-  <url>
-    <loc>https://www.lazarusreport.online/markets</loc>
-    <lastmod>2026-03-27</lastmod>
-    <priority>0.70</priority>
+    <changefreq>daily</changefreq>
+    <priority>0.90</priority>
   </url>
   <url>
     <loc>https://www.lazarusreport.online/military</loc>
     <lastmod>2026-03-27</lastmod>
-    <priority>0.80</priority>
+    <changefreq>daily</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://www.lazarusreport.online/crypto</loc>
+    <lastmod>2026-03-27</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://www.lazarusreport.online/markets</loc>
+    <lastmod>2026-03-27</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://www.lazarusreport.online/flight-tracker</loc>
+    <lastmod>2026-03-27</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.70</priority>
   </url>
   <url>
     <loc>https://www.lazarusreport.online/ship-tracker</loc>
     <lastmod>2026-03-27</lastmod>
+    <changefreq>hourly</changefreq>
     <priority>0.70</priority>
+  </url>
+  <url>
+    <loc>https://www.lazarusreport.online/live-tv</loc>
+    <lastmod>2026-03-27</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.65</priority>
   </url>
 </urlset>

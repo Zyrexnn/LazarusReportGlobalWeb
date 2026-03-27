@@ -13,9 +13,39 @@ import { getTranslation } from '../utils/i18n';
 
 const lang = Astro.cookies.get('lazarus_lang')?.value || 'en';
 const t = getTranslation(lang);
+
+// Additional Schema for Homepage
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [{
+    "@type": "ListItem",
+    "position": 1,
+    "name": "Home",
+    "item": "https://www.lazarusreport.online"
+  }]
+};
+
+const newsMediaSchema = {
+  "@context": "https://schema.org",
+  "@type": "NewsMediaOrganization",
+  "name": "Lazarus Report Global",
+  "url": "https://www.lazarusreport.online",
+  "logo": "https://www.lazarusreport.online/logolazarusreport.png",
+  "sameAs": [
+    "https://www.instagram.com/lazarusreportglobal/"
+  ],
+  "description": "Independent Geopolitical Analysis & Global Security. Uncovering the buried truths behind global power shifts.",
+  "foundingDate": "2026",
+  "keywords": "geopolitical analysis, global security, OSINT, conflict tracker, military intelligence"
+};
 ---
 
 <BaseLayout title="Lazarus Report Global — Independent Geopolitical Analysis">
+  <!-- Additional Schema for Homepage -->
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} slot="head" />
+  <script type="application/ld+json" set:html={JSON.stringify(newsMediaSchema)} slot="head" />
+  
   <Header />
 
   <main>

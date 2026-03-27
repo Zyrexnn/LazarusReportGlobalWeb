@@ -1,0 +1,4 @@
+Contact: https://www.lazarusreport.online/about
+Expires: 2027-12-31T23:59:59.000Z
+Preferred-Languages: en, id
+Canonical: https://www.lazarusreport.online/.well-known/security.txt

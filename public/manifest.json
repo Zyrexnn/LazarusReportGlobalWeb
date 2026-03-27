@@ -1,0 +1,21 @@
+{
+  "name": "Lazarus Report Global — Independent Geopolitical Analysis",
+  "short_name": "Lazarus Report",
+  "description": "Independent Geopolitical Analysis & Global Security. Uncovering the buried truths behind global power shifts.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f0f0f",
+  "theme_color": "#0f0f0f",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/logolazarusreport.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["news", "politics", "education"],
+  "lang": "en",
+  "dir": "ltr"
+}
