@@ -1,5 +1,4 @@
 import { useState, useEffect, memo } from 'react';
-import { subscribeToBinance } from '../utils/binanceWS';
 
 interface TickerData {
   symbol: string;
@@ -9,129 +8,78 @@ interface TickerData {
   prefix?: string;
 }
 
-const INITIAL_DATA: Record<string, TickerData> = {
-  BTC: { symbol: 'BTC', displayName: 'BTC', price: '67,234.50', isPositive: true, prefix: '$' },
-  ETH: { symbol: 'ETH', displayName: 'ETH', price: '3,456.20', isPositive: true, prefix: '$' },
-  GOLD: { symbol: 'GOLD', displayName: 'GOLD', price: '2,345.60', isPositive: true, prefix: '$' },
-  SPX: { symbol: 'SPX', displayName: 'S&P 500', price: '5,234.50', isPositive: true, prefix: '' },
-  DJI: { symbol: 'DJI', displayName: 'DOW', price: '38,456.20', isPositive: false, prefix: '' },
-  IXIC: { symbol: 'IXIC', displayName: 'NASDAQ', price: '16,234.80', isPositive: true, prefix: '' },
-};
+const MARKET_ITEMS = [
+  { id: 'BTC', label: 'BTC', pair: 'BTCUSDT' },
+  { id: 'ETH', label: 'ETH', pair: 'ETHUSDT' },
+  { id: 'GOLD', label: 'GOLD', pair: 'PAXGUSDT' },
+  { id: 'BNB', label: 'BNB', pair: 'BNBUSDT' },
+  { id: 'SOL', label: 'SOL', pair: 'SOLUSDT' },
+  { id: 'XRP', label: 'XRP', pair: 'XRPUSDT' },
+];
+
+const INITIAL_DATA: Record<string, TickerData> = {};
+MARKET_ITEMS.forEach(item => {
+  INITIAL_DATA[item.id] = { symbol: item.id, displayName: item.label, price: '—', isPositive: true, prefix: '$' };
+});
 
 const MarketTicker = memo(() => {
   const [data, setData] = useState(INITIAL_DATA);
-  const [lastPrices, setLastPrices] = useState<Record<string, number>>({});
 
   useEffect(() => {
-    let lastUpdate = 0;
-    const THROTTLE_MS = 300; // Update setiap 300ms untuk lebih responsif
+    let intervalId: ReturnType<typeof setInterval>;
 
-    // Subscribe to Binance WebSocket for crypto + GOLD (REALTIME via WebSocket)
-    const unsubscribeBinance = subscribeToBinance(({ symbol, price, change }) => {
-      const now = Date.now();
-      if (now - lastUpdate < THROTTLE_MS) return;
-      lastUpdate = now;
-
-      setData(prev => ({
-        ...prev,
-        [symbol]: {
-          ...prev[symbol],
-          displayName: symbol === 'GOLD' ? 'GOLD' : symbol,
-          price: price.toLocaleString('en-US', { 
-            minimumFractionDigits: 2, 
-            maximumFractionDigits: 2 
-          }),
-          isPositive: change >= 0,
-          prefix: '$'
-        }
-      }));
-
-      // Track price for comparison
-      setLastPrices(prev => ({ ...prev, [symbol]: price }));
-    });
-
-    // Fetch Indices data - REALTIME dengan polling agresif (2 detik)
-    const fetchIndicesData = async () => {
+    async function fetchData() {
+      if (typeof window === 'undefined') return;
+      
       try {
-        // Yahoo Finance API - gratis, no key needed
-        const response = await fetch(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=^GSPC,^DJI,^IXIC`, {
-          headers: {
-            'User-Agent': 'Mozilla/5.0'
-          }
-        });
+        const res = await fetch('/api/market-data');
+        if (!res.ok) return;
+        const result = await res.json();
         
-        if (!response.ok) throw new Error('API Error');
-        
-        const result = await response.json();
-        
-        if (result.quoteResponse?.result) {
-          const quotes = result.quoteResponse.result;
-          const updates: Partial<Record<string, TickerData>> = {};
-
-          quotes.forEach((quote: any) => {
-            let key = '';
-            let displayName = '';
+        if (result && result.crypto && Array.isArray(result.crypto)) {
+          setData(prev => {
+            const next = { ...prev };
             
-            if (quote.symbol === '^GSPC') {
-              key = 'SPX';
-              displayName = 'S&P 500';
-            } else if (quote.symbol === '^DJI') {
-              key = 'DJI';
-              displayName = 'DOW';
-            } else if (quote.symbol === '^IXIC') {
-              key = 'IXIC';
-              displayName = 'NASDAQ';
-            }
+            MARKET_ITEMS.forEach(item => {
+              // The API returns 'pair' like 'BTC/USDT' or 'PAXG/USDT'
+              // Or we can just match symbol: 'BTCUSDT' or 'PAXGUSDT'
+              const ticker = result.crypto.find((c: any) => c.symbol === item.pair);
+              if (ticker) {
+                const currentPrice = ticker.price;
+                const prevItem = prev[item.id];
+                const prevPriceNum = prevItem && prevItem.price !== '—' ? parseFloat(prevItem.price.replace(/,/g, '')) : currentPrice;
+                const isPositive = currentPrice >= prevPriceNum;
 
-            if (key && quote.regularMarketPrice) {
-              const currentPrice = quote.regularMarketPrice;
-              const lastPrice = lastPrices[key];
-              
-              // Determine if price went up or down
-              let isPositive = true;
-              if (lastPrice !== undefined) {
-                isPositive = currentPrice >= lastPrice;
-              } else if (quote.regularMarketChange) {
-                isPositive = quote.regularMarketChange >= 0;
+                next[item.id] = {
+                  ...prevItem,
+                  price: currentPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 }),
+                  isPositive: currentPrice === prevPriceNum ? prevItem.isPositive : isPositive,
+                };
               }
-              
-              updates[key] = {
-                symbol: key,
-                displayName,
-                price: currentPrice.toLocaleString('en-US', { 
-                  minimumFractionDigits: 2, 
-                  maximumFractionDigits: 2 
-                }),
-                isPositive,
-                prefix: ''
-              };
-
-              // Store current price for next comparison
-              setLastPrices(prev => ({ ...prev, [key]: currentPrice }));
-            }
+            });
+            return next;
           });
-
-          setData(prev => ({ ...prev, ...updates }));
         }
       } catch (error) {
-        console.error('[Market Ticker] Failed to fetch indices data:', error);
+        console.error('[Market Ticker] Failed to fetch data:', error);
+        if (!window.sessionStorage.getItem('lazarus_ticker_error_shown')) {
+          const detailMsg = error instanceof Error ? error.message : 'Unknown ticker stream error.';
+          window.dispatchEvent(new CustomEvent('lazarus-error', { detail: `[MARKET_TICKER] ${detailMsg}` }));
+          window.sessionStorage.setItem('lazarus_ticker_error_shown', 'true');
+        }
       }
-    };
+    }
 
-    // Initial fetch untuk indices
-    fetchIndicesData();
-    
-    // REALTIME: Update setiap 2 detik untuk indices (market hours)
-    // Harga akan berubah-ubah sesuai market movement
-    const interval = setInterval(fetchIndicesData, 2000);
+    // Initial fetch
+    fetchData();
 
-    return () => {
-      unsubscribeBinance();
-      clearInterval(interval);
-    };
-  }, [lastPrices]);
+    // Polling every 2.5 seconds (proxy backend limits Binance API rate while bypassing user ISP block)
+    intervalId = setInterval(fetchData, 2500);
 
-  const items = [data.BTC, data.ETH, data.GOLD, data.SPX, data.DJI, data.IXIC];
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const items = MARKET_ITEMS.map(i => data[i.id]);
   // Duplicate for seamless marquee effect
   const displayItems = [...items, ...items, ...items];
 
