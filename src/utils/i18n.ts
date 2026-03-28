@@ -8,6 +8,7 @@ export const translations = {
       shipTracker: 'Ship Tracker',
       flightTracker: 'Flight Tracker',
       conflictTracker: 'Conflict Tracker',
+      marketSignals: 'Markets',
       analysis: 'Analysis',
       about: 'About',
     },
@@ -130,6 +131,11 @@ export const translations = {
         title: 'Conflict Intelligence',
         description: 'OSINT tracker for the Iran-US-Israel conflict operations and associated geopolitical data.',
         metaDescription: 'Track real-time data, waves, and tactical intelligence on the Iran-Israel-US conflict using OSINT sources.'
+      },
+      marketSignals: {
+        title: 'Markets & Finance',
+        description: 'Monitor global market movements, real-time crypto prices, and latest financial news from verified sources.',
+        metaDescription: 'Lazarus Report — Global market news, real-time crypto prices, financial analysis, Bitcoin, Ethereum, Gold charts, and major stock indices.'
       }
     },
     footer: {
@@ -238,6 +244,7 @@ export const translations = {
       shipTracker: 'Pelacak Kapal',
       flightTracker: 'Pelacak Pesawat',
       conflictTracker: 'Pelacak Konflik',
+      marketSignals: 'Pasar',
       analysis: 'Analisis',
       about: 'Tentang',
     },
@@ -360,6 +367,11 @@ export const translations = {
         title: 'Intelijen Konflik',
         description: 'Pelacak OSINT untuk operasi konflik Iran-AS-Israel dan data geopolitik terkait.',
         metaDescription: 'Pantau data real-time, gelombang serangan, dan intelijen taktis pada konflik Iran-Israel-AS menggunakan sumber OSINT.'
+      },
+      marketSignals: {
+        title: 'Pasar & Keuangan',
+        description: 'Pantau pergerakan pasar global, harga crypto real-time, dan berita keuangan terkini dari sumber terverifikasi.',
+        metaDescription: 'Lazarus Report — Berita pasar global, harga crypto real-time, analisis keuangan, chart Bitcoin, Ethereum, Gold, dan indeks saham utama.'
       }
     },
     footer: {
