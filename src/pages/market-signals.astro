@@ -1,0 +1,308 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import LiveMarketGrid from '../components/LiveMarketGrid.tsx';
+import '../styles/global.css';
+
+import { getTranslation } from '../utils/i18n';
+import type { MarketDataResponse, FinnhubNewsItem, GlobalMarketMetrics, SentimentData } from './api/market-data';
+
+const lang = Astro.cookies.get('lazarus_lang')?.value || 'en';
+const t = getTranslation(lang);
+const isID = lang === 'id';
+
+const pageTitle = isID ? 'Pasar & Keuangan' : 'Markets & Finance';
+const pageDesc = isID
+  ? 'Pantau pergerakan pasar global, harga crypto real-time dari Binance, chart interaktif, dan intelijen pasar CoinMarketCap.'
+  : 'Monitor global market movements, real-time Binance crypto prices, interactive charts, and CoinMarketCap market intelligence.';
+
+// Fetch market data server-side
+let marketNews: FinnhubNewsItem[] = [];
+let globalMetrics: GlobalMarketMetrics | null = null;
+let sentiment: SentimentData | null = null;
+try {
+  const baseUrl = Astro.url.origin;
+  const res = await fetch(`${baseUrl}/api/market-data`);
+  if (res.ok) {
+    const data = await res.json() as MarketDataResponse;
+    marketNews = data?.news ?? [];
+    globalMetrics = data?.global ?? null;
+    sentiment = data?.sentiment ?? null;
+  }
+} catch {}
+
+function fmtPrice(n: number): string {
+  if (n === 0) return '—';
+  if (n >= 1e12) return '$' + (n / 1e12).toFixed(2) + 'T';
+  if (n >= 1e9) return '$' + (n / 1e9).toFixed(2) + 'B';
+  if (n >= 1e6) return '$' + (n / 1e6).toFixed(1) + 'M';
+  return '$' + n.toLocaleString('en-US');
+}
+
+function timeAgo(ts: number): string {
+  const diff = Date.now() - ts * 1000;
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return isID ? 'baru saja' : 'just now';
+  if (mins < 60) return `${mins}m`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h`;
+  return `${Math.floor(hours / 24)}d`;
+}
+
+const majorCharts = [
+  { symbol: 'BINANCE:BTCUSDT', label: 'Bitcoin', ticker: 'BTC/USDT' },
+  { symbol: 'BINANCE:ETHUSDT', label: 'Ethereum', ticker: 'ETH/USDT' },
+  { symbol: 'TVC:GOLD', label: 'Gold', ticker: 'XAU/USD' },
+  { symbol: 'TVC:DXY', label: isID ? 'Indeks Dolar AS' : 'US Dollar Index', ticker: 'DXY' },
+];
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.lazarusreport.online" },
+    { "@type": "ListItem", "position": 2, "name": pageTitle, "item": "https://www.lazarusreport.online/market-signals" }
+  ]
+};
+---
+
+<BaseLayout
+  title={`${pageTitle} — Lazarus Report Global`}
+  description={pageDesc}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} slot="head" />
+  <Header />
+
+  <main class="min-h-screen bg-lazarus-black text-lazarus-body font-sans pt-20 pb-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8">
+
+      <!-- ═══ Page Header ═══ -->
+      <div class="mb-6 sm:mb-8">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-1.5 h-8 sm:h-10 bg-lazarus-gold rounded-full"></div>
+          <div>
+            <h1 class="font-serif text-2xl sm:text-3xl md:text-4xl text-lazarus-headline">{pageTitle}</h1>
+            <p class="text-lazarus-muted text-xs sm:text-sm mt-1 max-w-xl">{pageDesc}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- GLOBAL MARKET INTELLIGENCE (CoinMarketCap) -->
+      <!-- ═══════════════════════════════════════════════ -->
+      {globalMetrics && (
+        <section class="mb-8 sm:mb-10 lg:grid lg:grid-cols-4 gap-4 space-y-4 lg:space-y-0">
+          <div class="bg-lazarus-dark border border-lazarus-border/40 rounded-xl p-4 flex flex-col justify-center">
+            <span class="text-lazarus-muted/50 text-[9px] font-mono tracking-widest uppercase mb-1">Total Market Cap</span>
+            <div class="text-lazarus-headline text-lg sm:text-xl font-bold font-mono">
+              {fmtPrice(globalMetrics.totalMarketCap)}
+              <span class={`text-[10px] ml-2 font-bold ${globalMetrics.marketCapChange24h >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                {globalMetrics.marketCapChange24h.toFixed(2)}%
+              </span>
+            </div>
+            <div class="block h-1 w-full bg-lazarus-black/30 mt-2 rounded-full overflow-hidden">
+                <div class={`h-full ${globalMetrics.marketCapChange24h >= 0 ? 'bg-emerald-500/50' : 'bg-red-500/50'} transition-all`} style={`width: ${Math.min(100, Math.abs(globalMetrics.marketCapChange24h * 10))}%`}></div>
+            </div>
+          </div>
+          <div class="bg-lazarus-dark border border-lazarus-border/40 rounded-xl p-4">
+            <span class="text-lazarus-muted/50 text-[9px] font-mono tracking-widest uppercase mb-1">BTC Dominance</span>
+            <div class="text-lazarus-headline text-lg sm:text-xl font-bold font-mono">
+              {globalMetrics.btcDominance.toFixed(1)}%
+            </div>
+            <div class="text-[9px] text-lazarus-muted/40 mt-1 uppercase">Official CMC Analysis</div>
+          </div>
+          <div class="bg-lazarus-dark border border-lazarus-border/40 rounded-xl p-4">
+            <span class="text-lazarus-muted/50 text-[9px] font-mono tracking-widest uppercase mb-1">ETH Dominance</span>
+            <div class="text-lazarus-headline text-lg sm:text-xl font-bold font-mono">
+              {globalMetrics.ethDominance.toFixed(1)}%
+            </div>
+            <div class="text-[9px] text-lazarus-muted/40 mt-1 uppercase">Ecosystem Health</div>
+          </div>
+          <div class="bg-lazarus-dark border border-lazarus-border/40 rounded-xl p-4">
+            <span class="text-lazarus-muted/50 text-[9px] font-mono tracking-widest uppercase mb-1">Active Cryptos</span>
+            <div class="text-lazarus-headline text-lg sm:text-xl font-bold font-mono">
+              {globalMetrics.activeCryptos.toLocaleString()}
+            </div>
+            <div class="text-[9px] text-lazarus-muted/40 mt-1 uppercase tracking-tight">Verified by CoinMarketCap</div>
+          </div>
+        </section>
+      )}
+
+      <!-- SECTION 2: Economic Calendar -->
+      <section class="mb-8 sm:mb-10">
+        <h2 class="font-serif text-lg sm:text-xl text-lazarus-headline mb-4 flex items-center gap-3">
+          <div class="w-1 h-5 bg-lazarus-gold rounded-full"></div>
+          {isID ? 'Kalender Ekonomi Global' : 'Global Economic Calendar'}
+        </h2>
+        <div class="bg-lazarus-dark border border-lazarus-border rounded-xl overflow-hidden">
+          <iframe
+            src="https://s.tradingview.com/embed-widget/events/?locale=en#%7B%22colorTheme%22%3A%22dark%22%2C%22isTransparent%22%3Atrue%2C%22width%22%3A%22100%25%22%2C%22height%22%3A420%2C%22importanceFilter%22%3A%22012%22%2C%22countryFilter%22%3A%22us%2Ccn%2Cjp%2Cgb%2Ceu%2Cid%22%7D"
+            class="w-full border-0"
+            style="height: 420px;"
+            loading="eager"
+            title="Economic Calendar"
+            sandbox="allow-scripts allow-same-origin allow-popups"
+          ></iframe>
+        </div>
+      </section>
+
+      <!-- SECTION 3: Live Crypto (Binance WebSocket Island) -->
+      <section class="mb-8 sm:mb-10">
+        <LiveMarketGrid client:load lang={lang} />
+      </section>
+
+      <!-- SECTION 4: Two-column layout -->
+      <div class="flex flex-col lg:flex-row gap-6 lg:gap-8">
+        <!-- Left Column -->
+        <div class="flex-1 lg:w-[65%] space-y-8">
+          <!-- Charts -->
+          <section>
+            <h2 class="font-serif text-lg sm:text-xl text-lazarus-headline mb-4 flex items-center gap-3">
+              <div class="w-1 h-5 bg-lazarus-gold rounded-full"></div>
+              {isID ? 'Chart Interaktif' : 'Interactive Charts'}
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              {majorCharts.map((chart) => (
+                <div class="bg-lazarus-dark border border-lazarus-border rounded-xl overflow-hidden group hover:border-lazarus-gold/20 transition-all">
+                  <div class="flex items-center justify-between px-3 sm:px-4 py-2 border-b border-lazarus-border/50 bg-lazarus-black/20">
+                    <div>
+                      <h3 class="text-lazarus-headline text-xs sm:text-sm font-serif font-bold">{chart.label}</h3>
+                      <span class="text-lazarus-muted text-[9px] sm:text-[10px] font-mono tracking-wider">{chart.ticker}</span>
+                    </div>
+                  </div>
+                  <div class="bg-lazarus-black">
+                    <iframe
+                      src={`https://s.tradingview.com/widgetembed/?frameElementId=tv_${chart.ticker.replace(/\//g, '')}&symbol=${encodeURIComponent(chart.symbol)}&interval=D&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=0f0f0f&studies=&theme=dark&style=1&timezone=Etc/UTC&withdateranges=0&showpopupbutton=0&showvolume=0&locale=en&width=100%25&height=220`}
+                      class="w-full border-0 block"
+                      style="height: 220px;"
+                      loading="lazy"
+                      title={`${chart.label} Chart`}
+                      sandbox="allow-scripts allow-same-origin allow-popups"
+                    ></iframe>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <!-- Market News -->
+          {marketNews.length > 0 && (
+            <section>
+              <h2 class="font-serif text-lg sm:text-xl text-lazarus-headline mb-4 flex items-center gap-3">
+                <div class="w-1 h-5 bg-lazarus-gold rounded-full"></div>
+                {isID ? 'Berita Finansial & Intelijen' : 'Financial News & Intelligence'}
+              </h2>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                {marketNews.map((item) => (
+                  <a
+                    href={item.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="group bg-lazarus-dark border border-lazarus-border/30 rounded-xl overflow-hidden hover:bg-lazarus-black transition-all duration-300"
+                  >
+                    {item.image && (
+                      <div class="relative overflow-hidden aspect-[16/9] border-b border-lazarus-border/20">
+                        <img
+                          src={item.image}
+                          alt={item.headline}
+                          class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          loading="lazy"
+                        />
+                      </div>
+                    )}
+                    <div class="p-3 sm:p-4">
+                      <h3 class="text-lazarus-headline text-sm font-serif font-medium leading-snug group-hover:text-lazarus-gold transition-colors line-clamp-2 mb-2">
+                        {item.headline}
+                      </h3>
+                      <div class="flex items-center justify-between">
+                        <span class="text-lazarus-muted/40 text-[9px] font-mono uppercase tracking-wider">{item.source}</span>
+                        <span class="text-lazarus-muted/30 text-[9px] font-mono">{timeAgo(item.datetime)}</span>
+                      </div>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </section>
+          )}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="lg:w-[35%] lg:sticky lg:top-24 lg:self-start space-y-5">
+          <!-- Live Sentiment (Alternative.me API Data) -->
+          <div class="bg-lazarus-dark border border-lazarus-border/40 rounded-xl p-5 relative overflow-hidden">
+             <div class="absolute -right-4 -top-4 w-20 h-20 bg-lazarus-gold/5 rounded-full blur-2xl"></div>
+             <h3 class="text-lazarus-gold text-[10px] sm:text-xs font-bold tracking-[0.2em] uppercase mb-4">Real-time Sentiment</h3>
+             
+             <div class="space-y-4">
+                <div class="bg-lazarus-black/40 p-5 rounded-lg border border-lazarus-border/20 text-center relative overflow-hidden">
+                    <div class="relative z-10">
+                        <div class="text-[10px] text-lazarus-muted/50 uppercase tracking-[0.2em] mb-1">Fear & Greed Index</div>
+                        <div class={`text-4xl font-mono font-black mb-1 ${sentiment ? (sentiment.value > 50 ? 'text-emerald-400' : 'text-red-400') : 'text-lazarus-muted whitespace-nowrap'}`}>
+                           {sentiment ? sentiment.value : '--'}
+                        </div>
+                        <div class={`text-[10px] font-bold uppercase tracking-widest ${sentiment ? (sentiment.value > 50 ? 'text-emerald-500' : 'text-red-500') : 'text-lazarus-muted'}`}>
+                           {sentiment ? sentiment.label : 'Loading...'}
+                        </div>
+                    </div>
+                </div>
+                <!-- Mini Index Image as reference -->
+                <div class="flex items-center justify-center p-2 rounded-lg bg-lazarus-black/20 border border-lazarus-border/10 grayscale-[0.5] opacity-60">
+                     <img src="https://alternative.me/crypto/fear-and-greed-index.png" alt="Fear & Greed Ref" class="max-w-full h-auto rounded h-24" />
+                </div>
+             </div>
+          </div>
+
+          <!-- Heatmap -->
+          <div class="bg-lazarus-dark border border-lazarus-border/40 rounded-xl overflow-hidden">
+            <div class="px-4 py-3 border-b border-lazarus-border/20 bg-lazarus-black/10">
+              <h3 class="text-lazarus-gold text-[10px] sm:text-xs font-bold tracking-[0.2em] uppercase">Global Performance Heatmap</h3>
+            </div>
+            <iframe
+              src="https://s.tradingview.com/embed-widget/crypto-coins-heatmap/?locale=en#%7B%22dataSource%22%3A%22Crypto%22%2C%22blockSize%22%3A%22market_cap_calc%22%2C%22blockColor%22%3A%22change%22%2C%22hasTopBar%22%3Afalse%2C%22isDataSetEnabled%22%3Afalse%2C%22isZoomEnabled%22%3Atrue%2C%22hasSymbolTooltip%22%3Atrue%2C%22width%22%3A%22100%25%22%2C%22height%22%3A340%2C%22colorTheme%22%3A%22dark%22%2C%22isTransparent%22%3Atrue%7D"
+              class="w-full border-0"
+              style="height: 340px;"
+              loading="lazy"
+              title="Crypto Heatmap"
+            ></iframe>
+          </div>
+
+          <!-- Reference Sources -->
+          <div class="bg-lazarus-dark border border-lazarus-border/40 rounded-xl p-4">
+            <h3 class="text-lazarus-gold text-[10px] sm:text-xs font-bold tracking-[0.2em] uppercase mb-4">Intelligence Sources</h3>
+            <div class="space-y-3">
+              {[
+                { name: 'CoinMarketCap', icon: '💎', url: 'https://coinmarketcap.com', desc: 'Market Cap & Data' },
+                { name: 'Binance', icon: '🔸', url: 'https://www.binance.com', desc: 'Real-time Exchange Engine' },
+                { name: 'Alternative.me', icon: '📉', url: 'https://alternative.me', desc: 'Sentiment & F&G Index' },
+                { name: 'TradingView', icon: '📊', url: 'https://www.tradingview.com', desc: 'Charting & Analysis' },
+              ].map((src) => (
+                <a href={src.url} target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 p-2 rounded-lg hover:bg-lazarus-black/40 transition-colors group">
+                  <span class="text-lg opacity-80">{src.icon}</span>
+                  <div class="flex-1">
+                    <span class="text-lazarus-headline text-xs font-bold group-hover:text-lazarus-gold transition-colors">{src.name}</span>
+                    <span class="text-lazarus-muted/40 text-[9px] block uppercase tracking-tighter">{src.desc}</span>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Disclaimer -->
+      <div class="mt-12 bg-lazarus-dark/20 border border-lazarus-border/20 rounded-xl p-5">
+        <p class="text-lazarus-muted/50 text-[10px] leading-relaxed max-w-4xl italic">
+          Data Intelligence sourced from CoinMarketCap (Global Metrics), Binance (Real-time Prices), Alternative.me (Sentiment), and TradingView (Technical Charts). All information is real-time. Lazarus Report Global does not provide financial advice.
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</BaseLayout>
+
+<style>
+  section { animation: fade-in 0.8s ease-out forwards; }
+  .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+</style>
