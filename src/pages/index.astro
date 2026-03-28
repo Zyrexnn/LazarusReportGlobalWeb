@@ -135,6 +135,28 @@ const newsMediaSchema = {
             </a>
           </div>
 
+          <!-- Markets Mini Card -->
+          <div class="bg-lazarus-dark border border-lazarus-border rounded-xl p-5 relative overflow-hidden group hover:border-lazarus-gold/40 transition-all duration-300">
+            <div class="absolute -right-12 -bottom-12 w-32 h-32 bg-lazarus-gold/5 rounded-full blur-2xl group-hover:bg-lazarus-gold/10 transition-colors duration-500 pointer-events-none"></div>
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-lazarus-gold text-xs font-bold tracking-[0.2em] uppercase flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+                {t.nav.marketSignals}
+              </h3>
+            </div>
+            <p class="text-lazarus-headline font-serif text-sm mb-4 leading-relaxed">
+              {lang === 'id' ? 'Chart real-time, harga crypto, indeks saham, dan berita pasar global terkini.' : 'Real-time charts, crypto prices, stock indices, and the latest global market news.'}
+            </p>
+            <a href="/market-signals" class="inline-flex items-center gap-2 text-xs font-mono text-lazarus-gold hover:text-white transition-colors uppercase tracking-widest touch-target">
+              {lang === 'id' ? 'Buka Dashboard Pasar' : 'Open Market Dashboard'}
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </a>
+          </div>
+
           <!-- Crypto Ticker -->
           <CryptoTicker client:visible lang={lang} />
 
