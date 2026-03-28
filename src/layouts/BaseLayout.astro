@@ -1,5 +1,6 @@
 ---
 import HumanVerification from '../components/HumanVerification';
+import GlobalErrorPopup from '../components/GlobalErrorPopup.tsx';
 
 export interface Props {
   title?: string;
@@ -111,6 +112,7 @@ const websiteSchema = {
 </head>
 <body class="bg-lazarus-black text-lazarus-body font-sans min-h-screen antialiased">
   <HumanVerification client:only="react" lang={lang} />
+  <GlobalErrorPopup client:only="react" />
   <slot />
 </body>
 </html>
