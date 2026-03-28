@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import { getTranslation } from '../utils/i18n';
 
 interface NewsItem {
@@ -18,7 +18,8 @@ interface NewsFeedProps {
   lang?: string;
 }
 
-function SkeletonCard() {
+// Memoized Skeleton Card
+const SkeletonCard = memo(() => {
   return (
     <div className="bg-lazarus-dark border border-lazarus-border/30 rounded-none overflow-hidden animate-pulse">
       <div className="aspect-video bg-lazarus-black/40"></div>
@@ -30,9 +31,12 @@ function SkeletonCard() {
       </div>
     </div>
   );
-}
+});
 
-function NewsCard({ item, t }: { item: NewsItem; t: ReturnType<typeof getTranslation> }) {
+SkeletonCard.displayName = 'SkeletonCard';
+
+// Memoized News Card
+const NewsCard = memo(({ item, t }: { item: NewsItem; t: ReturnType<typeof getTranslation> }) => {
   const fallbackImg = 'https://images.unsplash.com/photo-1616423640778-28d1b53229bd?w=600&h=340&fit=crop';
   
   return (
@@ -83,7 +87,9 @@ function NewsCard({ item, t }: { item: NewsItem; t: ReturnType<typeof getTransla
       </div>
     </article>
   );
-}
+});
+
+NewsCard.displayName = 'NewsCard';
 
 function getFallbackNews(lang: string): NewsItem[] {
   if (lang === 'id') {

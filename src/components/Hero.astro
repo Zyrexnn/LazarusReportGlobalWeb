@@ -1,5 +1,7 @@
 ---
 import { getTranslation } from '../utils/i18n';
+import HeroNewsCards from './HeroNewsCards';
+
 const lang = Astro.cookies.get('lazarus_lang')?.value || 'en';
 const t = getTranslation(lang);
 ---
@@ -36,30 +38,6 @@ const t = getTranslation(lang);
       </a>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mt-12 animate-fade-in border-t border-lazarus-border/40" style="animation-delay: 0.4s;">
-      {t.hero.cards.map((card, index) => (
-        <a
-          href="#"
-          class:list={[
-            'group block p-5 hover:bg-lazarus-dark/30 transition-colors',
-            index === 0 && 'lg:pl-0 lg:pr-6 border-b sm:border-b-0 sm:border-r border-lazarus-border/30',
-            index === 1 && 'lg:px-6 border-b sm:border-b-0 lg:border-r border-lazarus-border/30',
-            index === 2 && 'lg:px-6 border-b sm:border-b-0 sm:border-r border-lazarus-border/30',
-            index === 3 && 'lg:pl-6 lg:pr-0'
-          ]}
-        >
-          <span class:list={[
-            'text-[10px] font-bold tracking-[0.15em] uppercase block mb-3',
-            card.category === t.categories.breaking || card.category === 'Breaking' ? 'text-lazarus-alert' : 'text-lazarus-gold'
-          ]}>
-            {card.category}
-          </span>
-          <h3 class="font-serif text-lazarus-headline text-lg font-medium leading-[1.3] group-hover:text-lazarus-gold transition-colors">
-            {card.title}
-          </h3>
-          <span class="text-lazarus-muted text-[10px] font-mono uppercase mt-4 block">{card.time} {t.hero.timeAgo}</span>
-        </a>
-      ))}
-    </div>
+    <HeroNewsCards client:load lang={lang} />
   </div>
 </section>

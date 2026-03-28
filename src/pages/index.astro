@@ -54,10 +54,6 @@ const newsMediaSchema = {
 
     <!-- Main Content Area -->
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <div class="mb-8 lg:hidden">
-        <LiveTV compact instanceId="live-tv-home-mobile" />
-      </div>
-
       <div class="flex flex-col lg:flex-row gap-8">
         <!-- News Feed (70%) -->
         <div class="flex-1 lg:w-[70%]">
@@ -65,23 +61,62 @@ const newsMediaSchema = {
             <div class="w-1 h-6 bg-lazarus-gold rounded-full"></div>
             {t.sections.latestIntelligence}
           </h2>
-          <NewsFeed client:load lang={lang} />
+          <NewsFeed client:visible lang={lang} />
         </div>
 
         <!-- Sidebar (30%) -->
         <div class="lg:w-[30%] lg:sticky lg:top-24 lg:self-start space-y-6">
-          <div class="hidden lg:block">
-            <LiveTV compact instanceId="live-tv-home-desktop" />
+          
+          <!-- Live TV Card - No Autoplay -->
+          <div class="bg-lazarus-dark border border-lazarus-border rounded-xl p-5 relative overflow-hidden group hover:border-lazarus-gold/40 transition-all duration-300">
+            <div class="absolute -right-12 -bottom-12 w-32 h-32 bg-lazarus-gold/5 rounded-full blur-2xl group-hover:bg-lazarus-gold/10 transition-colors duration-500 pointer-events-none"></div>
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-lazarus-gold text-xs font-bold tracking-[0.2em] uppercase flex items-center gap-2">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-red-600"></span>
+                </span>
+                {lang === 'id' ? 'Siaran Langsung' : 'Live Broadcast'}
+              </h3>
+            </div>
+            <p class="text-lazarus-headline font-serif text-sm mb-4 leading-relaxed">
+              {lang === 'id' ? 'Pantau siaran berita global 24/7 dari Al Jazeera, France 24, Bloomberg, dan lainnya.' : 'Monitor 24/7 global news broadcasts from Al Jazeera, France 24, Bloomberg, and more.'}
+            </p>
+            <a href="/live-tv" class="inline-flex items-center gap-2 text-xs font-mono text-lazarus-gold hover:text-white transition-colors uppercase tracking-widest touch-target">
+              {lang === 'id' ? 'Buka Monitor Desk' : 'Open Monitor Desk'}
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </a>
           </div>
 
-          <!-- AIS Map -->
-          <AISMap />
+          <!-- Ship Tracker Card - Button Only -->
+          <div class="bg-lazarus-dark border border-lazarus-border rounded-xl p-5 relative overflow-hidden group hover:border-lazarus-gold/40 transition-all duration-300">
+            <div class="absolute -right-12 -bottom-12 w-32 h-32 bg-blue-500/5 rounded-full blur-2xl group-hover:bg-blue-500/10 transition-colors duration-500 pointer-events-none"></div>
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-lazarus-gold text-xs font-bold tracking-[0.2em] uppercase flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" />
+                </svg>
+                {lang === 'id' ? 'Pelacak Kapal Global' : 'Global Ship Tracker'}
+              </h3>
+            </div>
+            <p class="text-lazarus-headline font-serif text-sm mb-4 leading-relaxed">
+              {lang === 'id' ? 'Pantau pergerakan kapal real-time di Teluk Persia, Selat Hormuz, dan jalur maritim strategis global.' : 'Track real-time vessel movements in Persian Gulf, Strait of Hormuz, and strategic maritime routes.'}
+            </p>
+            <a href="/ship-tracker" class="inline-flex items-center gap-2 text-xs font-mono text-lazarus-gold hover:text-white transition-colors uppercase tracking-widest touch-target">
+              {lang === 'id' ? 'Buka Peta AIS' : 'Open AIS Map'}
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </a>
+          </div>
 
-          <!-- Flight Tracker -->
+          <!-- Flight Tracker - Keep Embedded -->
           <FlightTracker />
 
           <!-- Conflict Intelligence Mini Card -->
-          <div class="bg-lazarus-dark border border-lazarus-border rounded-xl p-4 md:p-5 relative overflow-hidden group">
+          <div class="bg-lazarus-dark border border-lazarus-border rounded-xl p-5 relative overflow-hidden group hover:border-lazarus-gold/40 transition-all duration-300">
             <div class="absolute -right-12 -bottom-12 w-32 h-32 bg-lazarus-gold/5 rounded-full blur-2xl group-hover:bg-lazarus-gold/10 transition-colors duration-500 pointer-events-none"></div>
             <div class="flex items-center justify-between mb-3">
               <h3 class="text-lazarus-gold text-xs font-bold tracking-[0.2em] uppercase flex items-center gap-2">
@@ -92,7 +127,7 @@ const newsMediaSchema = {
             <p class="text-lazarus-headline font-serif text-sm mb-4 leading-relaxed">
               {lang === 'id' ? 'Pantau data real-time, gelombang serangan, dan intelijen taktis pada konflik multipolar menggunakan sumber OSINT.' : 'Track real-time data, waves, and tactical intelligence on the multipolar conflict operations using OSINT sources.'}
             </p>
-            <a href="/conflict-tracker" class="inline-flex items-center gap-2 text-xs font-mono text-lazarus-gold hover:text-white transition-colors uppercase tracking-widest">
+            <a href="/conflict-tracker" class="inline-flex items-center gap-2 text-xs font-mono text-lazarus-gold hover:text-white transition-colors uppercase tracking-widest touch-target">
               {lang === 'id' ? 'Buka Laporan Penuh' : 'Open Full Report'}
               <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
@@ -101,10 +136,10 @@ const newsMediaSchema = {
           </div>
 
           <!-- Crypto Ticker -->
-          <CryptoTicker client:load lang={lang} />
+          <CryptoTicker client:visible lang={lang} />
 
           <!-- Lazarus Exclusive -->
-          <div class="bg-lazarus-dark border border-lazarus-border rounded-xl p-4">
+          <div class="bg-lazarus-dark border border-lazarus-border rounded-xl p-5">
             <h3 class="text-lazarus-gold text-xs font-bold tracking-[0.2em] uppercase mb-4 flex items-center gap-2">
               <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z" />

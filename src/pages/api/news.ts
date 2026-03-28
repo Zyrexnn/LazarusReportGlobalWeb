@@ -675,8 +675,9 @@ export const GET: APIRoute = async ({ url }) => {
   const category = normalizeCategory(url.searchParams.get('category'));
   const query = url.searchParams.get('q') || '';
   const lang = url.searchParams.get('lang') === 'id' ? 'id' : 'en';
+  const limit = parseInt(url.searchParams.get('limit') || '20', 10);
 
-  const cacheKey = `news-${category}-${query}-${lang}`;
+  const cacheKey = `news-${category}-${query}-${lang}-${limit}`;
   const cachedData = cache.get(cacheKey);
   
   if (cachedData && Date.now() < cachedData.expiry) {
@@ -685,7 +686,7 @@ export const GET: APIRoute = async ({ url }) => {
     console.log(`[Cache] 💾 HIT for ${cacheKey} (age: ${age}s, from: ${cachedData.apiUsed})`);
     
     return new Response(JSON.stringify({ 
-      articles: cachedData.data, 
+      articles: cachedData.data.slice(0, limit), 
       cached: true,
       cacheAge: age,
       apiUsed: cachedData.apiUsed,
@@ -780,7 +781,7 @@ export const GET: APIRoute = async ({ url }) => {
     console.log(`[Cache] 💾 STORED ${cacheKey} (${uniqueArticles.length} articles, TTL: ${CACHE_TTL / 1000}s)`);
 
     return new Response(JSON.stringify({
-      articles: uniqueArticles,
+      articles: uniqueArticles.slice(0, limit),
       apiUsed: primaryProviderUsed,
       providerOrder: providers,
       attempted: attemptedProviders,
@@ -792,6 +793,7 @@ export const GET: APIRoute = async ({ url }) => {
       },
       cacheStats: getCacheStats(),
       cached: false,
+      limit,
     }), {
       status: 200,
       headers: {
