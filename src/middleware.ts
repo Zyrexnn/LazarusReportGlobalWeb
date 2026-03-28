@@ -95,5 +95,21 @@ export const onRequest = defineMiddleware(async (context, next) => {
     }
   }
 
-  return next();
+  const response = await next();
+  
+  // ── Global Security Headers for all routes (API & HTML) ──
+  // Prevent MIME type sniffing
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  // Prevent clickjacking / iframe embedding FROM unauthorized sources
+  response.headers.set("X-Frame-Options", "SAMEORIGIN");
+  // Enable XSS filtering in legacy browsers
+  response.headers.set("X-XSS-Protection", "1; mode=block");
+  // Only send referrer info to same origin for privacy & security
+  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  // Enforce HTTPS
+  response.headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
+  // Robust CSP for external widgets (Astro requires unsafe-inline for styles/scripts)
+  response.headers.set("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src * data:; font-src 'self' data: https:; connect-src * wss:; frame-src 'self' https: blob: data: about:; child-src 'self' https: blob: data: about:; worker-src 'self' blob: https:; upgrade-insecure-requests;");
+  
+  return response;
 });
