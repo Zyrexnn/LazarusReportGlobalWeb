@@ -264,9 +264,18 @@ export default function NewsFeed({ initialCategory = 'All', lang = 'en' }: NewsF
           setNews(fallbackNews);
         }
       } else {
+        if (!window.sessionStorage.getItem('lazarus_news_error_shown')) {
+          window.dispatchEvent(new CustomEvent('lazarus-error', { detail: `[NEWS_FEED_API] HTTP Status ${res.status}` }));
+          window.sessionStorage.setItem('lazarus_news_error_shown', 'true');
+        }
         setNews(fallbackNews);
       }
-    } catch {
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'News Feed API fetch failed.';
+      if (!window.sessionStorage.getItem('lazarus_news_error_shown')) {
+        window.dispatchEvent(new CustomEvent('lazarus-error', { detail: `[NEWS_FEED] ${errorMsg}` }));
+        window.sessionStorage.setItem('lazarus_news_error_shown', 'true');
+      }
       setNews(fallbackNews);
     } finally {
       setLoading(false);
