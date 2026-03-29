@@ -616,17 +616,21 @@ async function fetchFromApi(selection: ApiSelection, category: string, lang: str
     if (selection.name === 'WorldNews' && Array.isArray(data.news)) {
       articles = data.news
         .filter((item: any) => isWithin3Days(item.publish_date))
-        .map((item: any) => ({
-          title: item.title || 'Untitled',
-          category: categoryLabel,
-          excerpt: item.text?.substring(0, 220) || item.summary || '',
-          image: getValidImage(item.image),
-          date: formatArticleDate(item.publish_date, lang),
-          source: sourceName,
-          publisher: item.author || (item.url ? item.url.split('/')[2]?.replace('www.', '') : 'WorldNews'),
-          sourceName: String(sourceName),
-          url: item.url || '#',
-        }));
+        .map((item: any) => {
+          const urlMatch = item.url ? item.url.match(/^https?:\/\/(?:www\.)?([^\/]+)/i) : null;
+          const host = urlMatch ? urlMatch[1] : '';
+          return {
+            title: item.title || 'Untitled',
+            category: categoryLabel,
+            excerpt: item.text?.substring(0, 220) || item.summary || '',
+            image: getValidImage(item.image),
+            date: formatArticleDate(item.publish_date, lang),
+            source: sourceName,
+            publisher: host || 'WorldNews',
+            sourceName: String(sourceName),
+            url: item.url || '#',
+          };
+        });
     }
 
     if (selection.name === 'NewsAPI' && Array.isArray(data.articles)) {
