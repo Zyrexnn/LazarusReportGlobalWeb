@@ -11,10 +11,10 @@ export interface Props {
 }
 
 const {
-  title = 'Lazarus Report Global — Independent Geopolitical Analysis',
-  description = 'Independent Geopolitical Analysis & Global Security. Uncovering the buried truths behind global power shifts.',
+  title = 'Lazarus Report Global & Lazarus News — Independent Geopolitical Analysis',
+  description = 'Lazarus Report & Lazarus News. Breaking global security updates, independent geopolitical analysis, and OSINT. Uncovering the buried truths behind global power shifts.',
   ogImage = '/logolazarusreport.png',
-  keywords = 'geopolitical analysis, global security, conflict tracker, military intelligence, OSINT, international relations, geopolitics, lazarus report',
+  keywords = 'lazarus report, lazarus news, lazarus group news, geopolitical analysis, global security, conflict tracker, military intelligence, OSINT, international relations, geopolitics, lazarus report global',
   canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://www.lazarusreport.online').href,
 } = Astro.props;
 
@@ -23,12 +23,12 @@ const lang = Astro.cookies.get('lazarus_lang')?.value || 'en';
 // Structured Data for Organization and Logo
 const organizationSchema = {
   "@context": "https://schema.org",
-  "@type": "Organization",
+  "@type": "NewsMediaOrganization",
   "name": "Lazarus Report Global",
-  "alternateName": "Lazarus Report",
+  "alternateName": ["Lazarus Report", "Lazarus News", "Lazarus Group News"],
   "url": "https://www.lazarusreport.online",
   "logo": "https://www.lazarusreport.online/logolazarusreport.png",
-  "description": "Independent Geopolitical Analysis & Global Security. Uncovering the buried truths behind global power shifts.",
+  "description": "Lazarus Report & Lazarus News. Independent Geopolitical Analysis & Global Security. Uncovering the buried truths behind global power shifts.",
   "sameAs": [
     "https://www.lazarusreport.online"
   ],
@@ -43,6 +43,7 @@ const websiteSchema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   "name": "Lazarus Report Global",
+  "alternateName": ["Lazarus Report", "Lazarus News"],
   "url": "https://www.lazarusreport.online",
   "potentialAction": {
     "@type": "SearchAction",
@@ -64,8 +65,9 @@ const websiteSchema = {
   <meta name="theme-color" content="#0f0f0f" />
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
   
-  <!-- Canonical URL -->
+  <!-- Canonical URL & Sitemap -->
   <link rel="canonical" href={canonicalURL} />
+  <link rel="sitemap" href="/sitemap-index.xml" />
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />

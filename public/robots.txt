@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://www.lazarusreport.online/sitemap.xml
+Sitemap: https://www.lazarusreport.online/sitemap-index.xml
 
 # Crawl-delay for respectful crawling
 Crawl-delay: 1
