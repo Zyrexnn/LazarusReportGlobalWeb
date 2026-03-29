@@ -7,6 +7,8 @@ import { getTranslation } from '../utils/i18n';
 
 const lang = Astro.cookies.get('lazarus_lang')?.value || 'en';
 const t = getTranslation(lang);
+// Support external logo URL via environment variable or fallback to local
+const LOGO_URL = import.meta.env.PUBLIC_LOGO_URL || 'https://raw.githubusercontent.com/Zyrexnn/LazarusReportGlobalWeb/main/public/logolazarusreport.png';
 
 const navItems = [
   { href: '/', label: t.nav.home },
@@ -14,7 +16,6 @@ const navItems = [
   { href: '/ship-tracker', label: t.nav.shipTracker },
   { href: '/flight-tracker', label: t.nav.flightTracker },
   { href: '/conflict-tracker', label: t.nav.conflictTracker },
-  { href: '/market-signals', label: t.nav.marketSignals },
   { href: '/analysis', label: t.nav.analysis },
   { href: '/about', label: t.nav.about },
 ];
@@ -32,7 +33,7 @@ const currentPath = Astro.url.pathname;
       <!-- Logo -->
       <a href="/" class="flex items-center group" id="logo-link">
         <img
-          src="/logolazarusreport.png"
+          src={LOGO_URL}
           alt="Lazarus Report Global"
           class="h-32 py-1 w-auto transition-transform duration-300 group-hover:scale-105"
           loading="eager"
