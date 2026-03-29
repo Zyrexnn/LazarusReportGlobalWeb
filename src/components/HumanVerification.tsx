@@ -14,11 +14,61 @@ export default function HumanVerification({ lang = 'en' }: { lang?: string }) {
   const sliderRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // ============================================
+    // HUMAN VERIFICATION LOGIC - INDUSTRY STANDARD
+    // ============================================
+    
+    // 1. SESSION TRACKING - Visit Count Logic
+    // Detects new session (tab closed and reopened)
+    const isNewSession = !sessionStorage.getItem('lazarus_session_active');
+    
+    if (isNewSession) {
+      // Mark this session as active
+      sessionStorage.setItem('lazarus_session_active', 'true');
+      
+      // Increment visit count in localStorage (persists across sessions)
+      const currentVisits = parseInt(localStorage.getItem('lazarus_visit_count') || '0');
+      const newVisits = currentVisits + 1;
+      localStorage.setItem('lazarus_visit_count', newVisits.toString());
+
+      console.log(`[Human Verification] Visit #${newVisits} detected`);
+
+      // Trigger verification every 3 visits (Industry standard: balance security & UX)
+      if (newVisits % 3 === 0) {
+        console.log('[Human Verification] Visit threshold reached - verification required');
+        localStorage.removeItem('lazarus_verified');
+      }
+    }
+
+    // 2. INITIAL VERIFICATION CHECK
     const isVerified = localStorage.getItem('lazarus_verified');
     if (!isVerified) {
       setStage('selecting');
       document.body.style.overflow = 'hidden';
+      console.log('[Human Verification] User not verified - showing verification modal');
+    } else {
+      setStage('verified');
+      console.log('[Human Verification] User already verified');
     }
+
+    // 3. SESSION TIMEOUT - 30 Minute Timer
+    // Re-verify active users to prevent bot scraping with persistent connections
+    // 30 minutes = optimal balance (not too short for readers, not too long for security)
+    const SESSION_TIMEOUT = 1800000; // 30 minutes in milliseconds
+    // For testing: use 10000 (10 seconds) instead
+    
+    const sessionTimeout = setTimeout(() => {
+      console.log('[Human Verification] 30-minute session expired - re-verification required');
+      localStorage.removeItem('lazarus_verified');
+      setGranted(false);
+      setStage('selecting');
+      document.body.style.overflow = 'hidden';
+    }, SESSION_TIMEOUT);
+
+    // Cleanup on unmount
+    return () => {
+      clearTimeout(sessionTimeout);
+    };
   }, []);
 
   // Slide Logic
