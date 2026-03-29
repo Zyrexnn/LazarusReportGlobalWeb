@@ -316,7 +316,12 @@ function getSearchKeyword(category: string, query: string): string {
 function rotateApi(category: string, providers: ApiName[]): ApiName {
   const now = Date.now();
   const cached = rotationCache.get(category);
-  const currentIndex = cached && cached.expiry > now ? cached.index : -1;
+  
+  if (cached && cached.expiry > now && cached.index < providers.length) {
+    return providers[cached.index];
+  }
+
+  const currentIndex = cached ? cached.index : -1;
   const nextIndex = (currentIndex + 1) % providers.length;
 
   rotationCache.set(category, {
@@ -324,7 +329,7 @@ function rotateApi(category: string, providers: ApiName[]): ApiName {
     expiry: now + ROTATION_TTL,
   });
 
-  return (providers[nextIndex] as ApiName);
+  return providers[nextIndex];
 }
 
 // API Health Management Functions
