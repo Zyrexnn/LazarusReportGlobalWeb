@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 
-type ApiName = 'NewsData' | 'WorldNews' | 'Finnhub' | 'GNews' | 'Lazarus Report';
+type ApiName = 'NewsData' | 'WorldNews' | 'Finnhub' | 'GNews' | 'NewsAPI' | 'Lazarus Report';
 
 interface NewsArticle {
   title: string;
@@ -97,17 +97,17 @@ const CATEGORY_LABELS: Record<string, string> = {
 };
 
 const CATEGORY_API_PRIORITY: Record<string, ApiName[]> = {
-  all: ['NewsData', 'WorldNews', 'Finnhub', 'GNews'],
-  geopolitik: ['GNews', 'NewsData', 'WorldNews'],
-  geopolitics: ['GNews', 'NewsData', 'WorldNews'],
-  'middle east': ['GNews', 'NewsData', 'WorldNews'],
-  military: ['NewsData', 'GNews', 'WorldNews'],
-  militer: ['NewsData', 'GNews', 'WorldNews'],
-  markets: ['Finnhub', 'GNews', 'NewsData'],
-  pasar: ['Finnhub', 'GNews', 'NewsData'],
-  finance: ['Finnhub', 'GNews', 'NewsData'],
-  economy: ['Finnhub', 'GNews', 'NewsData'],
-  crypto: ['Finnhub', 'GNews'],
+  all: ['NewsData', 'WorldNews', 'NewsAPI', 'Finnhub', 'GNews'],
+  geopolitik: ['GNews', 'NewsData', 'NewsAPI', 'WorldNews'],
+  geopolitics: ['GNews', 'NewsData', 'NewsAPI', 'WorldNews'],
+  'middle east': ['GNews', 'NewsData', 'NewsAPI', 'WorldNews'],
+  military: ['NewsData', 'GNews', 'NewsAPI', 'WorldNews'],
+  militer: ['NewsData', 'GNews', 'NewsAPI', 'WorldNews'],
+  markets: ['Finnhub', 'GNews', 'NewsAPI', 'NewsData'],
+  pasar: ['Finnhub', 'GNews', 'NewsAPI', 'NewsData'],
+  finance: ['Finnhub', 'GNews', 'NewsAPI', 'NewsData'],
+  economy: ['Finnhub', 'GNews', 'NewsAPI', 'NewsData'],
+  crypto: ['Finnhub', 'NewsAPI', 'GNews'],
 };
 
 const GNEWS_CATEGORY_MAP: Record<string, 'world' | 'business'> = {
@@ -194,8 +194,9 @@ const SOURCE_PRIORITY: Record<string, number> = {
   'Lazarus Report': 0,
   'GNews': 1,
   'NewsData': 2,
-  'Finnhub': 3,
-  'WorldNews': 4,
+  'NewsAPI': 3,
+  'Finnhub': 4,
+  'WorldNews': 5,
 };
 
 function deduplicateArticles(articles: NewsArticle[]): NewsArticle[] {
@@ -464,6 +465,18 @@ function getApiToUse(category: string, query: string, lang: string, provider?: A
           'sort-direction': 'DESC',
         },
       };
+    case 'NewsAPI':
+      return {
+        name: 'NewsAPI',
+        baseUrl: 'https://newsapi.org/v2/everything',
+        key: import.meta.env.NEWSAPI_API_KEY || '',
+        params: {
+          q: searchQuery,
+          language: apiLanguage,
+          pageSize: 15,
+          sortBy: 'publishedAt',
+        },
+      };
     case 'Finnhub':
       return {
         name: 'Finnhub',
@@ -502,6 +515,7 @@ function buildApiUrl(selection: ApiSelection): string {
     'WorldNews': 'api-key',
     'Finnhub': 'token',
     'GNews': 'apikey',
+    'NewsAPI': 'apiKey',
   };
 
   const keyName = keyMap[selection.name as string];
@@ -609,7 +623,23 @@ async function fetchFromApi(selection: ApiSelection, category: string, lang: str
           image: getValidImage(item.image),
           date: formatArticleDate(item.publish_date, lang),
           source: sourceName,
-          publisher: 'WorldNews',
+          publisher: item.author || (item.url ? item.url.split('/')[2]?.replace('www.', '') : 'WorldNews'),
+          sourceName: String(sourceName),
+          url: item.url || '#',
+        }));
+    }
+
+    if (selection.name === 'NewsAPI' && Array.isArray(data.articles)) {
+      articles = data.articles
+        .filter((item: any) => isWithin3Days(item.publishedAt))
+        .map((item: any) => ({
+          title: item.title || 'Untitled',
+          category: categoryLabel,
+          excerpt: item.description || item.content || '',
+          image: getValidImage(item.urlToImage),
+          date: formatArticleDate(item.publishedAt, lang),
+          source: sourceName,
+          publisher: item.source?.name || 'NewsAPI',
           sourceName: String(sourceName),
           url: item.url || '#',
         }));
