@@ -27,18 +27,18 @@ const labels = {
   rocketAlertDesc: isID
     ? 'Peringatan real-time serangan udara dan roket di wilayah Israel.'
     : 'Real-time rocket and aerial threat alerts across Israeli territory.',
-  storyMap: isID ? 'Peta Taktis & Analisis StoryMap' : 'Tactical Map & StoryMap Analysis',
+  storyMap: isID ? 'Peta Teater Strategis — Osint' : 'Strategic Theater Map — Osint',
   storyMapDesc: isID
-    ? 'Visualisasi ArcGIS mendalam — kronologi, lokasi sasaran, dan konteks geopolitik.'
-    : 'Deep ArcGIS visualization — timeline, target locations, and geopolitical context.',
-  intelDash: isID ? 'Dashboard Intelijen ArcGIS' : 'ArcGIS Intelligence Dashboard',
+    ? 'Visualisasi teater perang interaktif — salvos, sasaran, dan data intelijen dari PromiseDenied.'
+    : 'Interactive theater visualization — salvos, targets, and tactical intelligence from PromiseDenied.',
+  intelDash: isID ? 'Dashboard Intelijen Global' : 'Global Intelligence Dashboard',
   intelDashDesc: isID
-    ? 'Dashboard interaktif dengan data serangan, korban, dan peralatan militer.'
-    : 'Interactive dashboard with strike data, casualties, and military hardware.',
-  osintData: isID ? 'Data OSINT — Ringkasan Gelombang' : 'OSINT Data — Wave Summary',
+    ? 'Analisis taktis mendalam soal muatan senjata, pangkalan militer, dan zona peluncuran.'
+    : 'Deep tactical analysis on payloads, military bases, and launch zones.',
+  osintData: isID ? 'Intelijen Gelombang Serangan' : 'Attack Wave Intelligence',
   osintDataDesc: isID
-    ? 'Data terstruktur dari dataset GitHub danielrosehill/Iran-Israel-War-2026-OSINT-Data.'
-    : 'Structured data from the danielrosehill/Iran-Israel-War-2026-OSINT-Data GitHub dataset.',
+    ? 'Dataset terperinci tentang salvo dan dampak serangan dari danielrosehill/Iran-Israel-War-2026-OSINT-Data.'
+    : 'Detailed dataset on salvos and strike impacts from the danielrosehill/Iran-Israel-War-2026-OSINT-Data repo.',
 
   // Stats
   totalWaves: isID ? 'Total Gelombang' : 'Total Waves',
@@ -166,52 +166,70 @@ const labels = {
       </section>
 
       <!-- ═══════════════════════════════════════════════════ -->
-      <!-- SECTION 2: ArcGIS Maps (Two Columns on Desktop) -->
+      <!-- SECTION 2: PromiseDenied Strategic Map + Tactical Intel -->
       <!-- ═══════════════════════════════════════════════════ -->
-      <section class="mb-10 grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- ArcGIS StoryMap -->
-        <div class="bg-lazarus-dark border border-lazarus-border rounded-xl overflow-hidden shadow-2xl relative group">
-          <div class="absolute inset-0 border border-lazarus-gold/10 rounded-xl pointer-events-none group-hover:border-lazarus-gold/40 transition-[border-color] duration-500 z-10"></div>
+      <section class="mb-10 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Strategic OSINT Map (PromiseDenied) -->
+        <div class="lg:col-span-2 bg-lazarus-dark border border-lazarus-border rounded-xl overflow-hidden shadow-2xl relative group">
+          <div class="absolute inset-0 border border-lazarus-gold/20 rounded-xl pointer-events-none group-hover:border-lazarus-gold/40 transition-[border-color] duration-500 z-10"></div>
           <div class="bg-lazarus-black/90 px-4 py-3 border-b border-lazarus-border/50 flex items-center justify-between z-20 relative">
             <div class="flex items-center gap-3">
               <span class="w-2 h-2 rounded-full bg-lazarus-gold shadow-[0_0_6px_rgba(212,175,55,0.6)] animate-pulse"></span>
               <h2 class="text-lazarus-gold text-[10px] font-bold tracking-[0.2em] uppercase">{labels.storyMap}</h2>
             </div>
-            <span class="text-[9px] font-mono text-lazarus-muted/40 uppercase tracking-widest">{labels.verified}</span>
+            <div class="flex items-center gap-4">
+              <span class="text-[9px] font-mono text-lazarus-muted/40 uppercase tracking-widest">{labels.verified}</span>
+              <a href="https://promisedenied.com/map" target="_blank" rel="noopener" class="text-[9px] font-mono text-lazarus-muted/30 hover:text-lazarus-gold transition-colors">promisedenied.com ↗</a>
+            </div>
           </div>
           <p class="px-4 py-1.5 text-[9px] font-mono text-lazarus-muted/40 bg-lazarus-black/60 border-b border-lazarus-border/20">
             {labels.storyMapDesc}
           </p>
           <iframe 
-            src="https://storymaps.arcgis.com/stories/089bc1a2fe684405a67d67f13bd31324" 
-            class="w-full h-[500px] md:h-[600px] border-0 bg-lazarus-black relative z-20" 
+            src="https://promisedenied.com/map" 
+            class="w-full h-[550px] md:h-[650px] border-0 bg-lazarus-black relative z-20 grayscale-[0.2] contrast-[1.1]" 
             allowfullscreen 
-            allow="geolocation"
-            title="ArcGIS StoryMap"
+            title="Strategic OSINT Map"
             loading="lazy"
           ></iframe>
         </div>
 
-        <!-- ArcGIS Dashboard -->
-        <div class="bg-lazarus-dark border border-lazarus-border rounded-xl overflow-hidden shadow-2xl relative group">
-          <div class="absolute inset-0 border border-lazarus-gold/10 rounded-xl pointer-events-none group-hover:border-lazarus-gold/40 transition-[border-color] duration-500 z-10"></div>
-          <div class="bg-lazarus-black/90 px-4 py-3 border-b border-lazarus-border/50 flex items-center justify-between z-20 relative">
-            <div class="flex items-center gap-3">
-              <span class="w-2 h-2 rounded-full bg-lazarus-gold shadow-[0_0_6px_rgba(212,175,55,0.6)] animate-pulse"></span>
-              <h2 class="text-lazarus-gold text-[10px] font-bold tracking-[0.2em] uppercase">{labels.intelDash}</h2>
+        <!-- Tactical Intel Panel (Right) -->
+        <div class="lg:col-span-1 space-y-4">
+          <!-- Weapon Systems Card -->
+          <div class="bg-lazarus-dark border border-lazarus-border rounded-xl p-5 relative overflow-hidden group">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-red-600/5 blur-3xl -mr-16 -mt-16 group-hover:bg-red-600/10 transition-colors"></div>
+            <h3 class="text-lazarus-gold text-[10px] font-bold tracking-[0.2em] uppercase mb-4 flex items-center gap-2">
+              <svg class="w-3.5 h-3.5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+              {isID ? 'Arsenal Oposisi' : 'Opposition Arsenal'}
+            </h3>
+            <div id="weapons-container" class="space-y-4 max-h-[300px] overflow-y-auto custom-scrollbar pr-1">
+              <p class="text-lazarus-muted/40 text-[10px] font-mono animate-pulse">{labels.loading}</p>
             </div>
-            <span class="text-[9px] font-mono text-lazarus-muted/40 uppercase tracking-widest">{labels.verified}</span>
           </div>
-          <p class="px-4 py-1.5 text-[9px] font-mono text-lazarus-muted/40 bg-lazarus-black/60 border-b border-lazarus-border/20">
-            {labels.intelDashDesc}
-          </p>
-          <iframe 
-            src="https://arcg.is/1SHTKa1" 
-            class="w-full h-[500px] md:h-[600px] border-0 bg-lazarus-black relative z-20" 
-            allowfullscreen
-            title="ArcGIS Intelligence Dashboard"
-            loading="lazy"
-          ></iframe>
+
+          <div class="bg-lazarus-dark border border-lazarus-border rounded-xl p-5 relative overflow-hidden group">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-cyan-600/5 blur-3xl -mr-16 -mt-16 group-hover:bg-cyan-600/10 transition-colors"></div>
+            <h3 class="text-lazarus-gold text-[10px] font-bold tracking-[0.2em] uppercase mb-4 flex items-center gap-2">
+              <svg class="w-3.5 h-3.5 text-cyan-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+              {isID ? 'Postur Pertahanan' : 'Defense Posture'}
+            </h3>
+            <div id="defense-container" class="space-y-4 max-h-[300px] overflow-y-auto custom-scrollbar pr-1">
+              <p class="text-lazarus-muted/40 text-[10px] font-mono animate-pulse">{labels.loading}</p>
+            </div>
+          </div>
+          
+          <!-- Regional Assets Card -->
+          <div class="bg-lazarus-dark border border-lazarus-border rounded-xl p-5 relative overflow-hidden group">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-amber-600/5 blur-3xl -mr-16 -mt-16 group-hover:bg-amber-600/10 transition-colors"></div>
+            <h3 class="text-lazarus-gold text-[10px] font-bold tracking-[0.2em] uppercase mb-4 flex items-center gap-2">
+              <svg class="w-3.5 h-3.5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+              {isID ? 'Aset Regional' : 'Regional Assets'}
+            </h3>
+            <div id="assets-container" class="space-y-4 max-h-[300px] overflow-y-auto custom-scrollbar pr-1">
+              <p class="text-lazarus-muted/40 text-[10px] font-mono animate-pulse">{labels.loading}</p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -311,7 +329,72 @@ const labels = {
       setEl('stat-countries', (data.stats?.targetedCountriesCount || 0).toLocaleString());
       setEl('stat-days', (data.stats?.conflictDays || 0).toLocaleString() + '+');
 
-      // Populate timeline
+      // Populate weapons
+      const weaponsEl = document.getElementById('weapons-container');
+      if (weaponsEl && data.weapons && data.weapons.weapons) {
+        weaponsEl.innerHTML = data.weapons.weapons.slice(0, 8).map(w => `
+          <div class="border-b border-lazarus-border/30 pb-3 last:border-0">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-lazarus-headline text-[11px] font-bold">${w.name}</span>
+              <span class="text-red-400/60 text-[9px] font-mono uppercase tracking-tighter">${w.category || 'Missile'}</span>
+            </div>
+            <p class="text-lazarus-muted text-[10px] leading-tight mb-1 content- Indonesia-Translation-Ready">${w.description || 'Ballistic deployment verified.'}</p>
+            <div class="flex gap-2">
+              <span class="text-[8px] font-mono text-lazarus-muted/50">RANGE: <strong class="text-lazarus-gold/60">${w.specs?.range || 'Unknown'}</strong></span>
+              <span class="text-[8px] font-mono text-lazarus-muted/50">TYPE: <strong class="text-lazarus-gold/60">${w.type || 'N/A'}</strong></span>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Populate defense systems
+      const defenseEl = document.getElementById('defense-container');
+      if (defenseEl && data.defense && data.defense.systems) {
+        defenseEl.innerHTML = data.defense.systems.slice(0, 6).map(s => `
+          <div class="border-b border-lazarus-border/30 pb-3 last:border-0">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-lazarus-headline text-[11px] font-bold">${s.name}</span>
+              <span class="text-cyan-400/60 text-[9px] font-mono uppercase tracking-tighter">Defense</span>
+            </div>
+            <p class="text-lazarus-muted text-[10px] leading-tight mb-1">${s.description || 'Active interception system.'}</p>
+            <div class="flex gap-2">
+              <span class="text-[8px] font-mono text-lazarus-muted/50">STAGES: <strong class="text-lazarus-gold/60">${s.specs?.interception_layers || '1'}</strong></span>
+              <span class="text-[8px] font-mono text-lazarus-muted/50">STATUS: <strong class="text-emerald-400/60">DEPLOYED</strong></span>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Populate regional assets
+      const assetsEl = document.getElementById('assets-container');
+      if (assetsEl && data.assets) {
+        let assetsHtml = '';
+        if (data.assets.bases && data.assets.bases.length > 0) {
+          assetsHtml += data.assets.bases.slice(0, 4).map(b => `
+            <div class="border-b border-lazarus-border/30 pb-3 last:border-0 mb-3">
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-lazarus-headline text-[11px] font-bold">${b.name}</span>
+                <span class="text-amber-400/60 text-[8px] font-mono uppercase">${b.country}</span>
+              </div>
+              <p class="text-lazarus-muted text-[10px] leading-tight">${b.location_description || 'Strategic base location.'}</p>
+            </div>
+          `).join('');
+        }
+        if (data.assets.vessels && data.assets.vessels.length > 0) {
+          assetsHtml += data.assets.vessels.slice(0, 3).map(v => `
+            <div class="border-b border-lazarus-border/30 pb-3 last:border-0 mb-3">
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-lazarus-headline text-[11px] font-bold">${v.name}</span>
+                <span class="text-amber-400/60 text-[8px] font-mono uppercase">${v.class}</span>
+              </div>
+              <p class="text-lazarus-muted text-[10px] leading-tight">${v.status || 'Active in theater.'}</p>
+            </div>
+          `).join('');
+        }
+        assetsEl.innerHTML = assetsHtml || '<p class="text-lazarus-muted/40 text-[10px]">No active assets reported.</p>';
+      }
+
+      // Populate timeline ... (rest of the script)
       const timelineEl = document.getElementById('timeline-container');
       if (timelineEl && data.timeline) {
         timelineEl.innerHTML = data.timeline.map(ev => `
@@ -339,7 +422,7 @@ const labels = {
             : 'bg-red-900/30 text-red-400';
           return `
             <tr class="hover:bg-lazarus-black/50 transition-colors border-b border-lazarus-border/20">
-              <td class="py-2.5 px-3 text-xs font-mono text-lazarus-gold/80">${inc.wave || '—'}</td>
+              <td class="py-2.5 px-3 text-xs font-mono text-lazarus-gold/80">${inc.wave|| '—'}</td>
               <td class="py-2.5 px-3 text-xs text-lazarus-muted whitespace-nowrap">${dateStr}</td>
               <td class="py-2.5 px-3 text-xs text-lazarus-headline truncate max-w-[180px]" title="${inc.weapons || ''}">${inc.weapons || '—'}</td>
               <td class="py-2.5 px-3 text-xs text-lazarus-muted truncate max-w-[200px]" title="${inc.targets || ''}">${inc.targets || '—'}</td>

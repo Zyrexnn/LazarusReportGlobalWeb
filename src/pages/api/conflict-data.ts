@@ -27,6 +27,10 @@ interface WaveFile {
     };
   };
   incidents?: any[];
+  weapons?: any[];
+  systems?: any[];
+  bases?: any[];
+  vessels?: any[];
 }
 
 async function safeFetch(url: string): Promise<WaveFile | null> {
@@ -108,7 +112,7 @@ function getWounded(d: WaveFile | null): number {
   return 0;
 }
 
-function buildResponse(tp4: WaveFile | null, tp3: WaveFile | null, tp2: WaveFile | null, tp1: WaveFile | null) {
+async function buildResponse(tp4: WaveFile | null, tp3: WaveFile | null, tp2: WaveFile | null, tp1: WaveFile | null) {
   const totalWaves = getIncidentCount(tp4) + getIncidentCount(tp3) + getIncidentCount(tp2) + getIncidentCount(tp1);
   const totalFatalities = getKilled(tp4) + getKilled(tp3) + getKilled(tp2) + getKilled(tp1);
   const totalWounded = getWounded(tp4) + getWounded(tp3) + getWounded(tp2) + getWounded(tp1);
@@ -116,6 +120,14 @@ function buildResponse(tp4: WaveFile | null, tp3: WaveFile | null, tp2: WaveFile
   // Compute days since April 13 2024 (TP1 start)
   const conflictStart = new Date('2024-04-13T00:00:00Z');
   const conflictDays = Math.floor((Date.now() - conflictStart.getTime()) / (1000 * 60 * 60 * 24));
+
+  // Fetch reference data concurrently
+  const [weapons, defense, bases, vessels] = await Promise.all([
+    safeFetch(`${GITHUB_RAW}/reference/iranian_weapons.json`),
+    safeFetch(`${GITHUB_RAW}/reference/defense_systems.json`),
+    safeFetch(`${GITHUB_RAW}/reference/us_bases.json`),
+    safeFetch(`${GITHUB_RAW}/reference/us_naval_vessels.json`),
+  ]);
 
   // Countries targeted (union across all rounds)
   const countriesSet = new Set<string>();
@@ -194,6 +206,12 @@ function buildResponse(tp4: WaveFile | null, tp3: WaveFile | null, tp2: WaveFile
       totalWounded,
       targetedCountriesCount: countriesSet.size || 12,
       conflictDays,
+    },
+    weapons,
+    defense,
+    assets: {
+      bases: bases?.bases || [],
+      vessels: vessels?.vessels || [],
     },
     timeline,
     latestIncidents,
