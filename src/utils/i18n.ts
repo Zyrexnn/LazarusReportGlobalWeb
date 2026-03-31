@@ -235,6 +235,12 @@ export const translations = {
       code: 'Enter the code',
       status: 'Waiting for selection',
       granted: 'Verified. Accessing feed...'
+    },
+    errorPopup: {
+      title: 'System Alert',
+      message: 'The system encountered a minor technical issue. Some features may be temporarily limited.',
+      ignore: 'Dismiss',
+      report: 'Report Issue',
     }
   },
   id: {
@@ -471,6 +477,12 @@ export const translations = {
       code: 'Enter the code',
       status: 'Waiting for selection',
       granted: 'Verified. Accessing feed...'
+    },
+    errorPopup: {
+      title: 'Pemberitahuan Sistem',
+      message: 'Sistem mengalami kendala teknis kecil. Beberapa fitur mungkin dibatasi sementara.',
+      ignore: 'Tutup',
+      report: 'Lapor Kendala',
     }
   }
 };

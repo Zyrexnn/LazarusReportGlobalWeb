@@ -115,7 +115,7 @@ const websiteSchema = {
 </head>
 <body class="bg-lazarus-black text-lazarus-body font-sans min-h-screen antialiased">
   <HumanVerification client:only="react" lang={lang} />
-  <GlobalErrorPopup client:only="react" />
+  <GlobalErrorPopup client:only="react" lang={lang} />
   <slot />
 </body>
 </html>

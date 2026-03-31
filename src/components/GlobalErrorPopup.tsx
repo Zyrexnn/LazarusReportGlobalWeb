@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
+import { getTranslation } from '../utils/i18n';
 
-export default function GlobalErrorHandler() {
+export default function GlobalErrorHandler({ lang = 'en' }: { lang?: string }) {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const t = getTranslation(lang as any);
 
   useEffect(() => {
     // Flag to prevent multiple popups
@@ -65,8 +67,8 @@ export default function GlobalErrorHandler() {
             </svg>
           </div>
           
-          <h3 className="font-serif text-xl text-lazarus-headline mb-2 font-bold tracking-wide">System Exception Module</h3>
-          <p className="text-lazarus-muted text-xs sm:text-sm mb-2">Sebuah fitur atau API gagal memproses permintaan. Demi keamanan, sistem menghentikan operasi terkait.</p>
+          <h3 className="font-serif text-xl text-lazarus-headline mb-2 font-bold tracking-wide">{t.errorPopup.title}</h3>
+          <p className="text-lazarus-muted text-xs sm:text-sm mb-6">{t.errorPopup.message}</p>
           
           <div className="w-full bg-lazarus-black/50 border border-lazarus-border/30 rounded p-3 mb-6 flex text-left font-mono text-[9px] text-red-400/80 overflow-hidden break-all">
             <span className="font-bold mr-2 text-lazarus-muted">ERR_LOG:</span> {errorMsg}
@@ -77,15 +79,15 @@ export default function GlobalErrorHandler() {
               onClick={() => setErrorMsg(null)}
               className="px-4 py-2 flex-1 rounded text-xs font-bold tracking-widest uppercase border border-lazarus-border hover:bg-lazarus-black transition-colors"
             >
-              Abaikan
+              {t.errorPopup.ignore}
             </button>
             <a 
-              href="https://www.instagram.com/lazarusreport/" 
+              href="https://www.instagram.com/lazarusreportglobal/" 
               target="_blank" 
               rel="noopener noreferrer"
               className="px-4 py-2 flex-1 rounded text-xs font-bold tracking-widest uppercase bg-red-600/20 text-red-500 border border-red-500/50 hover:bg-red-500 hover:text-white transition-colors"
             >
-              Lapor (IG)
+              {t.errorPopup.report}
             </a>
           </div>
         </div>
