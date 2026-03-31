@@ -186,7 +186,7 @@ export default function HumanVerification({ lang = 'en' }: { lang?: string }) {
                 </div>
                 <div className="text-left">
                   <div className="text-lazarus-gold font-bold text-xs tracking-wider uppercase mb-1">{t.verification.methodSlide}</div>
-                  <div className="text-lazarus-muted/40 text-[9px] uppercase tracking-tighter">Fast_Verification_Protocol</div>
+                  <div className="text-lazarus-muted/40 text-[9px] uppercase tracking-tighter">Fast_Verification</div>
                 </div>
                 <div className="absolute right-4 opacity-0 group-hover:opacity-100 transition-opacity">
                    <div className="w-1.5 h-1.5 rounded-full bg-lazarus-gold animate-ping"></div>
@@ -204,7 +204,7 @@ export default function HumanVerification({ lang = 'en' }: { lang?: string }) {
                 </div>
                 <div className="text-left">
                   <div className="text-lazarus-gold font-bold text-xs tracking-wider uppercase mb-1">{t.verification.methodCode}</div>
-                  <div className="text-lazarus-muted/40 text-[9px] uppercase tracking-tighter">Secured_Encryption_Key</div>
+                  <div className="text-lazarus-muted/40 text-[9px] uppercase tracking-tighter">Manual_Code_Entry</div>
                 </div>
                 <div className="absolute right-4 opacity-0 group-hover:opacity-100 transition-opacity">
                    <div className="w-1.5 h-1.5 rounded-full bg-lazarus-gold animate-ping"></div>
@@ -263,7 +263,7 @@ export default function HumanVerification({ lang = 'en' }: { lang?: string }) {
             <div className="animate-in fade-in slide-in-from-right-4 duration-500">
               <div className="text-center mb-6">
                 <div className="inline-block px-4 py-2 border border-lazarus-gold/10 bg-black/30 mb-6">
-                  <span className="text-lazarus-muted text-[10px] mr-3 uppercase">Access_ID:</span>
+                  <span className="text-lazarus-muted text-[10px] mr-3 uppercase">Enter_the_code:</span>
                   <span className="text-lazarus-gold font-bold tracking-[0.5em] text-lg">{targetCode}</span>
                 </div>
                 
@@ -312,8 +312,8 @@ export default function HumanVerification({ lang = 'en' }: { lang?: string }) {
 
         <div className="mt-8 pt-6 border-t border-lazarus-gold/10 flex justify-between items-end">
           <div className="text-[8px] text-lazarus-muted/40 uppercase leading-relaxed">
-            TERMINAL_SECURE: 0x4F2A<br />
-            ENCRYPTION: AES-256-GCM
+            SECURITY_LEVEL: ALPHA<br />
+            PROTECTION: ACTIVE
           </div>
           <div className="text-right">
              <div className="text-[10px] text-lazarus-gold/50 font-bold italic tracking-tighter">LAZARUS_ARCHITECT</div>

@@ -227,14 +227,14 @@ export const translations = {
       article3: 'Energy war is back on. Who controls tomorrow now?'
     },
     verification: {
-      title: 'SECURE ACCESS PROTOCOL',
-      subtitle: 'CHOOSE VERIFICATION METHOD',
-      methodSlide: 'BIO-METRIC SLIDE',
-      methodCode: 'ENCRYPTION CODE',
-      slide: 'SLIDE TO UNLOCK SYSTEM',
-      code: 'ENTER ACCESS CODE',
-      status: 'SYS.STATUS: PENDING_SELECTION',
-      granted: 'ACCESS GRANTED. DECRYPTING FEED...'
+      title: 'Human Verification',
+      subtitle: 'Please verify that you are a human',
+      methodSlide: 'Slide to Verify',
+      methodCode: 'Verification Code',
+      slide: 'Slide to the right',
+      code: 'Enter the code',
+      status: 'Waiting for selection',
+      granted: 'Verified. Accessing feed...'
     }
   },
   id: {
@@ -463,14 +463,14 @@ export const translations = {
       article3: 'Perang energi balik panas. Siapa pegang keran, dia pegang arah.'
     },
     verification: {
-      title: 'PROTOKOL KEAMANAN',
-      subtitle: 'PILIH METODE VERIFIKASI',
-      methodSlide: 'GESER BIO-METRIK',
-      methodCode: 'KODE ENKRIPSI',
-      slide: 'GESER UNTUK MEMBUKA SISTEM',
-      code: 'MASUKKAN KODE AKSES',
-      status: 'SYS.STATUS: MENUNGGU_PILIHAN',
-      granted: 'AKSES DITERIMA. MENDEKRIPSI DATA...'
+      title: 'Human Verification',
+      subtitle: 'Please verify that you are a human',
+      methodSlide: 'Slide to Verify',
+      methodCode: 'Verification Code',
+      slide: 'Slide to the right',
+      code: 'Enter the code',
+      status: 'Waiting for selection',
+      granted: 'Verified. Accessing feed...'
     }
   }
 };
