@@ -86,6 +86,12 @@ export default function MarketDashboard({ lang = 'en', news, global, sentiment }
   const [selectedSymbol, setSelectedSymbol] = useState<string>('BTCUSDT');
   const [connected, setConnected] = useState(false);
   const [activeTab, setActiveTab] = useState<'watchlist' | 'news'>('watchlist');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredAssets = assets.filter(a => 
+    a.pair.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    a.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   // Find the selected asset object
   const selectedAsset = assets.find(a => a.symbol === selectedSymbol) || assets[0];
@@ -279,15 +285,28 @@ export default function MarketDashboard({ lang = 'en', news, global, sentiment }
             
             {/* Watchlist Content */}
             <div className={`${activeTab === 'watchlist' ? 'block' : 'hidden'} divide-y divide-lazarus-border/10`}>
+              {/* Search Bar */}
+              <div className="p-3 border-b border-lazarus-border/30 bg-[#121212] sticky top-0 z-20">
+                <input
+                  type="text"
+                  placeholder="Search coin or index..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-[#0a0a0a] border border-lazarus-border/30 rounded px-3 py-2 text-xs text-lazarus-headline focus:outline-none focus:border-lazarus-gold transition-colors"
+                />
+              </div>
               {/* Header Row */}
-              <div className="grid grid-cols-[1.5fr_1fr_1fr] px-4 py-2 sticky top-0 bg-[#121212]/95 backdrop-blur z-10 border-b border-lazarus-border/30 text-[9px] uppercase tracking-wider text-lazarus-muted/50 font-mono">
+              <div className="grid grid-cols-[1.5fr_1fr_1fr] px-4 py-2 sticky top-[53px] bg-[#121212]/95 backdrop-blur z-10 border-b border-lazarus-border/30 text-[9px] uppercase tracking-wider text-lazarus-muted/50 font-mono">
                  <div>Asset</div>
                  <div className="text-right">Price</div>
                  <div className="text-right">24h</div>
               </div>
               
               {/* ListView */}
-              {assets.map((asset) => (
+              {filteredAssets.length === 0 ? (
+                <div className="p-4 text-center text-xs text-lazarus-muted italic">No assets found.</div>
+              ) : (
+                filteredAssets.map((asset) => (
                 <button
                   key={asset.symbol}
                   onClick={() => setSelectedSymbol(asset.symbol)}
@@ -312,7 +331,7 @@ export default function MarketDashboard({ lang = 'en', news, global, sentiment }
                     {asset.price > 0 ? fmtChange(asset.change24h) : '—'}
                   </div>
                 </button>
-              ))}
+              )))}
             </div>
 
             {/* News Content */}
