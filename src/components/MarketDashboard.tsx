@@ -192,10 +192,10 @@ export default function MarketDashboard({ lang = 'en', news, global, sentiment }
       </div>
 
       {/* ── Main Dashboard Layout ── */}
-      <div className="flex flex-col lg:flex-row gap-4 h-[800px] lg:h-[700px]">
+      <div className="flex flex-col lg:flex-row gap-4">
         
         {/* ── Left Column: Chart & Stats ── */}
-        <div className="flex-1 flex flex-col gap-4 min-w-0">
+        <div className="flex-1 flex flex-col gap-4 min-w-0 h-[500px] lg:h-[700px]">
           
           {/* Main Chart Area */}
           <div className="flex-1 bg-[#0f0f0f] border border-lazarus-border/30 rounded-xl overflow-hidden relative group">
@@ -253,7 +253,7 @@ export default function MarketDashboard({ lang = 'en', news, global, sentiment }
         </div>
 
         {/* ── Right Column: Sidebar (Watchlist & News) ── */}
-        <div className="lg:w-[360px] flex flex-col bg-[#121212] border border-lazarus-border/30 rounded-xl overflow-hidden shrink-0">
+        <div className="lg:w-[360px] flex flex-col bg-[#121212] border border-lazarus-border/30 rounded-xl overflow-hidden shrink-0 h-[500px] lg:h-[700px]">
           
           {/* Tabs */}
           <div className="flex border-b border-lazarus-border/30 bg-[#0a0a0a]">
