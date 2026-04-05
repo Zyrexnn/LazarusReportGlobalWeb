@@ -110,7 +110,7 @@ const breadcrumbSchema = {
             <div class="text-lazarus-headline text-lg sm:text-xl font-bold font-mono">
               {globalMetrics.btcDominance.toFixed(1)}%
             </div>
-            <div class="text-[9px] text-lazarus-muted/40 mt-1 uppercase">Official CMC Analysis</div>
+            <div class="text-[9px] text-lazarus-muted/40 mt-1 uppercase">Market Sentiment</div>
           </div>
           <div class="bg-lazarus-dark border border-lazarus-border/40 rounded-xl p-4">
             <span class="text-lazarus-muted/50 text-[9px] font-mono tracking-widest uppercase mb-1">ETH Dominance</span>
@@ -124,7 +124,7 @@ const breadcrumbSchema = {
             <div class="text-lazarus-headline text-lg sm:text-xl font-bold font-mono">
               {globalMetrics.activeCryptos.toLocaleString()}
             </div>
-            <div class="text-[9px] text-lazarus-muted/40 mt-1 uppercase tracking-tight">Verified by CoinMarketCap</div>
+            <div class="text-[9px] text-lazarus-muted/40 mt-1 uppercase tracking-tight">Vetted Global Assets</div>
           </div>
         </section>
       )}
@@ -215,8 +215,7 @@ const breadcrumbSchema = {
                       <h3 class="text-lazarus-headline text-sm font-serif font-medium leading-snug group-hover:text-lazarus-gold transition-colors line-clamp-2 mb-2">
                         {item.headline}
                       </h3>
-                      <div class="flex items-center justify-between">
-                        <span class="text-lazarus-muted/40 text-[9px] font-mono uppercase tracking-wider">{item.source}</span>
+                      <div class="flex items-center justify-end">
                         <span class="text-lazarus-muted/30 text-[9px] font-mono">{timeAgo(item.datetime)}</span>
                       </div>
                     </div>
@@ -267,35 +266,16 @@ const breadcrumbSchema = {
             ></iframe>
           </div>
 
-          <!-- Reference Sources -->
-          <div class="bg-lazarus-dark border border-lazarus-border/40 rounded-xl p-4">
-            <h3 class="text-lazarus-gold text-[10px] sm:text-xs font-bold tracking-[0.2em] uppercase mb-4">Intelligence Sources</h3>
-            <div class="space-y-3">
-              {[
-                { name: 'CoinMarketCap', icon: '💎', url: 'https://coinmarketcap.com', desc: 'Market Cap & Data' },
-                { name: 'Binance', icon: '🔸', url: 'https://www.binance.com', desc: 'Real-time Exchange Engine' },
-                { name: 'Alternative.me', icon: '📉', url: 'https://alternative.me', desc: 'Sentiment & F&G Index' },
-                { name: 'TradingView', icon: '📊', url: 'https://www.tradingview.com', desc: 'Charting & Analysis' },
-              ].map((src) => (
-                <a href={src.url} target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 p-2 rounded-lg hover:bg-lazarus-black/40 transition-colors group">
-                  <span class="text-lg opacity-80">{src.icon}</span>
-                  <div class="flex-1">
-                    <span class="text-lazarus-headline text-xs font-bold group-hover:text-lazarus-gold transition-colors">{src.name}</span>
-                    <span class="text-lazarus-muted/40 text-[9px] block uppercase tracking-tighter">{src.desc}</span>
-                  </div>
-                </a>
-              ))}
-            </div>
+          <!-- Simplified Disclaimer -->
+          <div class="bg-lazarus-dark border border-lazarus-border/40 rounded-xl p-5 italic">
+            <p class="text-lazarus-muted/50 text-[10px] leading-relaxed">
+              Real-time Market Intelligence. All data points are provided for informational purposes only. Lazarus Report Global does not provide financial or investment advice.
+            </p>
           </div>
         </div>
       </div>
 
-      <!-- Footer Disclaimer -->
-      <div class="mt-12 bg-lazarus-dark/20 border border-lazarus-border/20 rounded-xl p-5">
-        <p class="text-lazarus-muted/50 text-[10px] leading-relaxed max-w-4xl italic">
-          Data Intelligence sourced from CoinMarketCap (Global Metrics), Binance (Real-time Prices), Alternative.me (Sentiment), and TradingView (Technical Charts). All information is real-time. Lazarus Report Global does not provide financial advice.
-        </p>
-      </div>
+      <!-- Removed separate footer disclaimer as it's now in the sidebar for better layout flow -->
     </div>
   </main>
 
