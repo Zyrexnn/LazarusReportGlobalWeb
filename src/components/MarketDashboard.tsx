@@ -150,6 +150,18 @@ export default function MarketDashboard({ lang = 'en', news, global, sentiment }
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const symbolParam = params.get('symbol');
+      if (symbolParam && SYMBOLS.some(s => s.pair === symbolParam || s.symbol === symbolParam)) {
+        // Find by exact symbol match or pair match (since ticker passes pair like BTCUSDT)
+        const match = SYMBOLS.find(s => s.pair === symbolParam || s.symbol === symbolParam);
+        if (match) setSelectedSymbol(match.symbol);
+      }
+    }
+  }, []);
+
   const filteredAssets = assets.filter(a => 
     a.pair.toLowerCase().includes(searchQuery.toLowerCase()) || 
     a.name.toLowerCase().includes(searchQuery.toLowerCase())

@@ -4,26 +4,52 @@ interface TickerData {
   symbol: string;
   displayName: string;
   price: string;
+  change24h: number;
   isPositive: boolean;
   prefix?: string;
+  pair: string; // Used for links
+}
+
+interface SentimentData {
+  value: number;
+  label: string;
 }
 
 const MARKET_ITEMS = [
   { id: 'BTC', label: 'BTC', pair: 'BTCUSDT' },
   { id: 'ETH', label: 'ETH', pair: 'ETHUSDT' },
-  { id: 'GOLD', label: 'GOLD', pair: 'PAXGUSDT' },
+  { id: 'GOLD', label: 'GOLD', pair: 'PAXGUSDT' }, // Proxy for gold
   { id: 'BNB', label: 'BNB', pair: 'BNBUSDT' },
   { id: 'SOL', label: 'SOL', pair: 'SOLUSDT' },
   { id: 'XRP', label: 'XRP', pair: 'XRPUSDT' },
+  { id: 'ADA', label: 'ADA', pair: 'ADAUSDT' },
+  { id: 'DOGE', label: 'DOGE', pair: 'DOGEUSDT' },
+  { id: 'DOT', label: 'DOT', pair: 'DOTUSDT' },
+  { id: 'AVAX', label: 'AVAX', pair: 'AVAXUSDT' },
 ];
 
-const INITIAL_DATA: Record<string, TickerData> = {};
+const INITIAL_ITEMS: Record<string, TickerData> = {};
 MARKET_ITEMS.forEach(item => {
-  INITIAL_DATA[item.id] = { symbol: item.id, displayName: item.label, price: '—', isPositive: true, prefix: '$' };
+  INITIAL_ITEMS[item.id] = { symbol: item.id, displayName: item.label, pair: item.pair, price: '—', change24h: 0, isPositive: true, prefix: '$' };
 });
 
+const SparklineUp = () => (
+  <svg width="24" height="12" viewBox="0 0 24 12" fill="none" className="mx-1 shrink-0">
+    <path d="M1 9.5L6 4L11 7L17 2.5L23 5" stroke="#10b981" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+const SparklineDown = () => (
+  <svg width="24" height="12" viewBox="0 0 24 12" fill="none" className="mx-1 shrink-0">
+    <path d="M1 2.5L6 7L11 4.5L17 9.5L23 7" stroke="#ef4444" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
 const MarketTicker = memo(() => {
-  const [data, setData] = useState(INITIAL_DATA);
+  const [data, setData] = useState<{ items: Record<string, TickerData>, sentiment: SentimentData | null }>({
+    items: INITIAL_ITEMS,
+    sentiment: null
+  });
 
   useEffect(() => {
     let intervalId: ReturnType<typeof setInterval>;
@@ -36,68 +62,91 @@ const MarketTicker = memo(() => {
         if (!res.ok) return;
         const result = await res.json();
         
-        if (result && result.crypto && Array.isArray(result.crypto)) {
-          setData(prev => {
-            const next = { ...prev };
-            
+        setData(prev => {
+          const nextItems = { ...prev.items };
+          
+          if (result && result.crypto && Array.isArray(result.crypto)) {
             MARKET_ITEMS.forEach(item => {
-              // The API returns 'pair' like 'BTC/USDT' or 'PAXG/USDT'
-              // Or we can just match symbol: 'BTCUSDT' or 'PAXGUSDT'
               const ticker = result.crypto.find((c: any) => c.symbol === item.pair);
               if (ticker) {
                 const currentPrice = ticker.price;
-                const prevItem = prev[item.id];
-                const prevPriceNum = prevItem && prevItem.price !== '—' ? parseFloat(prevItem.price.replace(/,/g, '')) : currentPrice;
-                const isPositive = currentPrice >= prevPriceNum;
+                const prevItem = prev.items[item.id];
+                const change24h = ticker.change24h || 0;
+                const isPositive = change24h >= 0;
 
-                next[item.id] = {
+                nextItems[item.id] = {
                   ...prevItem,
-                  price: currentPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 }),
-                  isPositive: currentPrice === prevPriceNum ? prevItem.isPositive : isPositive,
+                  price: currentPrice >= 1000 
+                    ? currentPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                    : currentPrice.toLocaleString('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 }),
+                  change24h,
+                  isPositive,
                 };
               }
             });
-            return next;
-          });
-        }
+          }
+
+          return { 
+            items: nextItems, 
+            sentiment: result?.sentiment ? result.sentiment : prev.sentiment 
+          };
+        });
       } catch (error) {
         console.error('[Market Ticker] Failed to fetch data:', error);
-        if (!window.sessionStorage.getItem('lazarus_ticker_error_shown')) {
-          const detailMsg = error instanceof Error ? error.message : 'Unknown ticker stream error.';
-          window.dispatchEvent(new CustomEvent('lazarus-error', { detail: `[MARKET_TICKER] ${detailMsg}` }));
-          window.sessionStorage.setItem('lazarus_ticker_error_shown', 'true');
-        }
       }
     }
 
-    // Initial fetch
     fetchData();
-
-    // Polling every 2.5 seconds (proxy backend limits Binance API rate while bypassing user ISP block)
-    intervalId = setInterval(fetchData, 2500);
-
+    intervalId = setInterval(fetchData, 4000); // Polling every 4s to stay ultra light
     return () => clearInterval(intervalId);
   }, []);
 
-  const items = MARKET_ITEMS.map(i => data[i.id]);
-  // Duplicate for seamless marquee effect
-  const displayItems = [...items, ...items, ...items];
+  const items = MARKET_ITEMS.map(i => data.items[i.id]);
+  const displayItems = [...items, ...items, ...items]; // Marquee loop
+  
+  const sentiment = data.sentiment;
 
   return (
-    <div className="bg-lazarus-black/90 border-b border-lazarus-border py-1 overflow-hidden">
-      <div className="ticker-wrapper flex items-center text-xs font-mono">
+    <div className="bg-[#0f0f0f] border-b border-white/5 py-[6px] overflow-hidden select-none">
+      <div className="ticker-wrapper flex items-center text-[11px] font-mono font-medium tracking-wide">
         <div className="animate-ticker flex items-center gap-6 whitespace-nowrap pr-6">
-          {displayItems.map((item, idx) => (
-            <div key={`${item.symbol}-${idx}`} className="flex items-center gap-2">
-              <span className="text-lazarus-gold font-semibold">{item.displayName}</span>
-              <span className={item.isPositive ? 'text-green-400' : 'text-red-400'}>
-                {item.prefix}{item.price}
-              </span>
-              <span className={`text-[10px] ${item.isPositive ? 'text-green-400/60' : 'text-red-400/60'}`}>
-                {item.isPositive ? '▲' : '▼'}
-              </span>
+          
+          {/* Sentiment Section - Shows up multiple times in loop if we want, or just once. We'll map it in the chunk */}
+          {[1, 2, 3].map((loopIdx) => (
+            <div key={`loop-${loopIdx}`} className="flex items-center gap-7">
+              {/* Fear & Greed Block */}
+              {sentiment && (
+                <div className="flex items-center gap-2 pr-4 border-r border-white/10 shrink-0">
+                  <span className={`font-bold text-sm ${sentiment.value > 50 ? 'text-emerald-500' : 'text-red-500'}`}>
+                    {sentiment.value}
+                  </span>
+                  <span className="text-lazarus-muted capitalize">
+                    {sentiment.label}
+                  </span>
+                </div>
+              )}
+
+              {/* Ticker Items */}
+              {items.map((item, idx) => (
+                <a 
+                  key={`${item.symbol}-${loopIdx}-${idx}`} 
+                  href={`/en/market-signals?symbol=${item.pair}`}
+                  className="flex items-center gap-1.5 hover:bg-white/5 px-2 py-0.5 rounded transition-colors cursor-pointer"
+                  title={`View ${item.displayName} chart`}
+                >
+                  <span className="text-gray-100 font-bold uppercase">{item.displayName}</span>
+                  <span className="text-gray-300">
+                    {item.prefix}{item.price}
+                  </span>
+                  {item.isPositive ? <SparklineUp /> : <SparklineDown />}
+                  <span className={`flex items-center ${item.isPositive ? 'text-emerald-500' : 'text-red-500'}`}>
+                    {item.isPositive ? '▲' : '▼'} {Math.abs(item.change24h).toFixed(2)}%
+                  </span>
+                </a>
+              ))}
             </div>
           ))}
+
         </div>
       </div>
     </div>
@@ -107,3 +156,4 @@ const MarketTicker = memo(() => {
 MarketTicker.displayName = 'MarketTicker';
 
 export default MarketTicker;
+
