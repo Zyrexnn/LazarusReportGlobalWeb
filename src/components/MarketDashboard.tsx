@@ -263,7 +263,7 @@ export default function MarketDashboard({ lang = 'en', news, global, sentiment }
       <div className="flex flex-col lg:flex-row gap-4">
         
         {/* ── Left Column: Chart & Stats ── */}
-        <div className="flex-1 flex flex-col gap-4 min-w-0 h-[600px] lg:h-[700px]">
+        <div className="flex-1 flex flex-col gap-4 min-w-0 lg:h-[700px]">
           
           {/* Mobile Menu Toggle */}
           <button 
@@ -278,7 +278,7 @@ export default function MarketDashboard({ lang = 'en', news, global, sentiment }
           </button>
           
           {/* Main Chart Area */}
-          <div className="flex-1 bg-[#0f0f0f] border border-lazarus-border/30 rounded-xl overflow-hidden relative group">
+          <div className="w-full h-[400px] sm:h-[500px] lg:h-auto lg:flex-1 bg-[#0f0f0f] border border-lazarus-border/30 rounded-xl overflow-hidden relative group shrink-0">
             {/* Asset Overlay Header (Broker style) */}
             <div className="absolute top-0 left-0 right-0 z-10 px-4 py-3 bg-gradient-to-b from-lazarus-black view-border-none to-transparent pointer-events-none flex justify-between items-start">
                <div>
