@@ -130,7 +130,7 @@ const MarketTicker = memo(() => {
               {items.map((item, idx) => (
                 <a 
                   key={`${item.symbol}-${loopIdx}-${idx}`} 
-                  href={`/en/market-signals?symbol=${item.pair}`}
+                  href={`/market-signals?symbol=${item.pair}`}
                   className="flex items-center gap-1.5 hover:bg-white/5 px-2 py-0.5 rounded transition-colors cursor-pointer"
                   title={`View ${item.displayName} chart`}
                 >
