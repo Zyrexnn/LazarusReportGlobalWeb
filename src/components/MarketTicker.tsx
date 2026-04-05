@@ -107,39 +107,42 @@ const MarketTicker = memo(() => {
   const sentiment = data.sentiment;
 
   return (
-    <div className="bg-[#0f0f0f] border-b border-white/5 py-[6px] overflow-hidden select-none">
-      <div className="ticker-wrapper flex items-center text-[11px] font-mono font-medium tracking-wide">
-        <div className="animate-ticker flex items-center gap-6 whitespace-nowrap pr-6">
-          
-          {/* Sentiment Section - Shows up multiple times in loop if we want, or just once. We'll map it in the chunk */}
-          {[1, 2, 3].map((loopIdx) => (
-            <div key={`loop-${loopIdx}`} className="flex items-center gap-7">
-              {/* Fear & Greed Block */}
-              {sentiment && (
-                <div className="flex items-center gap-2 pr-4 border-r border-white/10 shrink-0">
-                  <span className={`font-bold text-sm ${sentiment.value > 50 ? 'text-emerald-500' : 'text-red-500'}`}>
-                    {sentiment.value}
-                  </span>
-                  <span className="text-lazarus-muted capitalize">
-                    {sentiment.label}
-                  </span>
-                </div>
-              )}
+    <div className="bg-[#0f0f0f] border-b border-white/5 py-[6px] overflow-hidden select-none flex items-center">
+      {/* FIXED Sentiment Section - Does not move */}
+      {sentiment && (
+        <div className="flex items-center gap-2 px-4 border-r border-white/10 shrink-0 bg-[#0f0f0f] z-10 shadow-[8px_0_12px_rgba(15,15,15,0.8)]">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className={sentiment.value > 50 ? 'text-emerald-500' : 'text-red-500'}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+          </svg>
+          <span className={`font-bold text-[12px] ${sentiment.value > 50 ? 'text-emerald-500' : 'text-red-500'}`}>
+            {sentiment.value}
+          </span>
+          <span className="text-lazarus-muted text-[10px] uppercase font-bold tracking-tighter whitespace-nowrap">
+            {sentiment.label}
+          </span>
+        </div>
+      )}
 
-              {/* Ticker Items */}
+      {/* SCROLLING Ticker Items */}
+      <div className="ticker-wrapper flex-1 relative overflow-hidden flex items-center text-[11px] font-mono font-medium tracking-wide">
+        <div className="animate-ticker flex items-center gap-10 whitespace-nowrap pr-10">
+          
+          {/* Seamless 2-Loop synchronization with -50% translateX animation */}
+          {[1, 2].map((loopIdx) => (
+            <div key={`loop-${loopIdx}`} className="flex items-center gap-10">
               {items.map((item, idx) => (
                 <a 
                   key={`${item.symbol}-${loopIdx}-${idx}`} 
                   href={`/market-signals?symbol=${item.pair}`}
-                  className="flex items-center gap-1.5 hover:bg-white/5 px-2 py-0.5 rounded transition-colors cursor-pointer"
+                  className="flex items-center gap-2 hover:bg-white/5 px-2 py-0.5 rounded transition-all duration-300 cursor-pointer group"
                   title={`View ${item.displayName} chart`}
                 >
-                  <span className="text-gray-100 font-bold uppercase">{item.displayName}</span>
-                  <span className="text-gray-300">
+                  <span className="text-gray-100 font-bold uppercase group-hover:text-lazarus-gold transition-colors">{item.displayName}</span>
+                  <span className="text-gray-300 font-mono">
                     {item.prefix}{item.price}
                   </span>
                   {item.isPositive ? <SparklineUp /> : <SparklineDown />}
-                  <span className={`flex items-center ${item.isPositive ? 'text-emerald-500' : 'text-red-500'}`}>
+                  <span className={`flex items-center font-bold ${item.isPositive ? 'text-emerald-500' : 'text-red-500'}`}>
                     {item.isPositive ? '▲' : '▼'} {Math.abs(item.change24h).toFixed(2)}%
                   </span>
                 </a>
@@ -156,4 +159,5 @@ const MarketTicker = memo(() => {
 MarketTicker.displayName = 'MarketTicker';
 
 export default MarketTicker;
+
 
