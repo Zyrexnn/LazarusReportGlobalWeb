@@ -160,31 +160,68 @@ async function fetchMarketNews(apiKey: string): Promise<FinnhubNewsItem[]> {
   } catch { return []; }
 }
 
-// ── API Handler ──
-export const GET: APIRoute = async () => {
+// --- Core Data Fetching Logic (Exported for direct SSR use) ---
+export async function getMarketData(): Promise<MarketDataResponse> {
   const finnhubKey = import.meta.env.FINNHUB_API_KEY ?? '';
   const cmcKey = import.meta.env.CMC_API_KEY ?? '';
   
-  const cacheKey = 'market_data_v2';
+  const cacheKey = 'market_data_v3';
   const cached = getCached<MarketDataResponse>(cacheKey);
-  if (cached) return new Response(JSON.stringify(cached), { status: 200, headers: { 'Content-Type': 'application/json' } });
+  if (cached) return cached;
 
-  const [crypto, news, global, sentiment] = await Promise.all([
-    fetchBinanceTickers(),
-    finnhubKey ? fetchMarketNews(finnhubKey) : Promise.resolve([]),
-    cmcKey ? fetchCMCGlobal(cmcKey) : Promise.resolve(null),
-    fetchSentiment(),
-  ]);
+  try {
+    const [crypto, news, global, sentiment] = await Promise.all([
+      fetchBinanceTickers(),
+      finnhubKey ? fetchMarketNews(finnhubKey) : Promise.resolve([]),
+      cmcKey ? fetchCMCGlobal(cmcKey) : Promise.resolve(null),
+      fetchSentiment(),
+    ]);
 
-  const response: MarketDataResponse = {
-    crypto,
-    news,
-    global,
-    sentiment,
-    updatedAt: new Date().toISOString(),
-    errors: [],
-  };
+    const response: MarketDataResponse = {
+      crypto,
+      news,
+      global,
+      sentiment,
+      updatedAt: new Date().toISOString(),
+      errors: [],
+    };
 
-  setCache(cacheKey, response);
-  return new Response(JSON.stringify(response), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    setCache(cacheKey, response);
+    return response;
+  } catch (err) {
+    console.error('[Market Data API] Error fetching:', err);
+    return {
+      crypto: [],
+      news: [],
+      global: null,
+      sentiment: null,
+      updatedAt: new Date().toISOString(),
+      errors: ['Failed to fetch external market data'],
+    };
+  }
+}
+
+// ── API Handler (Standard HTTP GET) ──
+export const GET: APIRoute = async ({ request }) => {
+  // --- Security Check (Basic Anti-Injection & Origin protection) ---
+  const origin = request.headers.get('origin');
+  const referer = request.headers.get('referer');
+  const host = request.headers.get('host');
+  
+  // Only allow requests from our own host/origin or local dev
+  if (origin && !origin.includes(host || '') && !origin.includes('localhost')) {
+    return new Response(JSON.stringify({ error: 'Access Denied' }), { status: 403 });
+  }
+
+  const data = await getMarketData();
+  
+  return new Response(JSON.stringify(data), {
+    status: 200,
+    headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=30',
+      'X-Content-Type-Options': 'nosniff',
+    },
+  });
 };
+
