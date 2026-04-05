@@ -148,6 +148,7 @@ export default function MarketDashboard({ lang = 'en', news, global, sentiment }
   const [connected, setConnected] = useState(false);
   const [activeTab, setActiveTab] = useState<'watchlist' | 'news'>('watchlist');
   const [searchQuery, setSearchQuery] = useState('');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const filteredAssets = assets.filter(a => 
     a.pair.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -262,7 +263,19 @@ export default function MarketDashboard({ lang = 'en', news, global, sentiment }
       <div className="flex flex-col lg:flex-row gap-4">
         
         {/* ── Left Column: Chart & Stats ── */}
-        <div className="flex-1 flex flex-col gap-4 min-w-0 h-[500px] lg:h-[700px]">
+        <div className="flex-1 flex flex-col gap-4 min-w-0 h-[600px] lg:h-[700px]">
+          
+          {/* Mobile Menu Toggle */}
+          <button 
+            onClick={() => setMobileMenuOpen(true)}
+            className="lg:hidden w-full bg-[#121212] border border-lazarus-border/30 rounded-xl p-3 flex items-center justify-between text-lazarus-gold font-bold shrink-0 shadow-lg"
+          >
+            <span className="flex items-center gap-2 text-sm tracking-wide">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+              Watchlist & Market News
+            </span>
+            <span className="text-[10px] bg-lazarus-gold/10 text-lazarus-gold px-2 py-1 rounded uppercase tracking-wider">Open</span>
+          </button>
           
           {/* Main Chart Area */}
           <div className="flex-1 bg-[#0f0f0f] border border-lazarus-border/30 rounded-xl overflow-hidden relative group">
@@ -320,8 +333,20 @@ export default function MarketDashboard({ lang = 'en', news, global, sentiment }
         </div>
 
         {/* ── Right Column: Sidebar (Watchlist & News) ── */}
-        <div className="lg:w-[360px] flex flex-col bg-[#121212] border border-lazarus-border/30 rounded-xl overflow-hidden shrink-0 h-[500px] lg:h-[700px]">
+        <div className={`
+          flex flex-col bg-[#121212] border border-lazarus-border/30 overflow-hidden shrink-0 
+          lg:w-[360px] lg:rounded-xl lg:h-[700px] lg:relative lg:block
+          ${mobileMenuOpen ? 'fixed inset-0 z-[100] h-[100dvh] w-full rounded-none border-none' : 'hidden'}
+        `}>
           
+          {/* Mobile Close Header */}
+          <div className="lg:hidden flex justify-between items-center p-4 bg-[#0a0a0a] border-b border-lazarus-border/30 shrink-0">
+            <span className="font-serif font-bold text-lg text-lazarus-headline">Market Terminal</span>
+            <button onClick={() => setMobileMenuOpen(false)} className="text-lazarus-muted hover:text-white p-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+          </div>
+
           {/* Tabs */}
           <div className="flex border-b border-lazarus-border/30 bg-[#0a0a0a]">
             <button
@@ -370,7 +395,7 @@ export default function MarketDashboard({ lang = 'en', news, global, sentiment }
                 filteredAssets.map((asset) => (
                 <button
                   key={asset.symbol}
-                  onClick={() => setSelectedSymbol(asset.symbol)}
+                  onClick={() => { setSelectedSymbol(asset.symbol); setMobileMenuOpen(false); }}
                   className={`w-full grid grid-cols-[1.5fr_1fr_1fr] items-center px-4 py-3 text-left transition-colors hover:bg-white/5 group ${
                     selectedSymbol === asset.symbol ? 'bg-lazarus-gold/5 before:absolute before:left-0 before:w-1 before:h-full before:bg-lazarus-gold relative' : ''
                   }`}
