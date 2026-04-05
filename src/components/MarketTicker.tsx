@@ -1,4 +1,4 @@
-import { useState, useEffect, memo } from 'react';
+import { useState, useEffect, memo, useRef } from 'react';
 
 interface TickerData {
   symbol: string;
@@ -44,6 +44,46 @@ const SparklineDown = () => (
     <path d="M1 2.5L6 7L11 4.5L17 9.5L23 7" stroke="#ef4444" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
+
+const TickerItem = memo(({ item, loopIdx, idx }: { item: TickerData, loopIdx: number, idx: number }) => {
+  const [pulse, setPulse] = useState<'up' | 'down' | null>(null);
+  const prevPriceRef = useRef(item.price);
+
+  useEffect(() => {
+    if (prevPriceRef.current !== item.price && item.price !== '—') {
+      const p1 = parseFloat(prevPriceRef.current.replace(/,/g, ''));
+      const p2 = parseFloat(item.price.replace(/,/g, ''));
+      if (!isNaN(p1) && !isNaN(p2) && p1 !== p2) {
+        setPulse(p2 > p1 ? 'up' : 'down');
+        const timer = setTimeout(() => setPulse(null), 1000);
+        prevPriceRef.current = item.price;
+        return () => clearTimeout(timer);
+      }
+    }
+    prevPriceRef.current = item.price;
+  }, [item.price]);
+
+  return (
+    <a 
+      href={`/market-signals?symbol=${item.pair}`}
+      className="flex items-center gap-2 hover:bg-white/5 px-2 py-0.5 rounded transition-all duration-300 cursor-pointer group"
+      title={`View ${item.displayName} chart`}
+    >
+      <span className="text-gray-100 font-bold uppercase group-hover:text-lazarus-gold transition-colors">{item.displayName}</span>
+      <span className={`font-mono font-bold transition-all duration-500 transform ${
+        pulse === 'up' ? 'text-green-400 scale-110 shadow-[0_0_8px_rgba(52,211,153,0.3)]' : 
+        pulse === 'down' ? 'text-red-400 scale-110 shadow-[0_0_8px_rgba(248,113,113,0.3)]' : 
+        'text-gray-300'
+      }`}>
+        {item.prefix}{item.price}
+      </span>
+      {item.isPositive ? <SparklineUp /> : <SparklineDown />}
+      <span className={`flex items-center font-bold ${item.isPositive ? 'text-emerald-500' : 'text-red-500'}`}>
+        {item.isPositive ? '▲' : '▼'} {Math.abs(item.change24h).toFixed(2)}%
+      </span>
+    </a>
+  );
+});
 
 const MarketTicker = memo(() => {
   const [data, setData] = useState<{ items: Record<string, TickerData>, sentiment: SentimentData | null }>({
@@ -92,28 +132,27 @@ const MarketTicker = memo(() => {
           };
         });
       } catch (error) {
-        console.error('[Market Ticker] Failed to fetch data:', error);
+        // Silent error
       }
     }
 
     fetchData();
-    intervalId = setInterval(fetchData, 4000); // Polling every 4s to stay ultra light
+    intervalId = setInterval(fetchData, 2500); // Polling every 2.5s for real-time vibe
     return () => clearInterval(intervalId);
   }, []);
 
   const items = MARKET_ITEMS.map(i => data.items[i.id]);
-  const displayItems = [...items, ...items, ...items]; // Marquee loop
-  
   const sentiment = data.sentiment;
 
   return (
     <div className="bg-[#0f0f0f] border-b border-white/5 py-[6px] overflow-hidden select-none flex items-center">
-      {/* FIXED Sentiment Section - Does not move */}
+      {/* FIXED Sentiment Section */}
       {sentiment && (
         <div className="flex items-center gap-2 px-4 border-r border-white/10 shrink-0 bg-[#0f0f0f] z-10 shadow-[8px_0_12px_rgba(15,15,15,0.8)]">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className={sentiment.value > 50 ? 'text-emerald-500' : 'text-red-500'}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-          </svg>
+          <div className="relative flex h-2 w-2 mr-1">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+          </div>
           <span className={`font-bold text-[12px] ${sentiment.value > 50 ? 'text-emerald-500' : 'text-red-500'}`}>
             {sentiment.value}
           </span>
@@ -126,30 +165,13 @@ const MarketTicker = memo(() => {
       {/* SCROLLING Ticker Items */}
       <div className="ticker-wrapper flex-1 relative overflow-hidden flex items-center text-[11px] font-mono font-medium tracking-wide">
         <div className="animate-ticker flex items-center gap-10 whitespace-nowrap pr-10">
-          
-          {/* Seamless 2-Loop synchronization with -50% translateX animation */}
           {[1, 2].map((loopIdx) => (
             <div key={`loop-${loopIdx}`} className="flex items-center gap-10">
               {items.map((item, idx) => (
-                <a 
-                  key={`${item.symbol}-${loopIdx}-${idx}`} 
-                  href={`/market-signals?symbol=${item.pair}`}
-                  className="flex items-center gap-2 hover:bg-white/5 px-2 py-0.5 rounded transition-all duration-300 cursor-pointer group"
-                  title={`View ${item.displayName} chart`}
-                >
-                  <span className="text-gray-100 font-bold uppercase group-hover:text-lazarus-gold transition-colors">{item.displayName}</span>
-                  <span className="text-gray-300 font-mono">
-                    {item.prefix}{item.price}
-                  </span>
-                  {item.isPositive ? <SparklineUp /> : <SparklineDown />}
-                  <span className={`flex items-center font-bold ${item.isPositive ? 'text-emerald-500' : 'text-red-500'}`}>
-                    {item.isPositive ? '▲' : '▼'} {Math.abs(item.change24h).toFixed(2)}%
-                  </span>
-                </a>
+                <TickerItem key={`${item.symbol}-${loopIdx}-${idx}`} item={item} loopIdx={loopIdx} idx={idx} />
               ))}
             </div>
           ))}
-
         </div>
       </div>
     </div>
