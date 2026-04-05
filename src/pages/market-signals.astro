@@ -18,19 +18,11 @@ const pageDesc = isID
   : 'Monitor global market movements, real-time Binance crypto prices, interactive charts, and CoinMarketCap market intelligence.';
 
 // Fetch market data server-side
-let marketNews: FinnhubNewsItem[] = [];
-let globalMetrics: GlobalMarketMetrics | null = null;
-let sentiment: SentimentData | null = null;
-try {
-  const baseUrl = Astro.url.origin;
-  const res = await fetch(`${baseUrl}/api/market-data`);
-  if (res.ok) {
-    const data = await res.json() as MarketDataResponse;
-    marketNews = data?.news ?? [];
-    globalMetrics = data?.global ?? null;
-    sentiment = data?.sentiment ?? null;
-  }
-} catch {}
+import { getMarketData } from './api/market-data';
+const data = await getMarketData();
+const marketNews = data?.news ?? [];
+const globalMetrics = data?.global ?? null;
+const sentiment = data?.sentiment ?? null;
 
 function fmtPrice(n: number): string {
   if (n === 0) return '—';
@@ -201,16 +193,16 @@ const breadcrumbSchema = {
                     rel="noopener noreferrer"
                     class="group bg-lazarus-dark border border-lazarus-border/30 rounded-xl overflow-hidden hover:bg-lazarus-black transition-all duration-300"
                   >
-                    {item.image && (
-                      <div class="relative overflow-hidden aspect-[16/9] border-b border-lazarus-border/20">
-                        <img
-                          src={item.image}
-                          alt={item.headline}
-                          class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                          loading="lazy"
-                        />
-                      </div>
-                    )}
+                    <div class="relative overflow-hidden aspect-[16/9] border-b border-lazarus-border/20 bg-lazarus-black/40">
+                      <img
+                        src={item.image || `https://images.unsplash.com/photo-1611974717424-36cfaf41009e?w=800&q=80&fit=crop`}
+                        alt={item.headline}
+                        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        loading="lazy"
+                        onerror="this.src='https://images.unsplash.com/photo-1611974717424-36cfaf41009e?w=800&q=80&fit=crop'"
+                      />
+                      <div class="absolute inset-0 bg-gradient-to-t from-lazarus-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    </div>
                     <div class="p-3 sm:p-4">
                       <h3 class="text-lazarus-headline text-sm font-serif font-medium leading-snug group-hover:text-lazarus-gold transition-colors line-clamp-2 mb-2">
                         {item.headline}
