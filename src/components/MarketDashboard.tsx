@@ -18,6 +18,7 @@ interface CryptoAsset {
 }
 
 const SYMBOLS: Omit<CryptoAsset, 'price' | 'change24h' | 'high24h' | 'low24h' | 'volume24h' | 'quoteVolume24h' | 'flash'>[] = [
+  // Top 10 Crypto
   { symbol: 'BTCUSDT', tvSymbol: 'BINANCE:BTCUSDT', name: 'Bitcoin', pair: 'BTC/USDT' },
   { symbol: 'ETHUSDT', tvSymbol: 'BINANCE:ETHUSDT', name: 'Ethereum', pair: 'ETH/USDT' },
   { symbol: 'BNBUSDT', tvSymbol: 'BINANCE:BNBUSDT', name: 'BNB', pair: 'BNB/USDT' },
@@ -28,9 +29,69 @@ const SYMBOLS: Omit<CryptoAsset, 'price' | 'change24h' | 'high24h' | 'low24h' | 
   { symbol: 'AVAXUSDT', tvSymbol: 'BINANCE:AVAXUSDT', name: 'Avalanche', pair: 'AVAX/USDT' },
   { symbol: 'DOTUSDT', tvSymbol: 'BINANCE:DOTUSDT', name: 'Polkadot', pair: 'DOT/USDT' },
   { symbol: 'LINKUSDT', tvSymbol: 'BINANCE:LINKUSDT', name: 'Chainlink', pair: 'LINK/USDT' },
-  // Adding traditional indexes (prices won't update from binance, but TradingView chart will work)
+  
+  // High Cap Crypto
+  { symbol: 'TRXUSDT', tvSymbol: 'BINANCE:TRXUSDT', name: 'TRON', pair: 'TRX/USDT' },
+  { symbol: 'SHIBUSDT', tvSymbol: 'BINANCE:SHIBUSDT', name: 'Shiba Inu', pair: 'SHIB/USDT' },
+  { symbol: 'LTCUSDT', tvSymbol: 'BINANCE:LTCUSDT', name: 'Litecoin', pair: 'LTC/USDT' },
+  { symbol: 'BCHUSDT', tvSymbol: 'BINANCE:BCHUSDT', name: 'Bitcoin Cash', pair: 'BCH/USDT' },
+  { symbol: 'UNIUSDT', tvSymbol: 'BINANCE:UNIUSDT', name: 'Uniswap', pair: 'UNI/USDT' },
+  { symbol: 'NEARUSDT', tvSymbol: 'BINANCE:NEARUSDT', name: 'NEAR Protocol', pair: 'NEAR/USDT' },
+  { symbol: 'APTUSDT', tvSymbol: 'BINANCE:APTUSDT', name: 'Aptos', pair: 'APT/USDT' },
+  { symbol: 'ICPUSDT', tvSymbol: 'BINANCE:ICPUSDT', name: 'Internet Computer', pair: 'ICP/USDT' },
+  { symbol: 'XLMUSDT', tvSymbol: 'BINANCE:XLMUSDT', name: 'Stellar', pair: 'XLM/USDT' },
+  { symbol: 'FILUSDT', tvSymbol: 'BINANCE:FILUSDT', name: 'Filecoin', pair: 'FIL/USDT' },
+  { symbol: 'ARBUSDT', tvSymbol: 'BINANCE:ARBUSDT', name: 'Arbitrum', pair: 'ARB/USDT' },
+  { symbol: 'RNDRUSDT', tvSymbol: 'BINANCE:RNDRUSDT', name: 'Render', pair: 'RNDR/USDT' },
+  { symbol: 'VETUSDT', tvSymbol: 'BINANCE:VETUSDT', name: 'VeChain', pair: 'VET/USDT' },
+  { symbol: 'HBARUSDT', tvSymbol: 'BINANCE:HBARUSDT', name: 'Hedera', pair: 'HBAR/USDT' },
+  { symbol: 'LDOUSDT', tvSymbol: 'BINANCE:LDOUSDT', name: 'Lido DAO', pair: 'LDO/USDT' },
+  { symbol: 'OPUSDT', tvSymbol: 'BINANCE:OPUSDT', name: 'Optimism', pair: 'OP/USDT' },
+  { symbol: 'GRTUSDT', tvSymbol: 'BINANCE:GRTUSDT', name: 'The Graph', pair: 'GRT/USDT' },
+  { symbol: 'INJUSDT', tvSymbol: 'BINANCE:INJUSDT', name: 'Injective', pair: 'INJ/USDT' },
+  { symbol: 'RUNEUSDT', tvSymbol: 'BINANCE:RUNEUSDT', name: 'THORChain', pair: 'RUNE/USDT' },
+  { symbol: 'THETAUSDT', tvSymbol: 'BINANCE:THETAUSDT', name: 'Theta Network', pair: 'THETA/USDT' },
+  { symbol: 'FTMUSDT', tvSymbol: 'BINANCE:FTMUSDT', name: 'Fantom', pair: 'FTM/USDT' },
+  { symbol: 'ALGOUSDT', tvSymbol: 'BINANCE:ALGOUSDT', name: 'Algorand', pair: 'ALGO/USDT' },
+  { symbol: 'FLOWUSDT', tvSymbol: 'BINANCE:FLOWUSDT', name: 'Flow', pair: 'FLOW/USDT' },
+  { symbol: 'TIAUSDT', tvSymbol: 'BINANCE:TIAUSDT', name: 'Celestia', pair: 'TIA/USDT' },
+  { symbol: 'SNXUSDT', tvSymbol: 'BINANCE:SNXUSDT', name: 'Synthetix', pair: 'SNX/USDT' },
+  { symbol: 'MANAUSDT', tvSymbol: 'BINANCE:MANAUSDT', name: 'Decentraland', pair: 'MANA/USDT' },
+  { symbol: 'SANDUSDT', tvSymbol: 'BINANCE:SANDUSDT', name: 'The Sandbox', pair: 'SAND/USDT' },
+  { symbol: 'AXSUSDT', tvSymbol: 'BINANCE:AXSUSDT', name: 'Axie Infinity', pair: 'AXS/USDT' },
+  { symbol: 'AAVEUSDT', tvSymbol: 'BINANCE:AAVEUSDT', name: 'Aave', pair: 'AAVE/USDT' },
+  { symbol: 'QNTUSDT', tvSymbol: 'BINANCE:QNTUSDT', name: 'Quant', pair: 'QNT/USDT' },
+  { symbol: 'EGLDUSDT', tvSymbol: 'BINANCE:EGLDUSDT', name: 'MultiversX', pair: 'EGLD/USDT' },
+  { symbol: 'SEIUSDT', tvSymbol: 'BINANCE:SEIUSDT', name: 'Sei', pair: 'SEI/USDT' },
+  { symbol: 'SUIUSDT', tvSymbol: 'BINANCE:SUIUSDT', name: 'Sui', pair: 'SUI/USDT' },
+  { symbol: 'STXUSDT', tvSymbol: 'BINANCE:STXUSDT', name: 'Stacks', pair: 'STX/USDT' },
+  { symbol: 'NEOUSDT', tvSymbol: 'BINANCE:NEOUSDT', name: 'Neo', pair: 'NEO/USDT' },
+  { symbol: 'EOSUSDT', tvSymbol: 'BINANCE:EOSUSDT', name: 'EOS', pair: 'EOS/USDT' },
+  { symbol: 'XTZUSDT', tvSymbol: 'BINANCE:XTZUSDT', name: 'Tezos', pair: 'XTZ/USDT' },
+  { symbol: 'WLDUSDT', tvSymbol: 'BINANCE:WLDUSDT', name: 'Worldcoin', pair: 'WLD/USDT' },
+  { symbol: 'PEPEUSDT', tvSymbol: 'BINANCE:PEPEUSDT', name: 'Pepe', pair: 'PEPE/USDT' },
+  
+  // Major Indices & Commodities
+  { symbol: 'SPX', tvSymbol: 'SP:SPX', name: 'S&P 500', pair: 'SPX' },
+  { symbol: 'NDX', tvSymbol: 'NASDAQ:NDX', name: 'Nasdaq 100', pair: 'NDX' },
+  { symbol: 'DJI', tvSymbol: 'TVC:DJI', name: 'Dow Jones', pair: 'DJI' },
+  { symbol: 'RUT', tvSymbol: 'TVC:RUT', name: 'Russell 2000', pair: 'RUT' },
+  { symbol: 'VIX', tvSymbol: 'CBOE:VIX', name: 'Volatility Index', pair: 'VIX' },
   { symbol: 'GOLD', tvSymbol: 'TVC:GOLD', name: 'Gold', pair: 'XAU/USD' },
-  { symbol: 'DXY', tvSymbol: 'TVC:DXY', name: 'US Dollar', pair: 'DXY' },
+  { symbol: 'SILVER', tvSymbol: 'TVC:SILVER', name: 'Silver', pair: 'XAG/USD' },
+  { symbol: 'USOIL', tvSymbol: 'TVC:USOIL', name: 'Crude Oil WTI', pair: 'WTI' },
+  { symbol: 'UKOIL', tvSymbol: 'TVC:UKOIL', name: 'Brent Oil', pair: 'BRENT' },
+  { symbol: 'NATGAS', tvSymbol: 'TVC:NATGAS', name: 'Natural Gas', pair: 'NGAS' },
+  { symbol: 'COPPER', tvSymbol: 'TVC:COPPER', name: 'Copper', pair: 'HG1!' },
+  { symbol: 'DXY', tvSymbol: 'TVC:DXY', name: 'US Dollar Index', pair: 'DXY' },
+
+  // Forex Majors
+  { symbol: 'EURUSD', tvSymbol: 'FX:EURUSD', name: 'Euro / US Dollar', pair: 'EUR/USD' },
+  { symbol: 'GBPUSD', tvSymbol: 'FX:GBPUSD', name: 'British Pound / US Dollar', pair: 'GBP/USD' },
+  { symbol: 'USDJPY', tvSymbol: 'FX:USDJPY', name: 'US Dollar / Japanese Yen', pair: 'USD/JPY' },
+  { symbol: 'USDCAD', tvSymbol: 'FX:USDCAD', name: 'US Dollar / Canadian Dollar', pair: 'USD/CAD' },
+  { symbol: 'AUDUSD', tvSymbol: 'FX:AUDUSD', name: 'Australian Dollar / US Dollar', pair: 'AUD/USD' },
+  { symbol: 'USDCHF', tvSymbol: 'FX:USDCHF', name: 'US Dollar / Swiss Franc', pair: 'USD/CHF' },
 ];
 
 function fmtPrice(n: number): string {
